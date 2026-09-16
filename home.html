@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arthur 工作室 - 首页</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: #0f1115;
+      color: #e8eaed;
+      font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+      line-height: 1.7;
+    }
+
+    a { color: #4f8cff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container {
+      width: min(1080px, 92%);
+      margin: 0 auto;
+    }
+
+    /* 顶部导航 */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(15, 17, 21, 0.88);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #2a2f3a;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .brand {
+      font-weight: 700;
+      color: #e8eaed;
+      font-size: 1.05rem;
+    }
+
+    .brand:hover { text-decoration: none; color: #4f8cff; }
+
+    .nav nav {
+      display: flex;
+      gap: 22px;
+      font-size: 0.95rem;
+    }
+
+    .nav nav a { color: #9aa0a6; }
+    .nav nav a:hover { color: #e8eaed; text-decoration: none; }
+
+    /* 通用区块 */
+    .section {
+      padding: 80px 0;
+      border-top: 1px solid #2a2f3a;
+    }
+
+    .section h2 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    .section .lead {
+      color: #9aa0a6;
+      margin-bottom: 36px;
+      max-width: 720px;
+    }
+
+    /* 项目卡片 */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #1d212b;
+      border: 1px solid #2a2f3a;
+      border-radius: 14px;
+      padding: 24px;
+      transition: 0.2s;
+    }
+
+    .card:hover {
+      border-color: #4f8cff;
+      transform: translateY(-2px);
+    }
+
+    .card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.78rem;
+      color: #9aa0a6;
+      border: 1px solid #2a2f3a;
+      border-radius: 999px;
+      padding: 2px 10px;
+      margin-bottom: 14px;
+    }
+
+    .card p {
+      color: #9aa0a6;
+      font-size: 0.92rem;
+    }
+
+    /* 关于区 */
+    .about-text {
+      max-width: 720px;
+      color: #c3c8d0;
+    }
+
+    /* 联系区 */
+    .contact-list {
+      list-style: none;
+      display: grid;
+      gap: 12px;
+      max-width: 480px;
+    }
+
+    .contact-list li {
+      background: #1d212b;
+      border: 1px solid #2a2f3a;
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 0.95rem;
+    }
+
+    /* 页脚 */
+    footer {
+      border-top: 1px solid #2a2f3a;
+      padding: 32px 0 48px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 640px) {
+      .nav nav { gap: 14px; font-size: 0.88rem; }
+      .section { padding: 56px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部导航 -->
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href=" ">Arthur 工作室</a >
+      <nav>
+        <a href="#projects">项目</a >
+        <a href="#about">关于</a >
+        <a href="#contact">联系</a >
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- 项目区 -->
+    <section id="projects" class="section" style="border-top: none;">
+      <div class="container">
+        <h2>正在进行的项目</h2>
+        <p class="lead">这里会陆续放上我正在做的项目，包括开源汉化和独立软件。</p >
+
+        <div class="card-grid">
+          <!-- 占位卡片：以后往这里加新卡片 -->
+          <article class="card">
+            <span class="tag">汉化项目</span>
+            <h3>某音乐制作软件 中文汉化</h3>
+            <p>正在对一款开源音乐制作软件进行中文本地化，完成后将免费开源发布。</p >
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 关于区 -->
+    <section id="about" class="section">
+      <div class="container">
+        <h2>关于</h2>
+        <p class="about-text">
+          我是 Harvey，Arthur 工作室的创建者。目前专注于开源软件汉化，同时也在开发自己的独立软件。
+          所有项目均开源免费发布。
+        </p >
+      </div>
+    </section>
+
+    <!-- 联系区 -->
+    <section id="contact" class="section">
+      <div class="container">
+        <h2>联系</h2>
+        <ul class="contact-list">
+          <li>GitHub：<a href="https://github.com/harvey-music" target="_blank">github.com/harvey-music</a ></li>
+          <li>邮箱：zjh041106@qq.com</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>© <span id="year"></span> Arthur 工作室 · 所有项目均开源免费发布</p >
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
