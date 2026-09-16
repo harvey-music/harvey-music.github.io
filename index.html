@@ -1,1 +1,122 @@
-<h1>亚瑟工作室</h1>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arthur 工作室</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0f1115;
+      color: #e8eaed;
+      font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .logo {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      letter-spacing: 2px;
+      margin-bottom: 14px;
+    }
+
+    .subtitle {
+      color: #9aa0a6;
+      font-size: 1rem;
+      margin-bottom: 42px;
+      max-width: 480px;
+      line-height: 1.8;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 56px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: #4f8cff;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #6ea0ff;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #e8eaed;
+      border-color: #2a2f3a;
+    }
+
+    .btn-secondary:hover {
+      border-color: #4f8cff;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 22px;
+      color: #6b7280;
+      font-size: 0.88rem;
+    }
+
+    .footer-links a {
+      color: #9aa0a6;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: #4f8cff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Logo 占位：以后换成你自己的图，把 href 改成你的图片路径即可 -->
+  <svg class="logo" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="60" cy="60" r="58" stroke="#4f8cff" stroke-width="2"/>
+    <text x="60" y="76" text-anchor="middle" font-size="48" font-weight="700" fill="#4f8cff" font-family="Georgia, serif">A</text>
+  </svg>
+
+  <h1>Arthur 工作室</h1>
+  <p class="subtitle">专注于开源汉化与独立软件开发的小工作室</p >
+
+  <div class="buttons">
+    <a class="btn btn-primary" href=" ">进入首页</a >
+    <a class="btn btn-secondary" href="home.html#projects">项目</a >
+    <a class="btn btn-secondary" href="home.html#about">关于</a >
+  </div>
+
+  <div class="footer-links">
+    <a href="https://github.com/harvey-music" target="_blank">GitHub</a >
+    <a href="mailto:zjh041106@qq.com">邮箱</a >
+  </div>
+
+</body>
+</html>
