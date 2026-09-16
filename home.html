@@ -7,8 +7,6 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html { scroll-behavior: smooth; }
-
     body {
       background: #0f1115;
       color: #e8eaed;
@@ -24,16 +22,28 @@
       margin: 0 auto;
     }
 
-    /* 返回链接 */
+    /* 顶部一行：左返回，右名字 */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 4%;
+    }
+
     .back-link {
-      display: inline-block;
-      margin: 24px 0 0 4%;
       color: #6b7280;
       font-size: 0.9rem;
       text-decoration: none;
       transition: 0.2s;
     }
     .back-link:hover { color: #4f8cff; text-decoration: none; }
+
+    .brand {
+      font-weight: 700;
+      color: #e8eaed;
+      font-size: 1.05rem;
+    }
+    .brand:hover { color: #4f8cff; text-decoration: none; }
 
     /* 通用区块 */
     .section {
@@ -114,7 +124,6 @@
       font-size: 0.95rem;
     }
 
-    /* 页脚 */
     footer {
       border-top: 1px solid #2a2f3a;
       padding: 32px 0 48px;
@@ -130,13 +139,27 @@
 </head>
 <body>
 
-  <!-- 返回链接 -->
-  <a class="back-link" href="index.html">返回欢迎页</a >
+  <!-- 顶部一行：左返回，右名字 -->
+  <div class="topbar">
+    <a class="back-link" href="index.html">← 返回欢迎页</a >
+    <a class="brand" href="index.html">Arthur 工作室</a >
+  </div>
 
   <main>
 
-    <!-- 项目区 -->
-    <section id="projects" class="section" style="border-top: none;">
+    <!-- 关于区（放最上面） -->
+    <section id="about" class="section" style="border-top: none;">
+      <div class="container">
+        <h2>关于</h2>
+        <p class="about-text">
+          我是 Harvey，Arthur 工作室的创建者。目前专注于开源软件汉化，同时也在开发自己的独立软件。
+          所有项目均开源免费发布。
+        </p >
+      </div>
+    </section>
+
+    <!-- 项目区（放在关于下面） -->
+    <section id="projects" class="section">
       <div class="container">
         <h2>正在进行的项目</h2>
         <p class="lead">这里会陆续放上我正在做的项目，包括开源汉化和独立软件。</p >
@@ -148,17 +171,6 @@
             <p>正在对一款开源音乐制作软件进行中文本地化，完成后将免费开源发布。</p >
           </article>
         </div>
-      </div>
-    </section>
-
-    <!-- 关于区 -->
-    <section id="about" class="section">
-      <div class="container">
-        <h2>关于</h2>
-        <p class="about-text">
-          我是 Harvey，Arthur 工作室的创建者。目前专注于开源软件汉化，同时也在开发自己的独立软件。
-          所有项目均开源免费发布。
-        </p >
       </div>
     </section>
 
