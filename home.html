@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arthur 工作室 - 首页</title>
+  <title>Arthur 工作室 - 项目与关于</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -24,39 +24,16 @@
       margin: 0 auto;
     }
 
-    /* 顶部导航 */
-    .site-header {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: rgba(15, 17, 21, 0.88);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid #2a2f3a;
+    /* 返回链接 */
+    .back-link {
+      display: inline-block;
+      margin: 24px 0 0 4%;
+      color: #6b7280;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: 0.2s;
     }
-
-    .nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 64px;
-    }
-
-    .brand {
-      font-weight: 700;
-      color: #e8eaed;
-      font-size: 1.05rem;
-    }
-
-    .brand:hover { text-decoration: none; color: #4f8cff; }
-
-    .nav nav {
-      display: flex;
-      gap: 22px;
-      font-size: 0.95rem;
-    }
-
-    .nav nav a { color: #9aa0a6; }
-    .nav nav a:hover { color: #e8eaed; text-decoration: none; }
+    .back-link:hover { color: #4f8cff; text-decoration: none; }
 
     /* 通用区块 */
     .section {
@@ -147,15 +124,14 @@
     }
 
     @media (max-width: 640px) {
-      .nav nav { gap: 14px; font-size: 0.88rem; }
       .section { padding: 56px 0; }
     }
   </style>
 </head>
 <body>
 
-  <a class="back-link"
-    href="index.html">返回欢迎页</a>
+  <!-- 返回链接 -->
+  <a class="back-link" href=" ">返回欢迎页</a >
 
   <main>
 
@@ -166,7 +142,6 @@
         <p class="lead">这里会陆续放上我正在做的项目，包括开源汉化和独立软件。</p >
 
         <div class="card-grid">
-          <!-- 占位卡片：以后往这里加新卡片 -->
           <article class="card">
             <span class="tag">汉化项目</span>
             <h3>某音乐制作软件 中文汉化</h3>
