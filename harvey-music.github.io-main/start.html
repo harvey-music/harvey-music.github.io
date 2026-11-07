@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arthur 工作室 - 项目</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: #0f1115;
+      color: #e8eaed;
+      font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+      line-height: 1.8;
+    }
+
+    /* ---------- 顶栏（与「关于」页一致：左返回，右名字） ---------- */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 4%;
+    }
+
+    .back-link {
+      color: #6b7280;
+      font-size: 1.1rem;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+
+    .back-link:hover {
+      color: #4f8cff;
+    }
+
+    .brand {
+      font-weight: 700;
+      color: #e8eaed;
+      font-size: 1.05rem;
+      text-decoration: none;
+    }
+
+    .brand:hover {
+      color: #4f8cff;
+    }
+
+    .page {
+      width: min(1080px, 92%);
+      margin: 56px auto 72px;
+    }
+
+    /* ---------- 欢迎区 ---------- */
+    .hero {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.75rem, 4.5vw, 2.5rem);
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .hero p {
+      color: #9aa0a6;
+      font-size: 0.98rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ---------- 分组 ---------- */
+    .group {
+      margin-bottom: 60px;
+    }
+
+    .group-head {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .group-head h2 {
+      font-size: 1.25rem;
+      letter-spacing: 0.5px;
+    }
+
+    .group-head .count {
+      font-size: 0.82rem;
+      color: #6b7280;
+      border: 1px solid #2a2f3a;
+      border-radius: 999px;
+      padding: 1px 10px;
+      line-height: 1.7;
+    }
+
+    .group-hint {
+      color: #6b7280;
+      font-size: 0.88rem;
+      margin-bottom: 24px;
+    }
+
+    /* ---------- 项目格 ---------- */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      min-height: 196px;
+      background: #1d212b;
+      border: 1px solid #2a2f3a;
+      border-radius: 14px;
+      padding: 24px;
+      text-decoration: none;
+      color: inherit;
+      transition: 0.2s;
+    }
+
+    /* 可点击的真实项目 */
+    a.card:hover {
+      border-color: #4f8cff;
+      transform: translateY(-2px);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      color: #9aa0a6;
+      border: 1px solid #2a2f3a;
+      border-radius: 999px;
+      padding: 1px 10px;
+      line-height: 1.7;
+    }
+
+    .tag--accent {
+      color: #4f8cff;
+      border-color: rgba(79, 140, 255, 0.45);
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+
+    .card .desc {
+      color: #9aa0a6;
+      font-size: 0.9rem;
+    }
+
+    .card-foot {
+      margin-top: auto;
+      padding-top: 20px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #4f8cff;
+    }
+
+    .arrow {
+      display: inline-block;
+      transition: 0.2s;
+    }
+
+    a.card:hover .arrow {
+      transform: translateX(4px);
+    }
+
+    /* 未填的项目位 */
+    .card--empty {
+      border-style: dashed;
+      border-color: #262b34;
+      background: transparent;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px 20px;
+    }
+
+    .card--empty .plus {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px dashed #39404f;
+      border-radius: 50%;
+      color: #4b515c;
+      font-size: 1rem;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .card--empty span {
+      color: #565d6b;
+      font-size: 0.86rem;
+    }
+
+    @media (max-width: 640px) {
+      .page { margin: 36px auto 56px; }
+      .hero { margin-bottom: 40px; }
+      .group { margin-bottom: 44px; }
+      .card { padding: 20px; min-height: 168px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶栏（与「关于」页一致：左返回，右名字） -->
+  <div class="topbar">
+    <a class="back-link" href="index.html">返回欢迎页</a>
+    <a class="brand" href="index.html">Arthur 工作室</a>
+  </div>
+
+  <div class="page">
+
+    <!-- 欢迎区 -->
+    <header class="hero">
+      <h1>欢迎来到 Arthur 工作室</h1>
+      <p>下面按「已完成」和「正在进行」分成两块，点卡片可以查看项目详情。目前主推的是 Silverdaw 中文汉化。</p>
+    </header>
+
+    <!-- ===== 已完成项目 ===== -->
+    <section class="group">
+      <div class="group-head">
+        <h2>已完成项目</h2>
+        <span class="count">3 个位置</span>
+      </div>
+      <p class="group-hint">已经发布、可以直接使用的项目。</p>
+
+      <div class="grid">
+        <!-- 项目位填法：把 article.card--empty 换成下面这种结构即可
+             <a class="card" href="项目页.html">
+               <div class="card-head">
+                 <span class="tag tag--accent">汉化项目</span>
+               </div>
+               <h3>项目名称</h3>
+               <p class="desc">一句话说明这个项目是做什么的。</p>
+               <span class="card-foot">查看详情<span class="arrow"> →</span></span>
+             </a> -->
+        <article class="card card--empty">
+          <div class="plus">+</div>
+          <span>敬请期待</span>
+        </article>
+        <article class="card card--empty">
+          <div class="plus">+</div>
+          <span>敬请期待</span>
+        </article>
+        <article class="card card--empty">
+          <div class="plus">+</div>
+          <span>敬请期待</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== 正在进行项目 ===== -->
+    <section class="group">
+      <div class="group-head">
+        <h2>正在进行项目</h2>
+        <span class="count">3 个位置</span>
+      </div>
+      <p class="group-hint">还在做、尚未收尾的项目。</p>
+
+      <div class="grid">
+
+        <!-- Silverdaw 中文汉化 -->
+        <a class="card" href="silverdaw.html">
+          <div class="card-head">
+            <span class="tag tag--accent">汉化项目</span>
+          </div>
+          <h3>Silverdaw 中文汉化</h3>
+          <p class="desc">Windows 平台的开源数字音频工作站（AGPL-3.0）中文本地化。原版、完整汉化版、汉化补丁都已整理好。</p>
+          <span class="card-foot">查看详情<span class="arrow"> →</span></span>
+        </a>
+
+        <article class="card card--empty">
+          <div class="plus">+</div>
+          <span>敬请期待</span>
+        </article>
+        <article class="card card--empty">
+          <div class="plus">+</div>
+          <span>敬请期待</span>
+        </article>
+
+      </div>
+    </section>
+
+  </div>
+
+</body>
+</html>
