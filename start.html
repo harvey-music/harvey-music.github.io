@@ -150,6 +150,12 @@
       border-color: rgba(79, 140, 255, 0.45);
     }
 
+    /* 「准备中」状态标签：用品牌金色，和蓝色主色区分开 */
+    .tag--soon {
+      color: #c9a227;
+      border-color: rgba(201, 162, 39, 0.45);
+    }
+
     .card h3 {
       font-size: 1.1rem;
       margin-bottom: 10px;
@@ -245,6 +251,27 @@
       font-size: 0.86rem;
     }
 
+    /* 正在准备的项目：结构与真实项目一致，但还没有详情页可点 */
+    .card--soon {
+      border-color: #2c323d;
+    }
+
+    .card--soon .card-foot {
+      color: #6b7280;
+    }
+
+    /* 卡片底部说明里的外链（例如指向原版项目仓库） */
+    .card-foot a {
+      color: #4f8cff;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      transition: 0.18s;
+    }
+
+    .card-foot a:hover {
+      color: #7aa7ff;
+    }
+
     /* 触屏设备没有悬停，隐藏气泡避免首点残留 */
     @media (hover: none) {
       .card[data-tip]::after { display: none; }
@@ -271,7 +298,7 @@
     <!-- 欢迎区 -->
     <header class="hero">
       <h1>欢迎来到 Arthur 工作室</h1>
-      <p>下面按「已完成」和「正在进行」分成两块，点卡片可以查看项目详情。目前主推的是 Silverdaw 中文汉化。</p>
+      <p>下面按「已完成」「正在进行」和「正在准备」分成三块，点卡片可以查看项目详情。目前主推的是 Silverdaw 中文汉化。</p>
     </header>
 
     <!-- ===== 已完成项目 ===== -->
@@ -336,6 +363,54 @@
           <div class="plus">+</div>
           <span>敬请期待</span>
         </article>
+
+      </div>
+    </section>
+
+    <!-- ===== 正在准备的项目 ===== -->
+    <section class="group">
+      <div class="group-head">
+        <h2>正在准备的项目</h2>
+        <span class="count">3 个项目</span>
+      </div>
+      <p class="group-hint">方向已经定了、正在筹备的项目，做成一个就发布一个，暂时还不能点开。</p>
+
+      <div class="grid">
+
+        <!-- Prism 中文汉化（优先筹备的汉化项目） -->
+        <article class="card card--soon">
+          <div class="card-head">
+            <span class="tag tag--accent">汉化项目</span>
+            <span class="tag tag--soon">准备中</span>
+          </div>
+          <h3>Prism 中文汉化</h3>
+          <p class="desc">免费开源的跨平台音频分析与电平表机架，频谱、示波、矢量、响度等八种实时仪表可自由排布，也能作为 VST3/AU/CLAP 插件使用。目前正在汉化界面与术语。</p>
+          <span class="card-foot">重点筹备 · 预计 12 月发布 · <a href="https://github.com/Boof2015/prism" target="_blank" rel="noopener">原版项目</a></span>
+        </article>
+
+        <!-- 开源电脑工具整合 -->
+        <article class="card card--soon">
+          <div class="card-head">
+            <span class="tag">工具合集</span>
+            <span class="tag tag--soon">准备中</span>
+          </div>
+          <h3>开源电脑工具整合</h3>
+          <p class="desc">把日常好用的开源 Windows 工具整理成一份清单：分类、来源、安装方式和常用设置都写清楚，换新电脑时照着装一遍就能用。</p>
+          <span class="card-foot">准备中，敬请期待</span>
+        </article>
+
+        <!-- 开源软件汉化索引 -->
+        <article class="card card--soon">
+          <div class="card-head">
+            <span class="tag">汉化项目</span>
+            <span class="tag tag--soon">准备中</span>
+          </div>
+          <h3>开源软件汉化索引</h3>
+          <p class="desc">收录常用开源软件的官方中文版与可用汉化资源，标好版本号、授权方式和下载位置，找中文界面不用再翻十几个论坛帖。</p>
+          <span class="card-foot">准备中，敬请期待</span>
+        </article>
+
+        <!-- 以后有第 4 个项目，照上面卡片的格式加一张，并把计数改成 4 个项目 -->
 
       </div>
     </section>

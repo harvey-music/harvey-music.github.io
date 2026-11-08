@@ -4,6 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arthur 工作室</title>
+  <meta name="description" content="Arthur 工作室 —— 专注于开源汉化与独立软件开发的小工作室">
+  <meta name="theme-color" content="#0f1115">
+  <!-- 分享卡片（og:image 若要生效，部署后可换成绝对地址） -->
+  <meta property="og:title" content="Arthur 工作室">
+  <meta property="og:description" content="专注于开源汉化与独立软件开发的小工作室">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="logo-mark.png">
+  <link rel="icon" href="logo-mark.png">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -12,52 +20,67 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      background: #0f1115;
+      justify-content: flex-start;          /* 顶部对齐，不再死居中（屏越大越不空） */
+      /* 顶部留白有上限：小屏贴边、大屏不散开；整体重心比之前下移一档 */
+      padding: clamp(72px, 20vh, 220px) 20px 36px;
+      /* 顶部一层极淡暖光，给金色 logo 一个落点，不再是浮在纯黑上 */
+      background:
+        radial-gradient(90% 60% at 50% 0%, rgba(201, 162, 39, 0.07) 0%, rgba(201, 162, 39, 0) 60%),
+        #0f1115;
       color: #e8eaed;
       font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
       text-align: center;
-      padding: 40px 20px;
     }
 
     .logo {
+      /* logo-mark.png 只保留 A 图标（538×361）：按高度控制，viewport 越高放得越大 */
       width: auto;
-      max-width:140px;
-      height: auto;
-      margin-bottom: 28px;
+      max-width: 100%;
+      height: clamp(112px, 16vh, 152px);
+      margin-bottom: 24px;
+      /* 暖色光晕：让金色成为品牌点缀，而不是和蓝色主题互相打岔 */
+      filter: drop-shadow(0 12px 34px rgba(201, 162, 39, 0.28));
     }
 
     h1 {
-      font-size: clamp(2rem, 5vw, 3rem);
-      letter-spacing: 2px;
-      margin-bottom: 14px;
+      /* 让 logo 当主角：标题比 logo 小一档，只做名称标注 */
+      font-size: clamp(1.35rem, 2.8vw, 1.75rem);
+      letter-spacing: 1px;
+      margin-bottom: 12px;
     }
 
     .subtitle {
       color: #9aa0a6;
       font-size: 1rem;
-      margin-bottom: 42px;
+      margin-bottom: 28px;
       max-width: 480px;
       line-height: 1.8;
     }
 
+    /* 两个按钮两等分，宽度正好与下方公告卡对齐 */
     .buttons {
-      display: flex;
-      gap: 14px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-bottom: 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: min(340px, 100%);
+      margin-bottom: 32px;
     }
 
     .btn {
       display: inline-block;
-      padding: 12px 28px;
+      padding: 12px 20px;
       border-radius: 10px;
       font-size: 0.95rem;
       font-weight: 600;
       text-decoration: none;
       transition: 0.2s;
       border: 1px solid transparent;
+    }
+
+    .btn:focus-visible,
+    .notice-entry:focus-visible {
+      outline: 2px solid #4f8cff;
+      outline-offset: 3px;
     }
 
     .btn-primary {
@@ -81,7 +104,12 @@
 
     .footer-links {
       display: flex;
-      gap: 22px;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px 22px;
+      width: min(340px, 100%);
+      margin-top: auto;              /* 页脚吸到视口底部，页面才有「头—身—脚」 */
+      padding-top: 40px;
       color: #6b7280;
       font-size: 0.88rem;
     }
@@ -99,10 +127,10 @@
     /* ---------- 公告栏入口（两个按钮下方居中） ---------- */
     .notice-entry {
       display: flex;
-      align-items: center;
+      align-items: flex-start;        /* 顶对齐：标题折行时圆点、箭头仍与首行齐 */
       gap: 14px;
-      width: min(360px, 100%);
-      margin: 0 auto 46px;
+      width: min(340px, 100%);
+      margin: 0 auto;
       padding: 14px 18px;
       background: #1d212b;
       border: 1px solid #2a2f3a;
@@ -122,30 +150,36 @@
       flex: none;
       width: 8px;
       height: 8px;
+      margin-top: 6px;                /* 与首行标题的视觉中心对齐 */
       border-radius: 50%;
       background: #4f8cff;
       box-shadow: 0 0 0 4px rgba(79, 140, 255, 0.16);
     }
 
     .notice-text {
+      flex: 1 1 auto;
+      min-width: 0;                  /* 长标题才能正常折行，不会把箭头挤出去 */
       display: flex;
       flex-direction: column;
-      line-height: 1.5;
+      gap: 3px;
+      line-height: 1.45;
     }
 
     .notice-text strong {
-      font-size: 0.98rem;
+      font-size: 0.9rem;
       font-weight: 600;
     }
 
     .notice-text em {
       font-style: normal;
-      font-size: 0.82rem;
-      color: #6b7280;
+      font-size: 0.78rem;
+      color: #9aa0a6;                /* 原 #6b7280 在 #1d212b 上只有 3.3:1，偏糊 */
     }
 
     .notice-arrow {
       margin-left: auto;
+      margin-top: 1px;
+      line-height: 1.45;              /* 与标题首行同一行高，箭头才不会吊在中间 */
       color: #6b7280;
       font-size: 0.95rem;
       transition: 0.2s;
@@ -159,29 +193,30 @@
 </head>
 <body>
 
- <img class="logo" src="logo.png" alt="Arthur 工作室 logo">
+  <img class="logo" src="logo-mark.png" alt="Arthur 工作室 logo" width="226" height="152">
 
   <h1>Arthur 工作室</h1>
-  <p class="subtitle">专注于开源汉化与独立软件开发的小工作室</p >
+  <p class="subtitle">专注于开源汉化与独立软件开发的小工作室</p>
 
   <div class="buttons">
-    <a class="btn btn-primary" href="start.html">进入首页</a >
-    <a class="btn btn-secondary" href="home.html">关于</a >
+    <a class="btn btn-primary" href="start.html">浏览项目</a>
+    <a class="btn btn-secondary" href="home.html">关于</a>
   </div>
 
-  <!-- 公告栏入口：两个按钮下方居中，点开进入公告栏页 -->
+  <!-- 公告栏入口：显示最新一条公告摘要，宽度与上方按钮组对齐
+       发新公告时，把 strong 里的标题和 em 里的日期、条数同步改一下 -->
   <a class="notice-entry" href="notice.html">
     <span class="notice-dot" aria-hidden="true"></span>
     <span class="notice-text">
-      <strong>公告栏</strong>
-      <em>站点更新与版本发布通知</em>
+      <strong>Prism 中文汉化预计 12 月发布</strong>
+      <em>公告栏 · 11 月 8 日 · 共 6 条</em>
     </span>
     <span class="notice-arrow" aria-hidden="true">→</span>
   </a>
 
   <div class="footer-links">
-    <a href="https://github.com/harvey-music" target="_blank">GitHub</a >
-    <span>邮箱：zjh041106@qq.com</span>
+    <a href="https://github.com/harvey-music" target="_blank" rel="noopener">GitHub</a>
+    <a href="mailto:zjh041106@qq.com">zjh041106@qq.com</a>
   </div>
 
 </body>

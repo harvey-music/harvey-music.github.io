@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arthur 工作室 - 项目与关于</title>
+  <meta name="description" content="Arthur 工作室由 Harvey 创建：把需要复杂网络环境才能下载的软件做成点击即得，把英文界面的优秀工具做成中文界面。">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -62,6 +63,17 @@
       color: #c3c8d0;
     }
 
+    .about-text p + p {
+      margin-top: 18px;
+    }
+
+    /* 首段引子：字号略大、颜色更亮，作为整段的立论 */
+    .about-text .lead {
+      font-size: 1.15rem;
+      line-height: 1.75;
+      color: #e8eaed;
+    }
+
     /* 联系区 */
     .contact-list {
       list-style: none;
@@ -95,8 +107,8 @@
 
   <!-- 顶部一行：左返回，右名字 -->
   <div class="topbar">
-    <a class="back-link" href="index.html">返回欢迎页</a >
-    <a class="brand" href="index.html">Arthur 工作室</a >
+    <a class="back-link" href="index.html">返回欢迎页</a>
+    <a class="brand" href="index.html">Arthur 工作室</a>
   </div>
 
   <main>
@@ -105,10 +117,11 @@
     <section id="about" class="section" style="border-top: none;">
       <div class="container">
         <h2>关于</h2>
-        <p class="about-text">
-          我是 Harvey，Arthur 工作室的创建者。目前专注于开源软件汉化，同时也在开发自己的独立软件。
-          所有项目均开源免费发布。
-        </p >
+        <div class="about-text">
+          <p class="lead">技术的初衷是连接世界，但语言和网络的鸿沟，却时常让优秀的技术产品被挡在门外。</p>
+          <p>我是 Harvey，Arthur 工作室的创建者。我建立这个网站，是为了给大家提供一个“无门槛”的避风港：让那些需要复杂网络环境才能下载的软件，变得点击即得；让那些因为英文界面而难以使用的优秀工具，变得平易近人。</p>
+          <p>无论你是想找工具，还是想体验汉化后的流畅感，这里的大门永远为你敞开。</p>
+        </div>
       </div>
     </section>
 
@@ -117,7 +130,7 @@
       <div class="container">
         <h2>联系</h2>
         <ul class="contact-list">
-          <li>GitHub：<a href="https://github.com/harvey-music" target="_blank">github.com/harvey-music</a ></li>
+          <li>GitHub：<a href="https://github.com/harvey-music" target="_blank" rel="noopener">github.com/harvey-music</a></li>
           <li>邮箱：zjh041106@qq.com</li>
         </ul>
       </div>
@@ -127,7 +140,7 @@
 
   <footer>
     <div class="container">
-      <p>© <span id="year"></span> Arthur 工作室 · 所有项目均开源免费发布</p >
+      <p>© <span id="year"></span> Arthur 工作室 · 所有项目均开源免费发布</p>
     </div>
   </footer>
 

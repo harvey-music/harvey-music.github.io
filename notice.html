@@ -234,24 +234,57 @@
       <span class="alert-icon" aria-hidden="true">!</span>
       <div class="alert-body">
         <p class="alert-title">更新计划说明</p>
-        <p>Silverdaw 汉化版将在 2027 年 1 月前停止跟随官方原版更新，此后的官方版本更新（含重大版本更新）将不再同步汉化。已发布的完整汉化版与汉化补丁仍可继续下载使用。</p>
+        <p>Silverdaw 汉化版将在 2027 年 1 月前停止跟随官方原版更新，此后的官方版本更新（含重大版本更新）将不再同步汉化。已发布的完整汉化版与汉化补丁仍可继续下载使用。新的汉化项目 <a href="#notice-prism">Prism 中文汉化</a> 已启动筹备，预计 12 月左右发布。</p>
       </div>
     </div>
 
     <section class="group">
       <div class="group-head">
         <h2>全部公告</h2>
-        <span class="count">2 条</span>
+        <span class="count">6 条</span>
       </div>
       <p class="group-hint">按时间倒序排列。</p>
 
       <div class="notice-list">
 
-        <!-- 置顶公告 -->
-        <article class="notice notice--pin">
+        <!-- Prism 中文汉化：本轮重点筹备的项目 -->
+        <article class="notice notice--pin" id="notice-prism">
           <div class="notice-head">
             <time class="notice-date" datetime="2026-11-08">2026 年 11 月 8 日</time>
             <span class="tag tag--accent">置顶</span>
+            <span class="tag">项目预告</span>
+          </div>
+          <h3>Prism 中文汉化筹备中，预计 12 月左右发布</h3>
+          <p>工作室接下来重点推进的汉化项目是 Prism。Prism 是一款免费开源的音频分析与电平表机架，支持 Windows、macOS 与 Linux，内置频谱仪、示波器、矢量示波器、瀑布图、声谱图、VU 表、响度表与波形显示共八种实时仪表，可自由排布成机架并保存为配置；同一套仪表也提供 VST3 / AU / CLAP 插件版本，可直接在数字音频工作站中使用。</p>
+          <p>原版界面为英文，参数术语比较密集（FFT 尺寸、频谱倾斜、真峰值、LUFS 等），因此本次汉化以桌面版界面与说明文本为主，重点是同一参数在不同界面里的译法保持一致，不出现同一功能两种叫法的情况。</p>
+          <p>汉化将从界面文本梳理与术语对照开始，按原版结构逐块替换，预计 2026 年 12 月左右发布。发布形式、适用的原版版本与下载方式确定后，会在 <a href="start.html">项目页</a> 与本公告栏同步公布，在此之前项目页不提供下载入口。</p>
+          <p>12 月为现阶段的预估时间，若上游在此期间发布新版本，汉化基准版本可能随之调整，届时会另行公告说明。想先了解原版功能，可前往 <a href="https://github.com/Boof2015/prism" target="_blank" rel="noopener">Prism 官方仓库</a>。</p>
+        </article>
+
+        <!-- 开源电脑工具整合：简单预告 -->
+        <article class="notice">
+          <div class="notice-head">
+            <time class="notice-date" datetime="2026-11-08">2026 年 11 月 8 日</time>
+            <span class="tag">项目预告</span>
+          </div>
+          <h3>开源电脑工具整合筹备中</h3>
+          <p>计划把日常好用的开源 Windows 工具整理成一份清单，按用途分类，逐项写清来源、安装方式与常用设置，换新电脑或重装系统时照着装一遍就能用。整理完成后在 <a href="start.html">项目页</a> 公布。</p>
+        </article>
+
+        <!-- 开源软件汉化索引：简单预告 -->
+        <article class="notice">
+          <div class="notice-head">
+            <time class="notice-date" datetime="2026-11-08">2026 年 11 月 8 日</time>
+            <span class="tag">项目预告</span>
+          </div>
+          <h3>开源软件汉化索引筹备中</h3>
+          <p>计划收录常用开源软件的官方中文版与可用汉化资源，逐项标注版本号、授权方式与下载位置，找中文界面不必再翻十几个论坛帖。整理完成后在 <a href="start.html">项目页</a> 公布。</p>
+        </article>
+
+        <!-- Silverdaw 中文汉化上线（原置顶，置顶位置让给 Prism） -->
+        <article class="notice">
+          <div class="notice-head">
+            <time class="notice-date" datetime="2026-11-08">2026 年 11 月 8 日</time>
             <span class="tag">版本发布</span>
           </div>
           <h3>Silverdaw 中文汉化正式上线</h3>
@@ -259,6 +292,18 @@
           <p>完整汉化版以官方 1.3.0 版本为基准制作，中文语言资源已内置，安装后界面即为中文，无需任何额外操作，适合希望直接上手的使用者。</p>
           <p>汉化补丁以官方 1.10.0 版本为基准制作，仅适配该基准版本。补丁不含安装程序，需借助编程工具按随附说明手动替换文件，适合已在使用 1.10.0 原版、并希望保留原版安装方式的使用者；该补丁后续不再随官方版本更新。</p>
           <p>两种形式的基准版本不同，下载前请先确认所持原版的版本号，避免版本错配。下载入口位于 <a href="silverdaw.html">Silverdaw 项目页</a>，各下载方式均需在弹窗中确认后跳转。</p>
+        </article>
+
+        <!-- 下载方式调整：云盘分享页 -> 独立云存储直链 -->
+        <article class="notice">
+          <div class="notice-head">
+            <time class="notice-date" datetime="2026-11-08">2026 年 11 月 8 日</time>
+            <span class="tag">服务调整</span>
+          </div>
+          <h3>下载方式调整：云盘分享页改为独立云存储直链</h3>
+          <p>为提升下载体验，本站已于今日将 Silverdaw 的全部下载资源由第三方云盘分享页迁移至独立云存储空间。安装包、便携版、汉化补丁与使用说明现均以直链形式提供，不再经由云盘分享页面中转。</p>
+          <p>此前通过云盘分享页获取文件，需先打开分享页面、再输入提取码，过程中还可能受到限速与页面跳转的影响。改为直链后，在下载弹窗中确认即可直接开始下载，无需提取码，也不受云盘限速与页面广告干扰。</p>
+          <p>下载入口位置不变，仍位于 <a href="silverdaw.html">Silverdaw 项目页</a>。原有云盘链接自即日起停用，仍在使用旧链接的请重新从项目页获取。如遇下载异常，可稍后重试，并留意本栏目后续说明。</p>
         </article>
 
         <article class="notice">

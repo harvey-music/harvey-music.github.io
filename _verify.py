@@ -95,7 +95,7 @@ print("=== 6. HTTP 实测 ===")
 handler = functools.partial(Quiet, directory=ROOT)
 httpd = socketserver.TCPServer(("127.0.0.1", PORT), handler)
 threading.Thread(target=httpd.serve_forever, daemon=True).start()
-for path in ["/", "/start.html", "/silverdaw.html", "/home.html", "/notice.html", "/logo.png"]:
+for path in ["/", "/start.html", "/silverdaw.html", "/home.html", "/notice.html", "/logo-mark.png"]:
     r = urllib.request.urlopen("http://127.0.0.1:%d%s" % (PORT, path), timeout=5)
     print("%-17s -> HTTP %s, %d bytes" % (path, r.status, len(r.read())))
 httpd.shutdown()
