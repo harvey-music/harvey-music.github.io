@@ -46,7 +46,7 @@
       gap: 14px;
       flex-wrap: wrap;
       justify-content: center;
-      margin-bottom: 56px;
+      margin-bottom: 40px;
     }
 
     .btn {
@@ -95,6 +95,66 @@
     .footer-links a:hover {
       color: #4f8cff;
     }
+
+    /* ---------- 公告栏入口（两个按钮下方居中） ---------- */
+    .notice-entry {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: min(360px, 100%);
+      margin: 0 auto 46px;
+      padding: 14px 18px;
+      background: #1d212b;
+      border: 1px solid #2a2f3a;
+      border-radius: 14px;
+      text-align: left;
+      text-decoration: none;
+      color: inherit;
+      transition: 0.2s;
+    }
+
+    .notice-entry:hover {
+      border-color: #4f8cff;
+      transform: translateY(-2px);
+    }
+
+    .notice-dot {
+      flex: none;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4f8cff;
+      box-shadow: 0 0 0 4px rgba(79, 140, 255, 0.16);
+    }
+
+    .notice-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    .notice-text strong {
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
+    .notice-text em {
+      font-style: normal;
+      font-size: 0.82rem;
+      color: #6b7280;
+    }
+
+    .notice-arrow {
+      margin-left: auto;
+      color: #6b7280;
+      font-size: 0.95rem;
+      transition: 0.2s;
+    }
+
+    .notice-entry:hover .notice-arrow {
+      color: #4f8cff;
+      transform: translateX(3px);
+    }
   </style>
 </head>
 <body>
@@ -108,6 +168,16 @@
     <a class="btn btn-primary" href="start.html">进入首页</a >
     <a class="btn btn-secondary" href="home.html">关于</a >
   </div>
+
+  <!-- 公告栏入口：两个按钮下方居中，点开进入公告栏页 -->
+  <a class="notice-entry" href="notice.html">
+    <span class="notice-dot" aria-hidden="true"></span>
+    <span class="notice-text">
+      <strong>公告栏</strong>
+      <em>站点更新与版本发布通知</em>
+    </span>
+    <span class="notice-arrow" aria-hidden="true">→</span>
+  </a>
 
   <div class="footer-links">
     <a href="https://github.com/harvey-music" target="_blank">GitHub</a >

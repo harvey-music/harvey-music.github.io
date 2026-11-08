@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arthur 工作室 - 公告栏</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: #0f1115;
+      color: #e8eaed;
+      font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+      line-height: 1.8;
+    }
+
+    /* ---------- 顶栏（与「关于」页一致：左返回，右名字） ---------- */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 4%;
+    }
+
+    .back-link {
+      color: #6b7280;
+      font-size: 1.1rem;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+
+    .back-link:hover {
+      color: #4f8cff;
+    }
+
+    .brand {
+      font-weight: 700;
+      color: #e8eaed;
+      font-size: 1.05rem;
+      text-decoration: none;
+    }
+
+    .brand:hover {
+      color: #4f8cff;
+    }
+
+    .page {
+      width: min(860px, 92%);
+      margin: 56px auto 72px;
+    }
+
+    /* ---------- 欢迎区 ---------- */
+    .hero {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.75rem, 4.5vw, 2.5rem);
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .hero p {
+      color: #9aa0a6;
+      font-size: 0.98rem;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    /* ---------- 顶部提示条（蓝色 Alert） ---------- */
+    .alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 40px;
+      padding: 16px 20px;
+      background: rgba(79, 140, 255, 0.08);
+      border: 1px solid rgba(79, 140, 255, 0.45);
+      border-left: 3px solid #4f8cff;
+      border-radius: 12px;
+    }
+
+    .alert-icon {
+      flex: none;
+      width: 20px;
+      height: 20px;
+      margin-top: 3px;
+      border: 1.5px solid #4f8cff;
+      border-radius: 50%;
+      color: #4f8cff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      line-height: 17px;
+      text-align: center;
+    }
+
+    .alert-title {
+      color: #4f8cff;
+      font-size: 0.92rem;
+      font-weight: 700;
+      line-height: 1.6;
+      margin-bottom: 2px;
+    }
+
+    .alert-body p {
+      color: #c3c8d0;
+      font-size: 0.9rem;
+    }
+
+    /* ---------- 分组标题 ---------- */
+    .group-head {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .group-head h2 {
+      font-size: 1.25rem;
+      letter-spacing: 0.5px;
+    }
+
+    .group-head .count {
+      font-size: 0.82rem;
+      color: #6b7280;
+      border: 1px solid #2a2f3a;
+      border-radius: 999px;
+      padding: 1px 10px;
+      line-height: 1.7;
+    }
+
+    .group-hint {
+      color: #6b7280;
+      font-size: 0.88rem;
+      margin-bottom: 24px;
+    }
+
+    /* ---------- 公告条目 ---------- */
+    .notice-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .notice {
+      background: #1d212b;
+      border: 1px solid #2a2f3a;
+      border-radius: 14px;
+      padding: 22px 24px;
+    }
+
+    /* 置顶那条：蓝色描边，一眼能看见 */
+    .notice--pin {
+      border-color: rgba(79, 140, 255, 0.45);
+    }
+
+    .notice-head {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .notice-date {
+      color: #6b7280;
+      font-size: 0.84rem;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      color: #9aa0a6;
+      border: 1px solid #2a2f3a;
+      border-radius: 999px;
+      padding: 1px 10px;
+      line-height: 1.7;
+    }
+
+    .tag--accent {
+      color: #4f8cff;
+      border-color: rgba(79, 140, 255, 0.45);
+    }
+
+    .notice h3 {
+      font-size: 1.06rem;
+      margin-bottom: 8px;
+    }
+
+    .notice p {
+      color: #c3c8d0;
+      font-size: 0.93rem;
+    }
+
+    .notice p + p {
+      margin-top: 8px;
+    }
+
+    .notice a {
+      color: #4f8cff;
+      text-decoration: none;
+    }
+
+    .notice a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 640px) {
+      .page { margin: 36px auto 56px; }
+      .hero { margin-bottom: 40px; }
+      .notice { padding: 18px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶栏（与「关于」页一致：左返回，右名字） -->
+  <div class="topbar">
+    <a class="back-link" href="index.html">返回欢迎页</a>
+    <a class="brand" href="index.html">Arthur 工作室</a>
+  </div>
+
+  <div class="page">
+
+    <!-- 欢迎区 -->
+    <header class="hero">
+      <h1>公告栏</h1>
+      <p>站点更新、版本发布与维护通知都发在这里，最新的排在最上面。</p>
+    </header>
+
+    <!-- 蓝色提示条：更新计划说明 -->
+    <div class="alert" role="status">
+      <span class="alert-icon" aria-hidden="true">!</span>
+      <div class="alert-body">
+        <p class="alert-title">更新计划说明</p>
+        <p>Silverdaw 汉化版将在 2027 年 1 月前停止跟随官方原版更新，此后的官方版本更新（含重大版本更新）将不再同步汉化。已发布的完整汉化版与汉化补丁仍可继续下载使用。</p>
+      </div>
+    </div>
+
+    <section class="group">
+      <div class="group-head">
+        <h2>全部公告</h2>
+        <span class="count">2 条</span>
+      </div>
+      <p class="group-hint">按时间倒序排列。</p>
+
+      <div class="notice-list">
+
+        <!-- 置顶公告 -->
+        <article class="notice notice--pin">
+          <div class="notice-head">
+            <time class="notice-date" datetime="2026-11-08">2026 年 11 月 8 日</time>
+            <span class="tag tag--accent">置顶</span>
+            <span class="tag">版本发布</span>
+          </div>
+          <h3>Silverdaw 中文汉化正式上线</h3>
+          <p>Silverdaw 中文本地化工作已完成，即日起正式发布。本次提供两种形式，二者对应的官方基准版本不同，请按需选用。</p>
+          <p>完整汉化版以官方 1.3.0 版本为基准制作，中文语言资源已内置，安装后界面即为中文，无需任何额外操作，适合希望直接上手的使用者。</p>
+          <p>汉化补丁以官方 1.10.0 版本为基准制作，仅适配该基准版本。补丁不含安装程序，需借助编程工具按随附说明手动替换文件，适合已在使用 1.10.0 原版、并希望保留原版安装方式的使用者；该补丁后续不再随官方版本更新。</p>
+          <p>两种形式的基准版本不同，下载前请先确认所持原版的版本号，避免版本错配。下载入口位于 <a href="silverdaw.html">Silverdaw 项目页</a>，各下载方式均需在弹窗中确认后跳转。</p>
+        </article>
+
+        <article class="notice">
+          <div class="notice-head">
+            <time class="notice-date" datetime="2026-11-02">2026 年 11 月 2 日</time>
+            <span class="tag">站点公告</span>
+          </div>
+          <h3>关于启用公告栏的通知</h3>
+          <p>为便于信息集中发布，本站即日起启用公告栏。此后版本更新、发布说明与临时维护通知均通过本栏目统一发布，不再于各项目页面单独公示，相关内容请以本栏目信息为准。</p>
+        </article>
+
+        <!-- 新公告放最上面，复制下面这段改内容即可
+             想置顶就给这个 article 再加一个 notice--pin 类，
+             并在 head 里补一个 <span class="tag tag--accent">置顶</span>
+        <article class="notice">
+          <div class="notice-head">
+            <time class="notice-date" datetime="2026-11-10">2026 年 11 月 10 日</time>
+            <span class="tag">分类</span>
+          </div>
+          <h3>标题写这里</h3>
+          <p>正文写这里，段落可以写多段。</p>
+        </article>
+        -->
+
+      </div>
+    </section>
+
+  </div>
+
+</body>
+</html>

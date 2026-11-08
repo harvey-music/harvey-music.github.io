@@ -168,6 +168,44 @@
       color: #4f8cff;
     }
 
+    /* ---------- 悬停简介气泡（纯 CSS，给带 data-tip 的卡片用） ---------- */
+    .card[data-tip] {
+      position: relative;
+    }
+
+    .card[data-tip]::after {
+      content: attr(data-tip);
+      position: absolute;
+      left: 50%;
+      top: calc(100% + 10px);
+      transform: translate(-50%, -6px);
+      width: max-content;
+      max-width: min(400px, 88vw);
+      padding: 10px 13px;
+      background: #0b0d11;
+      border: 1px solid #2a2f3a;
+      border-radius: 10px;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
+      color: #c3c8d0;
+      font-size: 0.8rem;
+      font-weight: 400;
+      line-height: 1.7;
+      text-align: left;
+      white-space: normal;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: 0.18s;
+      z-index: 5;
+    }
+
+    .card[data-tip]:hover::after,
+    .card[data-tip]:focus-visible::after {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, 0);
+    }
+
     .arrow {
       display: inline-block;
       transition: 0.2s;
@@ -205,6 +243,11 @@
     .card--empty span {
       color: #565d6b;
       font-size: 0.86rem;
+    }
+
+    /* 触屏设备没有悬停，隐藏气泡避免首点残留 */
+    @media (hover: none) {
+      .card[data-tip]::after { display: none; }
     }
 
     @media (max-width: 640px) {
@@ -249,10 +292,17 @@
                <p class="desc">一句话说明这个项目是做什么的。</p>
                <span class="card-foot">查看详情<span class="arrow"> →</span></span>
              </a> -->
-        <article class="card card--empty">
-          <div class="plus">+</div>
-          <span>敬请期待</span>
-        </article>
+        <!-- Silverdaw 中文汉化 -->
+        <a class="card" href="silverdaw.html"
+           data-tip="一款把喜欢的歌剪开、重拼成新混音或串烧的音乐制作软件。">
+          <div class="card-head">
+            <span class="tag tag--accent">汉化项目</span>
+          </div>
+          <h3>Silverdaw 中文汉化</h3>
+          <p class="desc">Windows 平台的开源数字音频工作站（AGPL-3.0）中文本地化。原版、完整汉化版、汉化补丁都已整理好。</p>
+          <span class="card-foot">查看详情<span class="arrow"> →</span></span>
+        </a>
+
         <article class="card card--empty">
           <div class="plus">+</div>
           <span>敬请期待</span>
@@ -274,16 +324,10 @@
 
       <div class="grid">
 
-        <!-- Silverdaw 中文汉化 -->
-        <a class="card" href="silverdaw.html">
-          <div class="card-head">
-            <span class="tag tag--accent">汉化项目</span>
-          </div>
-          <h3>Silverdaw 中文汉化</h3>
-          <p class="desc">Windows 平台的开源数字音频工作站（AGPL-3.0）中文本地化。原版、完整汉化版、汉化补丁都已整理好。</p>
-          <span class="card-foot">查看详情<span class="arrow"> →</span></span>
-        </a>
-
+        <article class="card card--empty">
+          <div class="plus">+</div>
+          <span>敬请期待</span>
+        </article>
         <article class="card card--empty">
           <div class="plus">+</div>
           <span>敬请期待</span>

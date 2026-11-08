@@ -69,6 +69,80 @@
       margin: 0 auto;
     }
 
+    /* ---------- 产品介绍（中英左右对照，文案摘自官网） ---------- */
+    .intro {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin-bottom: 60px;
+      background: #14171e;
+      border: 1px solid #2a2f3a;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .intro-col {
+      padding: 26px 28px;
+    }
+
+    .intro-col + .intro-col {
+      border-left: 1px solid #2a2f3a;
+    }
+
+    .intro-label {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      color: #6b7280;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .intro-lead {
+      color: #e8eaed;
+      font-size: 0.94rem;
+      line-height: 1.85;
+      margin-bottom: 16px;
+    }
+
+    .intro-points {
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .intro-points li {
+      position: relative;
+      padding-left: 17px;
+      font-size: 0.86rem;
+      color: #9aa0a6;
+      line-height: 1.7;
+    }
+
+    .intro-points li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.75em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(79, 140, 255, 0.55);
+    }
+
+    .intro-col--en .intro-lead {
+      color: #c3c8d0;
+    }
+
+    .intro-src {
+      grid-column: 1 / -1;
+      border-top: 1px solid #2a2f3a;
+      padding: 12px 28px;
+      font-size: 0.78rem;
+      color: #6b7280;
+      text-align: center;
+    }
+
     /* ---------- 三个产品位 ---------- */
     .products {
       display: grid;
@@ -190,7 +264,7 @@
       font-weight: 600;
       text-decoration: none;
       border: 1px solid transparent;
-      transition: 0.2s;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
     }
 
     .btn-primary {
@@ -209,11 +283,248 @@
       cursor: not-allowed;
     }
 
+    /* 用 <button> 套 .btn 时，观感与 <a> 保持一致（含行高，否则高度比 <a> 矮 7px） */
+    button.btn {
+      width: 100%;
+      font-family: inherit;
+      line-height: inherit;
+      cursor: pointer;
+    }
+
+    /* ---------- 下载方式选择弹窗 ---------- */
+    .dl-modal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(6, 8, 12, 0.72);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s, visibility 0s linear 0.2s;
+      z-index: 50;
+    }
+
+    .dl-modal.is-open {
+      opacity: 1;
+      visibility: visible;
+      /* 打开时 visibility 立刻生效，只有 opacity 做过渡 */
+      transition: opacity 0.2s, visibility 0s linear 0s;
+    }
+
+    .dl-modal-card {
+      width: min(430px, 100%);
+      padding: 26px 24px 20px;
+      background: #1d212b;
+      border: 1px solid #2a2f3a;
+      border-radius: 14px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+      transform: translateY(10px);
+      /* 只过渡 transform，别用 all：否则继承来的 visibility 也要等过渡 */
+      transition: transform 0.2s;
+    }
+
+    .dl-modal.is-open .dl-modal-card {
+      transform: translateY(0);
+    }
+
+    .dl-modal-card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+    }
+
+    .dl-modal-sub {
+      color: #9aa0a6;
+      font-size: 0.86rem;
+      margin-bottom: 18px;
+    }
+
+    /* 弹窗内的黄色提示条：停更说明 + 跳转公告栏 */
+    .dl-alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding: 11px 14px;
+      background: rgba(240, 180, 41, 0.08);
+      border: 1px solid rgba(240, 180, 41, 0.38);
+      border-left: 3px solid #f0b429;
+      border-radius: 10px;
+    }
+
+    .dl-alert-icon {
+      flex: none;
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      border: 1.5px solid #f0b429;
+      border-radius: 50%;
+      color: #f0b429;
+      font-size: 0.68rem;
+      font-weight: 700;
+      line-height: 15px;
+      text-align: center;
+    }
+
+    .dl-alert-body {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .dl-alert p {
+      font-size: 0.8rem;
+      line-height: 1.65;
+      color: #c3c8d0;
+    }
+
+    .dl-alert p + p {
+      margin-top: 2px;
+    }
+
+    .dl-alert a {
+      color: #f0b429;
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      white-space: nowrap;
+    }
+
+    .dl-alert a:hover {
+      color: #ffc95c;
+    }
+
+    /* 两个选项：只可选一个 */
+    .dl-opts {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .dl-opt {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 15px;
+      background: #171a22;
+      border: 1px solid #2a2f3a;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: border-color 0.18s, background 0.18s;
+    }
+
+    .dl-opt:hover {
+      border-color: #39404f;
+    }
+
+    .dl-opt:has(.dl-radio:checked) {
+      border-color: rgba(79, 140, 255, 0.6);
+      background: #18202e;
+    }
+
+    .dl-radio {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .dl-opt-text {
+      flex: 1;
+      display: grid;
+      gap: 2px;
+    }
+
+    .dl-opt-name {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #e8eaed;
+    }
+
+    .dl-opt-meta {
+      font-size: 0.78rem;
+      color: #6b7280;
+    }
+
+    /* 选项右侧的方框 + 对钩 */
+    .dl-box {
+      position: relative;
+      flex: 0 0 auto;
+      width: 20px;
+      height: 20px;
+      border: 1px solid #39404f;
+      border-radius: 6px;
+      transition: background 0.18s, border-color 0.18s;
+    }
+
+    .dl-radio:checked ~ .dl-box {
+      background: #4f8cff;
+      border-color: #4f8cff;
+    }
+
+    .dl-radio:checked ~ .dl-box::after {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 2px;
+      width: 5px;
+      height: 10px;
+      border: solid #fff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .dl-radio:focus-visible ~ .dl-box {
+      outline: 2px solid #4f8cff;
+      outline-offset: 2px;
+    }
+
+    /* 取消 / 确认 */
+    .dl-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .dl-actions .btn {
+      flex: 1 1 0;
+      width: auto;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: #c3c8d0;
+      border-color: #2a2f3a;
+    }
+
+    .btn-ghost:hover {
+      border-color: #4f8cff;
+      color: #e8eaed;
+    }
+
+    .dl-hint {
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: #ffb4a2;
+      text-align: center;
+    }
+
+    .dl-hint:empty {
+      margin-top: 0;
+    }
+
     @media (max-width: 640px) {
       .page { margin: 36px auto 56px; }
       .hero { margin-bottom: 40px; }
       .products { margin-bottom: 44px; }
       .card { padding: 22px 20px 20px; }
+      .intro { grid-template-columns: 1fr; margin-bottom: 44px; }
+      .intro-col { padding: 20px; }
+      .intro-col + .intro-col { border-left: none; border-top: 1px solid #2a2f3a; }
+      .intro-src { padding: 10px 20px; }
+      .dl-modal-card { padding: 22px 18px 16px; }
+      .dl-opt { padding: 12px 13px; }
     }
   </style>
 </head>
@@ -233,6 +544,41 @@
       <p>同一个软件，三种拿法：官方原版本体、开箱即用的完整汉化版，以及给原版叠加用的汉化补丁。</p>
     </header>
 
+    <!-- 产品介绍：左中右英对照，文案摘自官网 silverdaw.com -->
+    <section class="intro">
+
+      <div class="intro-col">
+        <span class="intro-label">中文</span>
+        <p class="intro-lead">
+          Silverdaw 是一款免费开源的数字音频工作站（DAW），专为 Remix、Mashup 和以采样为核心的音乐创作而做。
+          导入现成的音频或自己录制，然后编排、裁剪、变调、对齐速度，最终混成一首完整的作品。
+        </p>
+        <ul class="intro-points">
+          <li>自动检测速度与调性，变调、对齐速度都作为片段设置生效，原始音频文件不会被改动</li>
+          <li>可把整轨拆成人声、鼓、贝斯等独立分轨，再自由重组，分轨保留原曲的速度与调性</li>
+          <li>支持跟随工程录音，自带 Tone、DJ 式滤波器、压缩、饱和、Bit Crusher 等轨道效果与自动化曲线，并可加载自己已安装的 VST3 插件</li>
+          <li>整首工程可导出为 WAV / FLAC / AIFF / MP3，可选响度标准化与位深，Windows 平台，许可证 GNU AGPL v3.0 或更高版本</li>
+        </ul>
+      </div>
+
+      <div class="intro-col intro-col--en" lang="en">
+        <span class="intro-label">English</span>
+        <p class="intro-lead">
+          Silverdaw is an open-source DAW for remixing, mashups, and sample-driven music making.
+          Import audio or record your own, then arrange, trim, re-pitch, and tempo-match it into a finished mix.
+        </p>
+        <ul class="intro-points">
+          <li>Automatic tempo and key detection, tempo matching, and pitch shifting — all applied as clip settings, so your original files are never altered.</li>
+          <li>Split any track into vocals, drums, bass, and other parts, then remix and recombine them freely.</li>
+          <li>Per-track Tone, a DJ-style filter, compressor, punch, saturation, and bit crusher, with reverb and delay sends into song-wide Project FX, plus your own VST3 effects.</li>
+          <li>Render your whole project to a single stereo file in WAV, FLAC, AIFF, or MP3, with optional loudness normalisation.</li>
+        </ul>
+      </div>
+
+      <p class="intro-src">介绍文案取自 Silverdaw 官网 silverdaw.com</p>
+
+    </section>
+
     <!-- 三个产品位 -->
     <div class="products">
 
@@ -250,9 +596,8 @@
           <li>许可证：AGPL-3.0</li>
         </ul>
         <div class="card-foot">
-          <!-- TODO: 有下载链接后，把下面这行换成
-               <a class="btn btn-primary" href="这里填链接" target="_blank" rel="noopener">下载原版</a> -->
-          <span class="btn btn-pending">即将上线</span>
+          <!-- 官方原版：跳转 Silverdaw 官网自行下载 -->
+          <a class="btn btn-primary" href="https://www.silverdaw.com/" target="_blank" rel="noopener">前往官网</a>
         </div>
       </article>
 
@@ -270,9 +615,8 @@
           <li>开源免费发布</li>
         </ul>
         <div class="card-foot">
-          <!-- TODO: 有下载链接后，把下面这行换成
-               <a class="btn btn-primary" href="这里填链接" target="_blank" rel="noopener">下载汉化版</a> -->
-          <span class="btn btn-pending">即将上线</span>
+          <!-- 点开后在页面正中弹出「安装包 / 便携版」二选一，链接填在下方脚本的 data-url 里 -->
+          <button type="button" class="btn btn-primary" data-dl-open="dlModal">下载汉化版</button>
         </div>
       </article>
 
@@ -283,23 +627,170 @@
           <span class="tag">用于原版</span>
         </div>
         <h2>汉化补丁</h2>
-        <p class="desc">给已经装了官方原版、不想重装软件的人准备。补丁只替换语言资源文件，不动程序主体，可以随时还原成英文。</p>
+        <p class="desc">以官方原版 1.10.0 为基准制作，仅适配这一个版本。它不是双击即装的安装包，需要具备一定编程基础，借助编程工具手动完成打补丁，因此仅作参考提供。</p>
         <ul class="spec">
-          <li>仅适用于官方原版本体</li>
-          <li>不改动程序主体，可随时还原</li>
-          <li>持续跟进官方更新</li>
+          <li>基于官方原版 1.10.0 制作，仅适配该版本</li>
+          <li>需一定编程基础，用编程工具手动打补丁</li>
+          <li>仅供参考，之后不再更新</li>
         </ul>
         <p class="credit">技术支持：<span>鲸世一梦</span></p>
         <div class="card-foot">
-          <!-- TODO: 有下载链接后，把下面这行换成
-               <a class="btn btn-primary" href="这里填链接" target="_blank" rel="noopener">下载补丁</a> -->
-          <span class="btn btn-pending">即将上线</span>
+          <!-- 点开后弹出单项确认框（汉化补丁 .zip），链接填在下方脚本的 data-url 里 -->
+          <button type="button" class="btn btn-primary" data-dl-open="dlModalPatch">下载汉化补丁</button>
         </div>
       </article>
 
     </div>
 
   </div>
+
+  <!-- 下载方式选择弹窗：二选一，确认后跳转对应链接 -->
+  <div class="dl-modal" id="dlModal" role="dialog" aria-modal="true" aria-labelledby="dlModalTitle">
+    <div class="dl-modal-card">
+      <h2 id="dlModalTitle">选择下载方式</h2>
+      <p class="dl-modal-sub">两个包内容一样，只是打包方式不同，挑一个即可。</p>
+
+      <!-- 黄色提示：汉化版停止跟随更新的说明，点「公告栏」跳转查看详情 -->
+      <div class="dl-alert">
+        <span class="dl-alert-icon" aria-hidden="true">!</span>
+        <div class="dl-alert-body">
+          <p>汉化版将在 2027 年 1 月前停止跟随官方原版更新。</p>
+          <p>此后的官方版本（含重大更新）不再同步汉化。</p>
+          <p><a href="notice.html">详情见公告栏 →</a></p>
+        </div>
+      </div>
+
+      <div class="dl-opts">
+        <label class="dl-opt">
+          <input class="dl-radio" type="radio" name="dlType" value="setup" data-url="https://4002693616.share.123pan.cn/123pan/PPLzMh-NuVbv?pwd=2222#" checked>
+          <span class="dl-opt-text">
+            <span class="dl-opt-name">下载安装包</span>
+            <span class="dl-opt-meta">.exe · 双击安装，自动建开始菜单与卸载项</span>
+            <span class="dl-opt-meta">123 云盘分享页 · 提取码 2222</span>
+          </span>
+          <span class="dl-box" aria-hidden="true"></span>
+        </label>
+
+        <label class="dl-opt">
+          <input class="dl-radio" type="radio" name="dlType" value="portable" data-url="https://4002693616.share.123pan.cn/123pan/PPLzMh-qLXZv?pwd=8888#">
+          <span class="dl-opt-text">
+            <span class="dl-opt-name">下载便携版</span>
+            <span class="dl-opt-meta">.zip · 解压即用，不写系统，可放 U 盘带走</span>
+            <span class="dl-opt-meta">123 云盘分享页 · 提取码 8888</span>
+          </span>
+          <span class="dl-box" aria-hidden="true"></span>
+        </label>
+      </div>
+
+      <div class="dl-actions">
+        <button type="button" class="btn btn-ghost" data-dl-close>取消</button>
+        <button type="button" class="btn btn-primary" data-dl-confirm>确认</button>
+      </div>
+
+      <p class="dl-hint" data-dl-hint></p>
+    </div>
+  </div>
+
+  <!-- 汉化补丁下载弹窗：只有一项，确认后跳转对应链接 -->
+  <div class="dl-modal" id="dlModalPatch" role="dialog" aria-modal="true" aria-labelledby="dlModalPatchTitle">
+    <div class="dl-modal-card">
+      <h2 id="dlModalPatchTitle">下载汉化补丁</h2>
+      <p class="dl-modal-sub">补丁包仅适配官方原版 1.10.0，需按说明手动替换文件。</p>
+
+      <div class="dl-opts">
+        <label class="dl-opt">
+          <input class="dl-radio" type="radio" name="dlPatch" value="patch" data-url="https://4002693616.share.123pan.cn/123pan/PPLzMh-iLtbv?pwd=1111#" checked>
+          <span class="dl-opt-text">
+            <span class="dl-opt-name">下载汉化补丁</span>
+            <span class="dl-opt-meta">.zip · 含补丁文件与使用说明，需手动替换</span>
+            <span class="dl-opt-meta">123 云盘分享页 · 提取码 1111</span>
+          </span>
+          <span class="dl-box" aria-hidden="true"></span>
+        </label>
+      </div>
+
+      <div class="dl-actions">
+        <button type="button" class="btn btn-ghost" data-dl-close>取消</button>
+        <button type="button" class="btn btn-primary" data-dl-confirm>确认</button>
+      </div>
+
+      <p class="dl-hint" data-dl-hint></p>
+    </div>
+  </div>
+
+  <script>
+    // 下载链接：123 云盘分享页（链接里的 pwd 参数就是提取码）
+    //   安装包 .exe   -> #dlModal      里 value="setup"    ✔ 已填（提取码 2222）
+    //   便携版 .zip   -> #dlModal      里 value="portable" ✔ 已填（提取码 8888）
+    //   汉化补丁 .zip -> #dlModalPatch 里 value="patch"    ✔ 已填（提取码 1111）
+    (function () {
+      var modals = document.querySelectorAll('.dl-modal');
+
+      function openModal(modal) {
+        if (!modal) return;
+        var hint = modal.querySelector('[data-dl-hint]');
+        if (hint) hint.textContent = '';
+        modal.classList.add('is-open');
+        document.body.style.overflow = 'hidden';   // 弹窗打开时锁住背景滚动
+        var checked = modal.querySelector('.dl-radio:checked');
+        if (checked) checked.focus({ preventScroll: true });
+      }
+
+      function closeModal(modal) {
+        modal.classList.remove('is-open');
+        // 没有其它弹窗还开着时，恢复页面滚动
+        if (!document.querySelector('.dl-modal.is-open')) {
+          document.body.style.overflow = '';
+        }
+      }
+
+      // 按钮上的 data-dl-open 指向要打开的弹窗 id
+      document.querySelectorAll('[data-dl-open]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          openModal(document.getElementById(btn.getAttribute('data-dl-open')));
+        });
+      });
+
+      modals.forEach(function (modal) {
+        var hint = modal.querySelector('[data-dl-hint]');
+        var confirm = modal.querySelector('[data-dl-confirm]');
+
+        modal.querySelectorAll('[data-dl-close]').forEach(function (btn) {
+          btn.addEventListener('click', function () { closeModal(modal); });
+        });
+
+        // 点遮罩空白处关掉（点卡片内部不关）
+        modal.addEventListener('click', function (e) {
+          if (e.target === modal) closeModal(modal);
+        });
+
+        // 确认：按当前选中项跳到各自的链接
+        confirm.addEventListener('click', function () {
+          var picked = modal.querySelector('.dl-radio:checked');
+          var url = picked ? picked.getAttribute('data-url') : '';
+          if (!url) {
+            hint.textContent = '下载链接还没放上来，请稍后再来。';
+            return;
+          }
+          window.location.href = url;
+        });
+
+        // 选中项变化时清掉上一次的提示
+        modal.querySelectorAll('.dl-radio').forEach(function (radio) {
+          radio.addEventListener('change', function () {
+            if (hint) hint.textContent = '';
+          });
+        });
+      });
+
+      // Esc 关闭当前打开的弹窗
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        var open = document.querySelector('.dl-modal.is-open');
+        if (open) closeModal(open);
+      });
+    })();
+  </script>
 
 </body>
 </html>

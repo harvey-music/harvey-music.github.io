@@ -11,7 +11,7 @@ ROOT = r"E:\Arthur\harvey-music.github.io-main"
 PORT = 8128
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input",
         "link", "meta", "param", "source", "track", "wbr"}
-PAGES = ["index.html", "start.html", "silverdaw.html", "home.html"]
+PAGES = ["index.html", "start.html", "silverdaw.html", "home.html", "notice.html"]
 
 
 class Balance(HTMLParser):
@@ -73,7 +73,7 @@ for n in ("start.html", "silverdaw.html"):
 
 print()
 print("=== 4. 顶栏内容 ===")
-for n in ("home.html", "start.html", "silverdaw.html"):
+for n in ("home.html", "start.html", "silverdaw.html", "notice.html"):
     bar = re.search(r'<div class="topbar">(.*?)</div>', srcs[n], re.S).group(1)
     links = re.findall(r'href="([^"]+)"[^>]*>([^<]+)<', bar)
     print("%-14s %s" % (n, " | ".join("%s -> %s" % (t.strip(), h) for h, t in links)))
@@ -95,7 +95,7 @@ print("=== 6. HTTP 实测 ===")
 handler = functools.partial(Quiet, directory=ROOT)
 httpd = socketserver.TCPServer(("127.0.0.1", PORT), handler)
 threading.Thread(target=httpd.serve_forever, daemon=True).start()
-for path in ["/", "/start.html", "/silverdaw.html", "/home.html", "/logo.png"]:
+for path in ["/", "/start.html", "/silverdaw.html", "/home.html", "/notice.html", "/logo.png"]:
     r = urllib.request.urlopen("http://127.0.0.1:%d%s" % (PORT, path), timeout=5)
     print("%-17s -> HTTP %s, %d bytes" % (path, r.status, len(r.read())))
 httpd.shutdown()
