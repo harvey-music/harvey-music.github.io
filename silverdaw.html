@@ -394,7 +394,7 @@
       color: #ffc95c;
     }
 
-    /* 两个选项：只可选一个 */
+    /* 选项列表：单选弹窗内互斥，多选弹窗内可同时勾选多项 */
     .dl-opts {
       display: grid;
       gap: 10px;
@@ -418,12 +418,16 @@
       border-color: #39404f;
     }
 
-    .dl-opt:has(.dl-radio:checked) {
+    /* 已勾选的选项：蓝色描边 + 深蓝底（单选、多选共用） */
+    .dl-opt:has(.dl-radio:checked),
+    .dl-opt:has(.dl-check:checked) {
       border-color: rgba(79, 140, 255, 0.6);
       background: #18202e;
     }
 
-    .dl-radio {
+    /* 单选 radio 与多选 checkbox 都藏起来，方框外观交给 .dl-box */
+    .dl-radio,
+    .dl-check {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -459,12 +463,14 @@
       transition: background 0.18s, border-color 0.18s;
     }
 
-    .dl-radio:checked ~ .dl-box {
+    .dl-radio:checked ~ .dl-box,
+    .dl-check:checked ~ .dl-box {
       background: #4f8cff;
       border-color: #4f8cff;
     }
 
-    .dl-radio:checked ~ .dl-box::after {
+    .dl-radio:checked ~ .dl-box::after,
+    .dl-check:checked ~ .dl-box::after {
       content: "";
       position: absolute;
       left: 6px;
@@ -476,7 +482,8 @@
       transform: rotate(45deg);
     }
 
-    .dl-radio:focus-visible ~ .dl-box {
+    .dl-radio:focus-visible ~ .dl-box,
+    .dl-check:focus-visible ~ .dl-box {
       outline: 2px solid #4f8cff;
       outline-offset: 2px;
     }
@@ -662,21 +669,21 @@
 
       <div class="dl-opts">
         <label class="dl-opt">
-          <input class="dl-radio" type="radio" name="dlType" value="setup" data-url="https://4002693616.share.123pan.cn/123pan/PPLzMh-NuVbv?pwd=2222#" checked>
+          <input class="dl-radio" type="radio" name="dlType" value="setup" data-url="https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/Silverdaw-1.9.0-Setup.exe" checked>
           <span class="dl-opt-text">
             <span class="dl-opt-name">下载安装包</span>
             <span class="dl-opt-meta">.exe · 双击安装，自动建开始菜单与卸载项</span>
-            <span class="dl-opt-meta">123 云盘分享页 · 提取码 2222</span>
+            <span class="dl-opt-meta">腾讯云直链 · 确认后直接开始下载</span>
           </span>
           <span class="dl-box" aria-hidden="true"></span>
         </label>
 
         <label class="dl-opt">
-          <input class="dl-radio" type="radio" name="dlType" value="portable" data-url="https://4002693616.share.123pan.cn/123pan/PPLzMh-qLXZv?pwd=8888#">
+          <input class="dl-radio" type="radio" name="dlType" value="portable" data-url="https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/Silverdaw-1.9.0.zip">
           <span class="dl-opt-text">
             <span class="dl-opt-name">下载便携版</span>
             <span class="dl-opt-meta">.zip · 解压即用，不写系统，可放 U 盘带走</span>
-            <span class="dl-opt-meta">123 云盘分享页 · 提取码 8888</span>
+            <span class="dl-opt-meta">腾讯云直链 · 确认后直接开始下载</span>
           </span>
           <span class="dl-box" aria-hidden="true"></span>
         </label>
@@ -691,19 +698,29 @@
     </div>
   </div>
 
-  <!-- 汉化补丁下载弹窗：只有一项，确认后跳转对应链接 -->
+  <!-- 汉化补丁弹窗：补丁 / 使用说明两项，可都勾选也可只勾一个 -->
   <div class="dl-modal" id="dlModalPatch" role="dialog" aria-modal="true" aria-labelledby="dlModalPatchTitle">
     <div class="dl-modal-card">
-      <h2 id="dlModalPatchTitle">下载汉化补丁</h2>
-      <p class="dl-modal-sub">补丁包仅适配官方原版 1.10.0，需按说明手动替换文件。</p>
+      <h2 id="dlModalPatchTitle">下载补丁与使用说明</h2>
+      <p class="dl-modal-sub">补丁包仅适配官方原版 1.10.0，需按说明手动替换文件。两项可都勾选，也可只勾一项。</p>
 
       <div class="dl-opts">
         <label class="dl-opt">
-          <input class="dl-radio" type="radio" name="dlPatch" value="patch" data-url="https://4002693616.share.123pan.cn/123pan/PPLzMh-iLtbv?pwd=1111#" checked>
+          <input class="dl-check" type="checkbox" value="patch" data-url="https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/Silverdaw-1.10.0-zh-CN.zip" checked>
           <span class="dl-opt-text">
             <span class="dl-opt-name">下载汉化补丁</span>
-            <span class="dl-opt-meta">.zip · 含补丁文件与使用说明，需手动替换</span>
-            <span class="dl-opt-meta">123 云盘分享页 · 提取码 1111</span>
+            <span class="dl-opt-meta">.zip · 补丁文件，需手动替换到程序目录</span>
+            <span class="dl-opt-meta">腾讯云直链 · 确认后直接开始下载</span>
+          </span>
+          <span class="dl-box" aria-hidden="true"></span>
+        </label>
+
+        <label class="dl-opt">
+          <input class="dl-check" type="checkbox" value="guide" data-url="https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E.txt" checked>
+          <span class="dl-opt-text">
+            <span class="dl-opt-name">下载使用说明</span>
+            <span class="dl-opt-meta">.txt · 补丁替换步骤与注意事项</span>
+            <span class="dl-opt-meta">腾讯云直链 · 确认后在新标签页打开</span>
           </span>
           <span class="dl-box" aria-hidden="true"></span>
         </label>
@@ -719,12 +736,29 @@
   </div>
 
   <script>
-    // 下载链接：123 云盘分享页（链接里的 pwd 参数就是提取码）
-    //   安装包 .exe   -> #dlModal      里 value="setup"    ✔ 已填（提取码 2222）
-    //   便携版 .zip   -> #dlModal      里 value="portable" ✔ 已填（提取码 8888）
-    //   汉化补丁 .zip -> #dlModalPatch 里 value="patch"    ✔ 已填（提取码 1111）
+    // 下载链接：全部走腾讯云 COS 直链，无需提取码
+    //   安装包 .exe   -> #dlModal      里 value="setup"    ✔ Silverdaw-1.9.0-Setup.exe
+    //   便携版 .zip   -> #dlModal      里 value="portable" ✔ Silverdaw-1.9.0.zip
+    //   汉化补丁 .zip -> #dlModalPatch 里 value="patch"    ✔ Silverdaw-1.10.0-zh-CN.zip
+    //   使用说明 .txt -> #dlModalPatch 里 value="guide"    ✔ 使用说明.txt
+    // 发布新版本时记得同步改直链里的文件名（安装包/便携版 1.9.0，补丁 1.10.0）
     (function () {
       var modals = document.querySelectorAll('.dl-modal');
+
+      // 说明类文件（txt / md / pdf）在新标签打开查看，其余按安装包 / 压缩包触发下载
+      function isDocFile(url) {
+        return /\.(txt|md|pdf)([?#]|$)/i.test(url);
+      }
+
+      // 触发下载：用临时 <a>，连点多个也不会互相覆盖（不写 target 就不会切走当前页）
+      function startFileDownload(url) {
+        var a = document.createElement('a');
+        a.href = url;
+        a.rel = 'noopener';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
 
       function openModal(modal) {
         if (!modal) return;
@@ -732,7 +766,7 @@
         if (hint) hint.textContent = '';
         modal.classList.add('is-open');
         document.body.style.overflow = 'hidden';   // 弹窗打开时锁住背景滚动
-        var checked = modal.querySelector('.dl-radio:checked');
+        var checked = modal.querySelector('.dl-radio:checked, .dl-check:checked');
         if (checked) checked.focus({ preventScroll: true });
       }
 
@@ -764,20 +798,31 @@
           if (e.target === modal) closeModal(modal);
         });
 
-        // 确认：按当前选中项跳到各自的链接
+        // 确认：把勾选的项全部打开 / 下载（单选弹窗里最多只会有一项）
         confirm.addEventListener('click', function () {
-          var picked = modal.querySelector('.dl-radio:checked');
-          var url = picked ? picked.getAttribute('data-url') : '';
-          if (!url) {
-            hint.textContent = '下载链接还没放上来，请稍后再来。';
+          var picked = [].slice.call(modal.querySelectorAll('.dl-radio:checked, .dl-check:checked'));
+          if (!picked.length) {
+            hint.textContent = '请至少勾选一项再确认。';
             return;
           }
-          window.location.href = url;
+          var urls = picked.map(function (el) { return el.getAttribute('data-url') || ''; });
+          if (urls.indexOf('') !== -1) {
+            hint.textContent = '有选项的下载链接还没放上来，请稍后再来。';
+            return;
+          }
+          hint.textContent = '';
+
+          // 说明文件先开新标签：window.open 必须在这次点击里同步调用，否则会被当成弹窗拦掉
+          urls.filter(isDocFile).forEach(function (url) {
+            window.open(url, '_blank', 'noopener');
+          });
+          // 安装包 / 压缩包逐个触发下载，浏览器只下载不会离开本页
+          urls.filter(function (url) { return !isDocFile(url); }).forEach(startFileDownload);
         });
 
-        // 选中项变化时清掉上一次的提示
-        modal.querySelectorAll('.dl-radio').forEach(function (radio) {
-          radio.addEventListener('change', function () {
+        // 勾选变化时清掉上一次的提示
+        modal.querySelectorAll('.dl-radio, .dl-check').forEach(function (item) {
+          item.addEventListener('change', function () {
             if (hint) hint.textContent = '';
           });
         });
