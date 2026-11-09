@@ -7,10 +7,55 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* ---------- 色板：与 logo 同源的黑金。以后改配色只改这一段 ---------- */
+    :root {
+      /* 底色：中性黑，去掉原来的蓝调 */
+      --bg: #0b0b0d;
+      --bg-soft: #111216;
+      --bg-deep: #08080a;
+      --card: #17181c;
+      --card-sel: #221d12;
+      --line: #26272c;
+      --line-soft: #232429;
+      --line-strong: #3a3b42;
+      /* 文字 */
+      --text: #eaeaec;
+      --text-dim: #c4c6cb;
+      --text-mute: #9a9da4;
+      --text-faint: #6c6f76;
+      --text-ghost: #565a61;
+      /* 品牌金：取自 logo 渐变，只用于状态与身份标识 */
+      --gold: #c9a227;
+      --gold-line: rgba(201, 162, 39, 0.45);
+      --gold-edge: #6b5620;
+      --gold-wash: rgba(201, 162, 39, 0.08);
+      --gold-wash-soft: rgba(201, 162, 39, 0.06);
+      --gold-shadow: rgba(201, 162, 39, 0.26);
+      /* 交互层：浅金，比标志金亮一档，小字号和按钮都清楚 */
+      --accent: #e3c274;
+      --accent-hover: #f0d79a;
+      --accent-line: rgba(227, 194, 116, 0.45);
+      --accent-line-strong: rgba(227, 194, 116, 0.6);
+      --accent-dot: rgba(227, 194, 116, 0.55);
+      --accent-glow: rgba(227, 194, 116, 0.16);
+      --accent-grad: linear-gradient(180deg, #f2d99b, #d9b25c);
+      --accent-grad-hover: linear-gradient(180deg, #f9e5b8, #e6c877);
+      --on-accent: #17181a;
+      /* 状态色：警示保留独立暖黄，不参与品牌金 */
+      --warn: #f0b429;
+      --warn-hover: #ffc95c;
+      --warn-wash: rgba(240, 180, 41, 0.08);
+      --warn-line: rgba(240, 180, 41, 0.38);
+      --danger: #ff9c8a;
+    }
+
+    /* 正文链接兜底：没单独设色的链接不要退回浏览器默认蓝 */
+    a { color: var(--accent); }
+
     body {
       min-height: 100vh;
-      background: #0f1115;
-      color: #e8eaed;
+      background: var(--bg);
+      color: var(--text);
       font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
       line-height: 1.8;
     }
@@ -24,25 +69,25 @@
     }
 
     .back-link {
-      color: #6b7280;
+      color: var(--text-faint);
       font-size: 1.1rem;
       text-decoration: none;
       transition: 0.2s;
     }
 
     .back-link:hover {
-      color: #4f8cff;
+      color: var(--accent);
     }
 
     .brand {
       font-weight: 700;
-      color: #e8eaed;
+      color: var(--text);
       font-size: 1.05rem;
       text-decoration: none;
     }
 
     .brand:hover {
-      color: #4f8cff;
+      color: var(--accent);
     }
 
     .page {
@@ -63,7 +108,7 @@
     }
 
     .hero p {
-      color: #9aa0a6;
+      color: var(--text-mute);
       font-size: 0.98rem;
       max-width: 580px;
       margin: 0 auto;
@@ -74,8 +119,8 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       margin-bottom: 60px;
-      background: #14171e;
-      border: 1px solid #2a2f3a;
+      background: var(--bg-soft);
+      border: 1px solid var(--line);
       border-radius: 14px;
       overflow: hidden;
     }
@@ -85,7 +130,7 @@
     }
 
     .intro-col + .intro-col {
-      border-left: 1px solid #2a2f3a;
+      border-left: 1px solid var(--line);
     }
 
     .intro-label {
@@ -93,13 +138,13 @@
       font-size: 0.72rem;
       font-weight: 600;
       letter-spacing: 1.5px;
-      color: #6b7280;
+      color: var(--text-faint);
       text-transform: uppercase;
       margin-bottom: 14px;
     }
 
     .intro-lead {
-      color: #e8eaed;
+      color: var(--text);
       font-size: 0.94rem;
       line-height: 1.85;
       margin-bottom: 16px;
@@ -115,7 +160,7 @@
       position: relative;
       padding-left: 17px;
       font-size: 0.86rem;
-      color: #9aa0a6;
+      color: var(--text-mute);
       line-height: 1.7;
     }
 
@@ -127,19 +172,19 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: rgba(79, 140, 255, 0.55);
+      background: var(--accent-dot);
     }
 
     .intro-col--en .intro-lead {
-      color: #c3c8d0;
+      color: var(--text-dim);
     }
 
     .intro-src {
       grid-column: 1 / -1;
-      border-top: 1px solid #2a2f3a;
+      border-top: 1px solid var(--line);
       padding: 12px 28px;
       font-size: 0.78rem;
-      color: #6b7280;
+      color: var(--text-faint);
       text-align: center;
     }
 
@@ -155,20 +200,20 @@
     .card {
       display: flex;
       flex-direction: column;
-      background: #1d212b;
-      border: 1px solid #2a2f3a;
+      background: var(--card);
+      border: 1px solid var(--line);
       border-radius: 14px;
       padding: 26px 24px 24px;
       transition: 0.2s;
     }
 
     .card:hover {
-      border-color: #4f8cff;
+      border-color: var(--accent);
       transform: translateY(-2px);
     }
 
     .card--featured {
-      border-color: #33507f;
+      border-color: var(--gold-edge);
     }
 
     .card-head {
@@ -181,7 +226,7 @@
     .no {
       font-size: 1.4rem;
       font-weight: 700;
-      color: #39404f;
+      color: var(--line-strong);
       letter-spacing: 1px;
       line-height: 1;
     }
@@ -189,16 +234,16 @@
     .tag {
       display: inline-block;
       font-size: 0.75rem;
-      color: #9aa0a6;
-      border: 1px solid #2a2f3a;
+      color: var(--text-mute);
+      border: 1px solid var(--line);
       border-radius: 999px;
       padding: 1px 10px;
       line-height: 1.7;
     }
 
     .tag--accent {
-      color: #4f8cff;
-      border-color: rgba(79, 140, 255, 0.45);
+      color: var(--accent);
+      border-color: var(--accent-line);
     }
 
     .card h2 {
@@ -207,7 +252,7 @@
     }
 
     .card .desc {
-      color: #9aa0a6;
+      color: var(--text-mute);
       font-size: 0.92rem;
     }
 
@@ -222,19 +267,19 @@
     .credit {
       margin-top: 12px;
       font-size: 0.82rem;
-      color: #6b7280;
+      color: var(--text-faint);
       line-height: 1.6;
     }
 
     .credit span {
-      color: #9aa0a6;
+      color: var(--text-mute);
     }
 
     .spec li {
       position: relative;
       padding-left: 17px;
       font-size: 0.87rem;
-      color: #c3c8d0;
+      color: var(--text-dim);
       line-height: 1.7;
     }
 
@@ -246,7 +291,7 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: rgba(79, 140, 255, 0.55);
+      background: var(--accent-dot);
     }
 
     /* 按钮统一贴到卡片底部 */
@@ -268,18 +313,19 @@
     }
 
     .btn-primary {
-      background: #4f8cff;
-      color: #fff;
+      background: var(--accent-grad);
+      color: var(--on-accent);
+      border-color: var(--gold-line);
     }
 
     .btn-primary:hover {
-      background: #6ea0ff;
+      background: var(--accent-grad-hover);
     }
 
     .btn-pending {
       background: transparent;
-      color: #6b7280;
-      border-color: #2a2f3a;
+      color: var(--text-faint);
+      border-color: var(--line);
       cursor: not-allowed;
     }
 
@@ -299,7 +345,7 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
-      background: rgba(6, 8, 12, 0.72);
+      background: rgba(6, 6, 8, 0.72);
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.2s, visibility 0s linear 0.2s;
@@ -316,8 +362,8 @@
     .dl-modal-card {
       width: min(430px, 100%);
       padding: 26px 24px 20px;
-      background: #1d212b;
-      border: 1px solid #2a2f3a;
+      background: var(--card);
+      border: 1px solid var(--line);
       border-radius: 14px;
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
       transform: translateY(10px);
@@ -335,7 +381,7 @@
     }
 
     .dl-modal-sub {
-      color: #9aa0a6;
+      color: var(--text-mute);
       font-size: 0.86rem;
       margin-bottom: 18px;
     }
@@ -347,9 +393,9 @@
       gap: 10px;
       margin-bottom: 16px;
       padding: 11px 14px;
-      background: rgba(240, 180, 41, 0.08);
-      border: 1px solid rgba(240, 180, 41, 0.38);
-      border-left: 3px solid #f0b429;
+      background: var(--warn-wash);
+      border: 1px solid var(--warn-line);
+      border-left: 3px solid var(--warn);
       border-radius: 10px;
     }
 
@@ -358,9 +404,9 @@
       width: 18px;
       height: 18px;
       margin-top: 2px;
-      border: 1.5px solid #f0b429;
+      border: 1.5px solid var(--warn);
       border-radius: 50%;
-      color: #f0b429;
+      color: var(--warn);
       font-size: 0.68rem;
       font-weight: 700;
       line-height: 15px;
@@ -375,7 +421,7 @@
     .dl-alert p {
       font-size: 0.8rem;
       line-height: 1.65;
-      color: #c3c8d0;
+      color: var(--text-dim);
     }
 
     .dl-alert p + p {
@@ -383,7 +429,7 @@
     }
 
     .dl-alert a {
-      color: #f0b429;
+      color: var(--warn);
       font-weight: 600;
       text-decoration: underline;
       text-underline-offset: 2px;
@@ -391,7 +437,7 @@
     }
 
     .dl-alert a:hover {
-      color: #ffc95c;
+      color: var(--warn-hover);
     }
 
     /* 选项列表：单选弹窗内互斥，多选弹窗内可同时勾选多项 */
@@ -407,22 +453,22 @@
       align-items: center;
       gap: 14px;
       padding: 13px 15px;
-      background: #171a22;
-      border: 1px solid #2a2f3a;
+      background: var(--bg-soft);
+      border: 1px solid var(--line);
       border-radius: 12px;
       cursor: pointer;
       transition: border-color 0.18s, background 0.18s;
     }
 
     .dl-opt:hover {
-      border-color: #39404f;
+      border-color: var(--line-strong);
     }
 
-    /* 已勾选的选项：蓝色描边 + 深蓝底（单选、多选共用） */
+    /* 已勾选的选项：金色描边 + 深金底（单选、多选共用） */
     .dl-opt:has(.dl-radio:checked),
     .dl-opt:has(.dl-check:checked) {
-      border-color: rgba(79, 140, 255, 0.6);
-      background: #18202e;
+      border-color: var(--accent-line-strong);
+      background: var(--card-sel);
     }
 
     /* 单选 radio 与多选 checkbox 都藏起来，方框外观交给 .dl-box */
@@ -444,12 +490,12 @@
     .dl-opt-name {
       font-size: 0.92rem;
       font-weight: 600;
-      color: #e8eaed;
+      color: var(--text);
     }
 
     .dl-opt-meta {
       font-size: 0.78rem;
-      color: #6b7280;
+      color: var(--text-faint);
     }
 
     /* 选项右侧的方框 + 对钩 */
@@ -458,15 +504,15 @@
       flex: 0 0 auto;
       width: 20px;
       height: 20px;
-      border: 1px solid #39404f;
+      border: 1px solid var(--line-strong);
       border-radius: 6px;
       transition: background 0.18s, border-color 0.18s;
     }
 
     .dl-radio:checked ~ .dl-box,
     .dl-check:checked ~ .dl-box {
-      background: #4f8cff;
-      border-color: #4f8cff;
+      background: var(--accent);
+      border-color: var(--accent);
     }
 
     .dl-radio:checked ~ .dl-box::after,
@@ -477,14 +523,14 @@
       top: 2px;
       width: 5px;
       height: 10px;
-      border: solid #fff;
+      border: solid var(--on-accent);
       border-width: 0 2px 2px 0;
       transform: rotate(45deg);
     }
 
     .dl-radio:focus-visible ~ .dl-box,
     .dl-check:focus-visible ~ .dl-box {
-      outline: 2px solid #4f8cff;
+      outline: 2px solid var(--accent);
       outline-offset: 2px;
     }
 
@@ -501,19 +547,19 @@
 
     .btn-ghost {
       background: transparent;
-      color: #c3c8d0;
-      border-color: #2a2f3a;
+      color: var(--text-dim);
+      border-color: var(--line);
     }
 
     .btn-ghost:hover {
-      border-color: #4f8cff;
-      color: #e8eaed;
+      border-color: var(--accent);
+      color: var(--text);
     }
 
     .dl-hint {
       margin-top: 12px;
       font-size: 0.8rem;
-      color: #ffb4a2;
+      color: var(--danger);
       text-align: center;
     }
 
@@ -528,7 +574,7 @@
       .card { padding: 22px 20px 20px; }
       .intro { grid-template-columns: 1fr; margin-bottom: 44px; }
       .intro-col { padding: 20px; }
-      .intro-col + .intro-col { border-left: none; border-top: 1px solid #2a2f3a; }
+      .intro-col + .intro-col { border-left: none; border-top: 1px solid var(--line); }
       .intro-src { padding: 10px 20px; }
       .dl-modal-card { padding: 22px 18px 16px; }
       .dl-opt { padding: 12px 13px; }
@@ -603,8 +649,8 @@
           <li>许可证：AGPL-3.0</li>
         </ul>
         <div class="card-foot">
-          <!-- 官方原版：跳转 Silverdaw 官网自行下载 -->
-          <a class="btn btn-primary" href="https://www.silverdaw.com/" target="_blank" rel="noopener">前往官网</a>
+          <!-- 官方原版：跳转 Silverdaw 官网自行下载（次要动作，用描边按钮，把金色实心留给本站的下载入口） -->
+          <a class="btn btn-ghost" href="https://www.silverdaw.com/" target="_blank" rel="noopener">前往官网</a>
         </div>
       </article>
 

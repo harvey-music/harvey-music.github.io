@@ -7,10 +7,55 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* ---------- 色板：与 logo 同源的黑金。以后改配色只改这一段 ---------- */
+    :root {
+      /* 底色：中性黑，去掉原来的蓝调 */
+      --bg: #0b0b0d;
+      --bg-soft: #111216;
+      --bg-deep: #08080a;
+      --card: #17181c;
+      --card-sel: #221d12;
+      --line: #26272c;
+      --line-soft: #232429;
+      --line-strong: #3a3b42;
+      /* 文字 */
+      --text: #eaeaec;
+      --text-dim: #c4c6cb;
+      --text-mute: #9a9da4;
+      --text-faint: #6c6f76;
+      --text-ghost: #565a61;
+      /* 品牌金：取自 logo 渐变，只用于状态与身份标识 */
+      --gold: #c9a227;
+      --gold-line: rgba(201, 162, 39, 0.45);
+      --gold-edge: #6b5620;
+      --gold-wash: rgba(201, 162, 39, 0.08);
+      --gold-wash-soft: rgba(201, 162, 39, 0.06);
+      --gold-shadow: rgba(201, 162, 39, 0.26);
+      /* 交互层：浅金，比标志金亮一档，小字号和按钮都清楚 */
+      --accent: #e3c274;
+      --accent-hover: #f0d79a;
+      --accent-line: rgba(227, 194, 116, 0.45);
+      --accent-line-strong: rgba(227, 194, 116, 0.6);
+      --accent-dot: rgba(227, 194, 116, 0.55);
+      --accent-glow: rgba(227, 194, 116, 0.16);
+      --accent-grad: linear-gradient(180deg, #f2d99b, #d9b25c);
+      --accent-grad-hover: linear-gradient(180deg, #f9e5b8, #e6c877);
+      --on-accent: #17181a;
+      /* 状态色：警示保留独立暖黄，不参与品牌金 */
+      --warn: #f0b429;
+      --warn-hover: #ffc95c;
+      --warn-wash: rgba(240, 180, 41, 0.08);
+      --warn-line: rgba(240, 180, 41, 0.38);
+      --danger: #ff9c8a;
+    }
+
+    /* 正文链接兜底：没单独设色的链接不要退回浏览器默认蓝 */
+    a { color: var(--accent); }
+
     body {
       min-height: 100vh;
-      background: #0f1115;
-      color: #e8eaed;
+      background: var(--bg);
+      color: var(--text);
       font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
       line-height: 1.8;
     }
@@ -24,25 +69,25 @@
     }
 
     .back-link {
-      color: #6b7280;
+      color: var(--text-faint);
       font-size: 1.1rem;
       text-decoration: none;
       transition: 0.2s;
     }
 
     .back-link:hover {
-      color: #4f8cff;
+      color: var(--accent);
     }
 
     .brand {
       font-weight: 700;
-      color: #e8eaed;
+      color: var(--text);
       font-size: 1.05rem;
       text-decoration: none;
     }
 
     .brand:hover {
-      color: #4f8cff;
+      color: var(--accent);
     }
 
     .page {
@@ -63,22 +108,22 @@
     }
 
     .hero p {
-      color: #9aa0a6;
+      color: var(--text-mute);
       font-size: 0.98rem;
       max-width: 560px;
       margin: 0 auto;
     }
 
-    /* ---------- 顶部提示条（蓝色 Alert） ---------- */
+    /* ---------- 顶部提示条（品牌金 Alert） ---------- */
     .alert {
       display: flex;
       align-items: flex-start;
       gap: 12px;
       margin-bottom: 40px;
       padding: 16px 20px;
-      background: rgba(79, 140, 255, 0.08);
-      border: 1px solid rgba(79, 140, 255, 0.45);
-      border-left: 3px solid #4f8cff;
+      background: var(--gold-wash);
+      border: 1px solid var(--accent-line);
+      border-left: 3px solid var(--accent);
       border-radius: 12px;
     }
 
@@ -87,9 +132,9 @@
       width: 20px;
       height: 20px;
       margin-top: 3px;
-      border: 1.5px solid #4f8cff;
+      border: 1.5px solid var(--accent);
       border-radius: 50%;
-      color: #4f8cff;
+      color: var(--accent);
       font-size: 0.72rem;
       font-weight: 700;
       line-height: 17px;
@@ -97,7 +142,7 @@
     }
 
     .alert-title {
-      color: #4f8cff;
+      color: var(--accent);
       font-size: 0.92rem;
       font-weight: 700;
       line-height: 1.6;
@@ -105,7 +150,7 @@
     }
 
     .alert-body p {
-      color: #c3c8d0;
+      color: var(--text-dim);
       font-size: 0.9rem;
     }
 
@@ -124,15 +169,15 @@
 
     .group-head .count {
       font-size: 0.82rem;
-      color: #6b7280;
-      border: 1px solid #2a2f3a;
+      color: var(--text-faint);
+      border: 1px solid var(--line);
       border-radius: 999px;
       padding: 1px 10px;
       line-height: 1.7;
     }
 
     .group-hint {
-      color: #6b7280;
+      color: var(--text-faint);
       font-size: 0.88rem;
       margin-bottom: 24px;
     }
@@ -144,15 +189,15 @@
     }
 
     .notice {
-      background: #1d212b;
-      border: 1px solid #2a2f3a;
+      background: var(--card);
+      border: 1px solid var(--line);
       border-radius: 14px;
       padding: 22px 24px;
     }
 
-    /* 置顶那条：蓝色描边，一眼能看见 */
+    /* 置顶那条：金色描边，一眼能看见 */
     .notice--pin {
-      border-color: rgba(79, 140, 255, 0.45);
+      border-color: var(--accent-line);
     }
 
     .notice-head {
@@ -164,23 +209,23 @@
     }
 
     .notice-date {
-      color: #6b7280;
+      color: var(--text-faint);
       font-size: 0.84rem;
     }
 
     .tag {
       display: inline-block;
       font-size: 0.75rem;
-      color: #9aa0a6;
-      border: 1px solid #2a2f3a;
+      color: var(--text-mute);
+      border: 1px solid var(--line);
       border-radius: 999px;
       padding: 1px 10px;
       line-height: 1.7;
     }
 
     .tag--accent {
-      color: #4f8cff;
-      border-color: rgba(79, 140, 255, 0.45);
+      color: var(--accent);
+      border-color: var(--accent-line);
     }
 
     .notice h3 {
@@ -189,7 +234,7 @@
     }
 
     .notice p {
-      color: #c3c8d0;
+      color: var(--text-dim);
       font-size: 0.93rem;
     }
 
@@ -198,7 +243,7 @@
     }
 
     .notice a {
-      color: #4f8cff;
+      color: var(--accent);
       text-decoration: none;
     }
 
@@ -229,7 +274,7 @@
       <p>站点更新、版本发布与维护通知都发在这里，最新的排在最上面。</p>
     </header>
 
-    <!-- 蓝色提示条：更新计划说明 -->
+    <!-- 金色提示条：更新计划说明 -->
     <div class="alert" role="status">
       <span class="alert-icon" aria-hidden="true">!</span>
       <div class="alert-body">
@@ -241,7 +286,7 @@
     <section class="group">
       <div class="group-head">
         <h2>全部公告</h2>
-        <span class="count">6 条</span>
+        <span class="count">9 条</span>
       </div>
       <p class="group-hint">按时间倒序排列。</p>
 
@@ -259,6 +304,39 @@
           <p>原版界面为英文，参数术语比较密集（FFT 尺寸、频谱倾斜、真峰值、LUFS 等），因此本次汉化以桌面版界面与说明文本为主，重点是同一参数在不同界面里的译法保持一致，不出现同一功能两种叫法的情况。</p>
           <p>汉化将从界面文本梳理与术语对照开始，按原版结构逐块替换，预计 2026 年 12 月左右发布。发布形式、适用的原版版本与下载方式确定后，会在 <a href="start.html">项目页</a> 与本公告栏同步公布，在此之前项目页不提供下载入口。</p>
           <p>12 月为现阶段的预估时间，若上游在此期间发布新版本，汉化基准版本可能随之调整，届时会另行公告说明。想先了解原版功能，可前往 <a href="https://github.com/Boof2015/prism" target="_blank" rel="noopener">Prism 官方仓库</a>。</p>
+        </article>
+
+        <!-- 项目页分组折叠：三个分组现在都能点标题收起 -->
+        <article class="notice">
+          <div class="notice-head">
+            <time class="notice-date" datetime="2026-11-09">2026 年 11 月 9 日</time>
+            <span class="tag">界面更新</span>
+          </div>
+          <h3>项目页三个分组支持折叠</h3>
+          <p>项目页的「已完成」「正在进行」「正在准备」三组，现在点标题行就能收起或展开，行尾的箭头会跟着翻转，用键盘的 Tab 加回车同样可以操作。默认三组都是展开的，与之前看到的一样；只想看其中一组时，把其它两组收起来即可。</p>
+          <p>卡片内容、跳转链接与下载入口均未改动，可在 <a href="start.html">项目页</a> 直接试用。</p>
+        </article>
+
+        <!-- 折叠动画优化：高度渐变 + 收起不再顶动页面 -->
+        <article class="notice">
+          <div class="notice-head">
+            <time class="notice-date" datetime="2026-11-09">2026 年 11 月 9 日</time>
+            <span class="tag">体验优化</span>
+          </div>
+          <h3>折叠改为平滑过渡，收起不再带动页面跳动</h3>
+          <p>分组的收起与展开现在改为高度渐变的过渡动画，不再是瞬间切换：展开时内容逐步下拉，收起时平滑收拢。此前在页面底部收起分组，整页会突然向上跳一段，现在改为跟着内容一起移动；如果收起后标题已经滚出视野，页面会把它带回原处。</p>
+          <p>系统开启「减少动态效果」时仍直接切换、不播放动画；浏览器禁用脚本或版本较旧时，分组照常可以折叠，只是没有过渡效果。</p>
+        </article>
+
+        <!-- 全站配色更新：蓝黑 -> 与 logo 同源的黑金 -->
+        <article class="notice">
+          <div class="notice-head">
+            <time class="notice-date" datetime="2026-11-09">2026 年 11 月 9 日</time>
+            <span class="tag">界面更新</span>
+          </div>
+          <h3>全站配色更新：改为与 logo 一致的黑金主题</h3>
+          <p>本次把全站配色从原来的蓝黑调整为与 logo 同源的黑金：底色换成更中性的黑，链接与按钮统一改为金色系，主按钮改为金色底配深色文字。</p>
+          <p>下载入口与全部文件均未变动，已保存的链接照常可用。停更提示与下载异常等警示仍保留原来的黄色，以便与普通链接区分；若发现某处颜色不协调或文字不易辨认，可在 <a href="home.html">关于</a> 页找到联系方式反馈。</p>
         </article>
 
         <!-- 开源电脑工具整合：简单预告 -->

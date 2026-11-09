@@ -8,14 +8,59 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* ---------- 色板：与 logo 同源的黑金。以后改配色只改这一段 ---------- */
+    :root {
+      /* 底色：中性黑，去掉原来的蓝调 */
+      --bg: #0b0b0d;
+      --bg-soft: #111216;
+      --bg-deep: #08080a;
+      --card: #17181c;
+      --card-sel: #221d12;
+      --line: #26272c;
+      --line-soft: #232429;
+      --line-strong: #3a3b42;
+      /* 文字 */
+      --text: #eaeaec;
+      --text-dim: #c4c6cb;
+      --text-mute: #9a9da4;
+      --text-faint: #6c6f76;
+      --text-ghost: #565a61;
+      /* 品牌金：取自 logo 渐变，只用于状态与身份标识 */
+      --gold: #c9a227;
+      --gold-line: rgba(201, 162, 39, 0.45);
+      --gold-edge: #6b5620;
+      --gold-wash: rgba(201, 162, 39, 0.08);
+      --gold-wash-soft: rgba(201, 162, 39, 0.06);
+      --gold-shadow: rgba(201, 162, 39, 0.26);
+      /* 交互层：浅金，比标志金亮一档，小字号和按钮都清楚 */
+      --accent: #e3c274;
+      --accent-hover: #f0d79a;
+      --accent-line: rgba(227, 194, 116, 0.45);
+      --accent-line-strong: rgba(227, 194, 116, 0.6);
+      --accent-dot: rgba(227, 194, 116, 0.55);
+      --accent-glow: rgba(227, 194, 116, 0.16);
+      --accent-grad: linear-gradient(180deg, #f2d99b, #d9b25c);
+      --accent-grad-hover: linear-gradient(180deg, #f9e5b8, #e6c877);
+      --on-accent: #17181a;
+      /* 状态色：警示保留独立暖黄，不参与品牌金 */
+      --warn: #f0b429;
+      --warn-hover: #ffc95c;
+      --warn-wash: rgba(240, 180, 41, 0.08);
+      --warn-line: rgba(240, 180, 41, 0.38);
+      --danger: #ff9c8a;
+    }
+
+    /* 正文链接兜底：没单独设色的链接不要退回浏览器默认蓝 */
+    a { color: var(--accent); }
+
     body {
-      background: #0f1115;
-      color: #e8eaed;
+      background: var(--bg);
+      color: var(--text);
       font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
       line-height: 1.7;
     }
 
-    a { color: #4f8cff; text-decoration: none; }
+    a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; }
 
     .container {
@@ -32,24 +77,24 @@
     }
 
     .back-link {
-      color: #6b7280;
+      color: var(--text-faint);
       font-size: 1.1rem;
       text-decoration: none;
       transition: 0.2s;
     }
-    .back-link:hover { color: #4f8cff; text-decoration: none; }
+    .back-link:hover { color: var(--accent); text-decoration: none; }
 
     .brand {
       font-weight: 700;
-      color: #e8eaed;
+      color: var(--text);
       font-size: 1.05rem;
     }
-    .brand:hover { color: #4f8cff; text-decoration: none; }
+    .brand:hover { color: var(--accent); text-decoration: none; }
 
     /* 通用区块 */
     .section {
       padding: 80px 0;
-      border-top: 1px solid #2a2f3a;
+      border-top: 1px solid var(--line);
     }
 
     .section h2 {
@@ -60,7 +105,7 @@
     /* 关于区 */
     .about-text {
       max-width: 720px;
-      color: #c3c8d0;
+      color: var(--text-dim);
     }
 
     .about-text p + p {
@@ -71,7 +116,7 @@
     .about-text .lead {
       font-size: 1.15rem;
       line-height: 1.75;
-      color: #e8eaed;
+      color: var(--text);
     }
 
     /* 联系区 */
@@ -83,18 +128,18 @@
     }
 
     .contact-list li {
-      background: #1d212b;
-      border: 1px solid #2a2f3a;
+      background: var(--card);
+      border: 1px solid var(--line);
       border-radius: 12px;
       padding: 14px 18px;
       font-size: 0.95rem;
     }
 
     footer {
-      border-top: 1px solid #2a2f3a;
+      border-top: 1px solid var(--line);
       padding: 32px 0 48px;
       text-align: center;
-      color: #6b7280;
+      color: var(--text-faint);
       font-size: 0.88rem;
     }
 

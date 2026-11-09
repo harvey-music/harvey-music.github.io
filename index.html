@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arthur 工作室</title>
   <meta name="description" content="Arthur 工作室 —— 专注于开源汉化与独立软件开发的小工作室">
-  <meta name="theme-color" content="#0f1115">
+  <meta name="theme-color" content="#0b0b0d">
   <!-- 分享卡片（og:image 若要生效，部署后可换成绝对地址） -->
   <meta property="og:title" content="Arthur 工作室">
   <meta property="og:description" content="专注于开源汉化与独立软件开发的小工作室">
@@ -14,6 +14,51 @@
   <link rel="icon" href="logo-mark.png">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ---------- 色板：与 logo 同源的黑金。以后改配色只改这一段 ---------- */
+    :root {
+      /* 底色：中性黑，去掉原来的蓝调 */
+      --bg: #0b0b0d;
+      --bg-soft: #111216;
+      --bg-deep: #08080a;
+      --card: #17181c;
+      --card-sel: #221d12;
+      --line: #26272c;
+      --line-soft: #232429;
+      --line-strong: #3a3b42;
+      /* 文字 */
+      --text: #eaeaec;
+      --text-dim: #c4c6cb;
+      --text-mute: #9a9da4;
+      --text-faint: #6c6f76;
+      --text-ghost: #565a61;
+      /* 品牌金：取自 logo 渐变，只用于状态与身份标识 */
+      --gold: #c9a227;
+      --gold-line: rgba(201, 162, 39, 0.45);
+      --gold-edge: #6b5620;
+      --gold-wash: rgba(201, 162, 39, 0.08);
+      --gold-wash-soft: rgba(201, 162, 39, 0.06);
+      --gold-shadow: rgba(201, 162, 39, 0.26);
+      /* 交互层：浅金，比标志金亮一档，小字号和按钮都清楚 */
+      --accent: #e3c274;
+      --accent-hover: #f0d79a;
+      --accent-line: rgba(227, 194, 116, 0.45);
+      --accent-line-strong: rgba(227, 194, 116, 0.6);
+      --accent-dot: rgba(227, 194, 116, 0.55);
+      --accent-glow: rgba(227, 194, 116, 0.16);
+      --accent-grad: linear-gradient(180deg, #f2d99b, #d9b25c);
+      --accent-grad-hover: linear-gradient(180deg, #f9e5b8, #e6c877);
+      --on-accent: #17181a;
+      /* 状态色：警示保留独立暖黄，不参与品牌金 */
+      --warn: #f0b429;
+      --warn-hover: #ffc95c;
+      --warn-wash: rgba(240, 180, 41, 0.08);
+      --warn-line: rgba(240, 180, 41, 0.38);
+      --danger: #ff9c8a;
+    }
+
+    /* 正文链接兜底：没单独设色的链接不要退回浏览器默认蓝 */
+    a { color: var(--accent); }
 
     body {
       min-height: 100vh;
@@ -25,9 +70,9 @@
       padding: clamp(72px, 20vh, 220px) 20px 36px;
       /* 顶部一层极淡暖光，给金色 logo 一个落点，不再是浮在纯黑上 */
       background:
-        radial-gradient(90% 60% at 50% 0%, rgba(201, 162, 39, 0.07) 0%, rgba(201, 162, 39, 0) 60%),
-        #0f1115;
-      color: #e8eaed;
+        radial-gradient(90% 60% at 50% 0%, var(--gold-wash-soft) 0%, transparent 60%),
+        var(--bg);
+      color: var(--text);
       font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
       text-align: center;
     }
@@ -38,8 +83,8 @@
       max-width: 100%;
       height: clamp(112px, 16vh, 152px);
       margin-bottom: 24px;
-      /* 暖色光晕：让金色成为品牌点缀，而不是和蓝色主题互相打岔 */
-      filter: drop-shadow(0 12px 34px rgba(201, 162, 39, 0.28));
+      /* 暖色光晕：金色是全站唯一的暖色，给 logo 一个落点 */
+      filter: drop-shadow(0 12px 34px var(--gold-shadow));
     }
 
     h1 {
@@ -50,7 +95,7 @@
     }
 
     .subtitle {
-      color: #9aa0a6;
+      color: var(--text-mute);
       font-size: 1rem;
       margin-bottom: 28px;
       max-width: 480px;
@@ -79,27 +124,28 @@
 
     .btn:focus-visible,
     .notice-entry:focus-visible {
-      outline: 2px solid #4f8cff;
+      outline: 2px solid var(--accent);
       outline-offset: 3px;
     }
 
     .btn-primary {
-      background: #4f8cff;
-      color: #fff;
+      background: var(--accent-grad);
+      color: var(--on-accent);
+      border-color: var(--gold-line);
     }
 
     .btn-primary:hover {
-      background: #6ea0ff;
+      background: var(--accent-grad-hover);
     }
 
     .btn-secondary {
       background: transparent;
-      color: #e8eaed;
-      border-color: #2a2f3a;
+      color: var(--text);
+      border-color: var(--line);
     }
 
     .btn-secondary:hover {
-      border-color: #4f8cff;
+      border-color: var(--accent);
     }
 
     .footer-links {
@@ -110,18 +156,18 @@
       width: min(340px, 100%);
       margin-top: auto;              /* 页脚吸到视口底部，页面才有「头—身—脚」 */
       padding-top: 40px;
-      color: #6b7280;
+      color: var(--text-faint);
       font-size: 0.88rem;
     }
 
     .footer-links a {
-      color: #9aa0a6;
+      color: var(--text-mute);
       text-decoration: none;
       transition: 0.2s;
     }
 
     .footer-links a:hover {
-      color: #4f8cff;
+      color: var(--accent);
     }
 
     /* ---------- 公告栏入口（两个按钮下方居中） ---------- */
@@ -132,8 +178,8 @@
       width: min(340px, 100%);
       margin: 0 auto;
       padding: 14px 18px;
-      background: #1d212b;
-      border: 1px solid #2a2f3a;
+      background: var(--card);
+      border: 1px solid var(--line);
       border-radius: 14px;
       text-align: left;
       text-decoration: none;
@@ -142,7 +188,7 @@
     }
 
     .notice-entry:hover {
-      border-color: #4f8cff;
+      border-color: var(--accent);
       transform: translateY(-2px);
     }
 
@@ -152,8 +198,8 @@
       height: 8px;
       margin-top: 6px;                /* 与首行标题的视觉中心对齐 */
       border-radius: 50%;
-      background: #4f8cff;
-      box-shadow: 0 0 0 4px rgba(79, 140, 255, 0.16);
+      background: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-glow);
     }
 
     .notice-text {
@@ -173,20 +219,20 @@
     .notice-text em {
       font-style: normal;
       font-size: 0.78rem;
-      color: #9aa0a6;                /* 原 #6b7280 在 #1d212b 上只有 3.3:1，偏糊 */
+      color: var(--text-mute);                /* 原 var(--text-faint) 在 var(--card) 上只有 3.3:1，偏糊 */
     }
 
     .notice-arrow {
       margin-left: auto;
       margin-top: 1px;
       line-height: 1.45;              /* 与标题首行同一行高，箭头才不会吊在中间 */
-      color: #6b7280;
+      color: var(--text-faint);
       font-size: 0.95rem;
       transition: 0.2s;
     }
 
     .notice-entry:hover .notice-arrow {
-      color: #4f8cff;
+      color: var(--accent);
       transform: translateX(3px);
     }
   </style>
@@ -208,8 +254,8 @@
   <a class="notice-entry" href="notice.html">
     <span class="notice-dot" aria-hidden="true"></span>
     <span class="notice-text">
-      <strong>Prism 中文汉化预计 12 月发布</strong>
-      <em>公告栏 · 11 月 8 日 · 共 6 条</em>
+      <strong>项目页三个分组支持折叠</strong>
+      <em>公告栏 · 11 月 9 日 · 共 9 条</em>
     </span>
     <span class="notice-arrow" aria-hidden="true">→</span>
   </a>
