@@ -47,10 +47,49 @@
       --warn-wash: rgba(240, 180, 41, 0.08);
       --warn-line: rgba(240, 180, 41, 0.38);
       --danger: #ff9c8a;
+      --nav-h: 54px;
     }
 
     /* 正文链接兜底：没单独设色的链接不要退回浏览器默认蓝 */
     a { color: var(--accent); }
+
+    /* ---------- 跨页面切换：0.24s 交叉淡入，无位移 ----------
+       只淡不滑；顶部导航命名后原地保留，不跟着内容一起淡。 */
+    @view-transition {
+      navigation: auto;
+    }
+
+    .globalnav { view-transition-name: site-nav; }
+
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 0.24s;
+      animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
+    }
+
+    ::view-transition-old(site-nav),
+    ::view-transition-new(site-nav) {
+      animation: none;
+    }
+
+    @supports not (view-transition-name: none) {
+      body { animation: page-fade-in 0.26s ease-out both; }
+    }
+
+    @keyframes page-fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* 页内锚点（如提示条里的 #notice-prism）平滑滚动 */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* 跨页返回时用瞬时定位还原滚动位置，避免平滑滚动把整页"扫"一遍 */
+    html.is-restoring {
+      scroll-behavior: auto;
+    }
 
     body {
       min-height: 100vh;
@@ -60,35 +99,142 @@
       line-height: 1.8;
     }
 
-    /* ---------- 顶栏（与「关于」页一致：左返回，右名字） ---------- */
-    .topbar {
+    /* ---------- 常驻顶部导航：与首页、Silverdaw 页同一套 ---------- */
+    .globalnav {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      height: var(--nav-h);
+      background: rgba(11, 11, 13, 0.72);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.25s, background 0.25s;
+    }
+
+    /* 一滚动就补一条细线，让导航和内容分层 */
+    .globalnav.is-stuck {
+      background: rgba(11, 11, 13, 0.86);
+      border-bottom-color: var(--line);
+    }
+
+    .nav-inner {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 20px 4%;
+      gap: 30px;
+      width: min(1160px, 92%);
+      height: 100%;
+      margin-inline: auto;
     }
 
-    .back-link {
-      color: var(--text-faint);
-      font-size: 1.1rem;
-      text-decoration: none;
-      transition: 0.2s;
-    }
-
-    .back-link:hover {
-      color: var(--accent);
-    }
-
-    .brand {
-      font-weight: 700;
+    .nav-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
       color: var(--text);
-      font-size: 1.05rem;
+      font-size: 0.95rem;
+      font-weight: 700;
       text-decoration: none;
+      white-space: nowrap;
+      flex: 0 0 auto;
     }
 
-    .brand:hover {
-      color: var(--accent);
+    .nav-brand img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
     }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin-left: auto;
+    }
+
+    .nav-link {
+      padding: 7px 14px;
+      border-radius: 999px;
+      color: var(--text-mute);
+      font-size: 0.9rem;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 0.2s, background 0.2s, transform 0.16s;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* 当前所在栏目 */
+    .nav-link.is-active {
+      color: var(--accent);
+      background: var(--gold-wash);
+    }
+
+    .nav-gh {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      margin-left: 6px;
+      border-radius: 50%;
+      color: var(--text-faint);
+      text-decoration: none;
+      transition: color 0.2s, background 0.2s, transform 0.16s;
+    }
+
+    .nav-gh:hover {
+      color: var(--accent);
+      background: var(--gold-wash);
+    }
+
+    @media (max-width: 640px) {
+      :root { --nav-h: 50px; }
+      .nav-inner { gap: 10px; }
+      .nav-brand { font-size: 0.86rem; gap: 7px; }
+      .nav-brand img { width: 22px; height: 22px; }
+      .nav-link { padding: 6px 8px; font-size: 0.82rem; }
+      .nav-gh { width: 28px; height: 28px; margin-left: 2px; }
+    }
+
+    /* 页内锚点（如 #notice-prism）落地时，给吸顶导航让出高度 */
+    [id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
+
+    /* ---------- 返回入口：与 Silverdaw 产品页同款胶囊 ---------- */
+    .page-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      margin-bottom: 22px;
+      padding: 5px 14px 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text-mute);
+      font-size: 0.82rem;
+      text-decoration: none;
+      transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.16s;
+    }
+
+    .page-back:hover {
+      color: var(--accent);
+      border-color: var(--accent-line);
+      background: var(--gold-wash);
+    }
+
+    /* 尖角用文字画，与产品页保持一致 */
+    .page-back .chev-l {
+      font-size: 1.1em;
+      line-height: 1;
+      transform: translateY(-0.5px);
+    }
+
+    /* ---------- 点击反馈：与产品页同一套，按下缩 4%，松手回弹 ---------- */
+    .nav-link:active { transform: scale(0.96); }
+    .nav-gh:active { transform: scale(0.92); }
+    .page-back:active { transform: scale(0.96); }
 
     .page {
       width: min(860px, 92%);
@@ -256,17 +402,51 @@
       .hero { margin-bottom: 40px; }
       .notice { padding: 18px 18px; }
     }
+
+    /* 系统开了「减少动态效果」：淡入与按下缩放全部关掉 */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      body { animation: none; }
+
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation: none;
+      }
+
+      .nav-link:active,
+      .nav-gh:active,
+      .page-back:active { transform: none; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- 顶栏（与「关于」页一致：左返回，右名字） -->
-  <div class="topbar">
-    <a class="back-link" href="index.html">返回欢迎页</a>
-    <a class="brand" href="index.html">Arthur 工作室</a>
-  </div>
+  <!-- ============ 常驻顶部导航：与首页同一套，「公告」为当前栏目 ============ -->
+  <nav class="globalnav" id="globalnav" aria-label="主导航">
+    <div class="nav-inner">
+      <a class="nav-brand" href="index.html">
+        <img src="logo-mark.png" alt="" width="26" height="26">
+        Arthur 工作室
+      </a>
+
+      <div class="nav-links">
+        <a class="nav-link" href="index.html#hanhua">汉化</a>
+        <a class="nav-link" href="softlib.html">软件库</a>
+        <a class="nav-link is-active" href="notice.html" aria-current="page">公告</a>
+        <a class="nav-link" href="index.html#about">关于</a>
+        <a class="nav-gh" href="https://github.com/harvey-music" target="_blank" rel="noopener" aria-label="GitHub 主页">
+          <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
 
   <div class="page">
+
+    <!-- 返回入口：公告页是独立页面，没有栏目内导航，单独给一个返回首页的落点 -->
+    <a class="page-back" href="index.html"><span class="chev-l" aria-hidden="true">‹</span> 返回首页</a>
 
     <!-- 欢迎区 -->
     <header class="hero">
@@ -279,64 +459,89 @@
       <span class="alert-icon" aria-hidden="true">!</span>
       <div class="alert-body">
         <p class="alert-title">更新计划说明</p>
-        <p>Silverdaw 汉化版将在 2027 年 1 月前停止跟随官方原版更新，此后的官方版本更新（含重大版本更新）将不再同步汉化。已发布的完整汉化版与汉化补丁仍可继续下载使用。新的汉化项目 <a href="#notice-prism">Prism 中文汉化</a> 已启动筹备，预计 12 月左右发布。</p>
+        <p>Silverdaw 汉化版将在 2027 年 1 月前停止跟随官方原版更新，此后的官方版本更新（含重大版本更新）将不再同步汉化。已发布的完整汉化版与汉化补丁仍可继续下载使用。新的汉化项目 <a href="#notice-prism">Prism 中文汉化</a> 已启动，预计 12 月左右推出。</p>
       </div>
     </div>
 
     <section class="group">
       <div class="group-head">
         <h2>全部公告</h2>
-        <span class="count">9 条</span>
+        <span class="count">10 条</span>
       </div>
-      <p class="group-hint">按时间倒序排列。</p>
+      <p class="group-hint">置顶条目在上，其余按时间倒序排列。</p>
 
       <div class="notice-list">
 
-        <!-- Prism 中文汉化：本轮重点筹备的项目 -->
+        <!-- Prism 中文汉化：本轮重点推进的项目 -->
         <article class="notice notice--pin" id="notice-prism">
           <div class="notice-head">
             <time class="notice-date" datetime="2026-11-08">2026 年 11 月 8 日</time>
             <span class="tag tag--accent">置顶</span>
             <span class="tag">项目预告</span>
           </div>
-          <h3>Prism 中文汉化筹备中，预计 12 月左右发布</h3>
+          <h3>Prism 中文汉化预计 12 月推出</h3>
           <p>工作室接下来重点推进的汉化项目是 Prism。Prism 是一款免费开源的音频分析与电平表机架，支持 Windows、macOS 与 Linux，内置频谱仪、示波器、矢量示波器、瀑布图、声谱图、VU 表、响度表与波形显示共八种实时仪表，可自由排布成机架并保存为配置；同一套仪表也提供 VST3 / AU / CLAP 插件版本，可直接在数字音频工作站中使用。</p>
           <p>原版界面为英文，参数术语比较密集（FFT 尺寸、频谱倾斜、真峰值、LUFS 等），因此本次汉化以桌面版界面与说明文本为主，重点是同一参数在不同界面里的译法保持一致，不出现同一功能两种叫法的情况。</p>
-          <p>汉化将从界面文本梳理与术语对照开始，按原版结构逐块替换，预计 2026 年 12 月左右发布。发布形式、适用的原版版本与下载方式确定后，会在 <a href="start.html">项目页</a> 与本公告栏同步公布，在此之前项目页不提供下载入口。</p>
-          <p>12 月为现阶段的预估时间，若上游在此期间发布新版本，汉化基准版本可能随之调整，届时会另行公告说明。想先了解原版功能，可前往 <a href="https://github.com/Boof2015/prism" target="_blank" rel="noopener">Prism 官方仓库</a>。</p>
+          <p>汉化将从界面文本梳理与术语对照开始，按原版结构逐块替换，预计 2026 年 12 月左右发布。发布形式、适用的原版版本与下载方式确定后，会在 <a href="index.html">首页</a> 与本公告栏同步公布，在此之前不提供下载入口。</p>
+          <p>12 月为现阶段的预估时间，若上游在此期间发布新版本，汉化基准版本可能随之调整，届时会另行公告说明。想先了解原版功能，可前往 <a href="https://github.com/Boof2015/prism" target="_blank" rel="noopener">Prism 官方仓库</a>；本站另整理了一页 <a href="prism.html">Prism 项目页</a>，只介绍原版功能与汉化进度，暂不提供下载。</p>
         </article>
 
-        <!-- 项目页分组折叠：三个分组现在都能点标题收起 -->
-        <article class="notice">
+        <!-- Silverdaw 中文汉化上线：已发布，与 Prism 预告并列置顶，方便直接找到下载说明 -->
+        <article class="notice notice--pin" id="notice-silverdaw-hanhua">
           <div class="notice-head">
-            <time class="notice-date" datetime="2026-11-09">2026 年 11 月 9 日</time>
+            <time class="notice-date" datetime="2026-11-08">2026 年 11 月 8 日</time>
+            <span class="tag tag--accent">置顶</span>
+            <span class="tag">版本发布</span>
+          </div>
+          <h3>Silverdaw 中文汉化正式上线</h3>
+          <p>Silverdaw 中文本地化工作已完成，即日起正式发布。本次提供两种形式，二者对应的官方基准版本不同，请按需选用。</p>
+          <p>完整汉化版以官方 1.3.0 版本为基准制作，中文语言资源已内置，安装后界面即为中文，无需任何额外操作，适合希望直接上手的使用者。</p>
+          <p>汉化补丁以官方 1.10.0 版本为基准制作，仅适配该基准版本。补丁不含安装程序，需借助编程工具按随附说明手动替换文件，适合已在使用 1.10.0 原版、并希望保留原版安装方式的使用者；该补丁后续不再随官方版本更新。</p>
+          <p>两种形式的基准版本不同，下载前请先确认所持原版的版本号，避免版本错配。下载入口位于 <a href="silverdaw.html">Silverdaw 项目页</a>，各下载方式均需在弹窗中确认后跳转。</p>
+        </article>
+
+        <!-- 软件库上线：栏目独立成页，条目按用途分类，支持筛选 -->
+        <article class="notice" id="notice-softlib">
+          <div class="notice-head">
+            <time class="notice-date" datetime="2026-11-10">2026 年 11 月 10 日</time>
             <span class="tag">界面更新</span>
           </div>
-          <h3>项目页三个分组支持折叠</h3>
-          <p>项目页的「已完成」「正在进行」「正在准备」三组，现在点标题行就能收起或展开，行尾的箭头会跟着翻转，用键盘的 Tab 加回车同样可以操作。默认三组都是展开的，与之前看到的一样；只想看其中一组时，把其它两组收起来即可。</p>
-          <p>卡片内容、跳转链接与下载入口均未改动，可在 <a href="start.html">项目页</a> 直接试用。</p>
+          <h3>软件库上线：18 个开源工具按用途分类</h3>
+          <p>新增独立页面 <a href="softlib.html">软件库</a>，将常用开源工具按系统工具、影音与图像、网络与传输、文档与效率四类整理为方格卡片，每项标注一句用途、许可协议与官方来源，点击卡片即前往项目官网或仓库。</p>
+          <p>页面顶部提供分类筛选，换新设备或重装系统时可照着逐项配置。开源软件的汉化条目仍在整理，后续补充会在这里同步。入口位于首页「软件库」一节，也可从顶部导航直接进入。</p>
         </article>
 
-        <!-- 折叠动画优化：高度渐变 + 收起不再顶动页面 -->
-        <article class="notice">
+        <!-- Silverdaw 项目页改版：返回入口 + 版心统一 + 弹窗位移修复 + 全站文案规范化 -->
+        <article class="notice" id="notice-silverdaw-ui">
           <div class="notice-head">
-            <time class="notice-date" datetime="2026-11-09">2026 年 11 月 9 日</time>
-            <span class="tag">体验优化</span>
+            <time class="notice-date" datetime="2026-11-10">2026 年 11 月 10 日</time>
+            <span class="tag">界面更新</span>
           </div>
-          <h3>折叠改为平滑过渡，收起不再带动页面跳动</h3>
-          <p>分组的收起与展开现在改为高度渐变的过渡动画，不再是瞬间切换：展开时内容逐步下拉，收起时平滑收拢。此前在页面底部收起分组，整页会突然向上跳一段，现在改为跟着内容一起移动；如果收起后标题已经滚出视野，页面会把它带回原处。</p>
-          <p>系统开启「减少动态效果」时仍直接切换、不播放动画；浏览器禁用脚本或版本较旧时，分组照常可以折叠，只是没有过渡效果。</p>
+          <h3>Silverdaw 项目页改版：新增返回入口、统一内容区宽度、修复弹窗位移</h3>
+          <p>本次对 <a href="silverdaw.html">Silverdaw 项目页</a> 做了三处调整。一是补充返回首页的入口：项目页有一处在产品主视觉左上角、一处在章节导航最左端，向下滚动时保持可见；公告页顶部同样补了一处。二是将「汉化覆盖」「获取方式」「规格」「关于原版」四个区块收进与「功能」一节相同的版心，宽屏下不再贴边。三是修复打开下载弹窗时整页横向抽动的问题。</p>
+          <p>全站文案同步改为书面表达，下载资源、文件命名与基准版本均未变动。</p>
+        </article>
+
+        <!-- 首页改版：项目列表并入首页，取消状态分组 -->
+        <article class="notice" id="notice-mergelist">
+          <div class="notice-head">
+            <time class="notice-date" datetime="2026-11-10">2026 年 11 月 10 日</time>
+            <span class="tag">界面更新</span>
+          </div>
+          <h3>项目列表并入首页，不再分「已完成 / 正在进行 / 正在准备」</h3>
+          <p>此前首页与单独的项目页各自维护一份清单，两处信息容易出现差异。现将项目统一收进首页的「汉化」一节：已发布的项目排在最前，未发布的项目标注预计推出时间；其余尚未上线的内容归入「软件库」一节，以一条说明交代当前进度。</p>
+          <p>状态分组一并取消。相较开发进度，访客更关心当前是否可以下载，因此仅保留时间信息：已发布项目标注月份，未发布项目标注预计推出时间。旧的项目页链接将自动跳转至首页，已收藏的地址照常可用。</p>
         </article>
 
         <!-- 全站配色更新：蓝黑 -> 与 logo 同源的黑金 -->
-        <article class="notice">
+        <article class="notice" id="notice-theme">
           <div class="notice-head">
             <time class="notice-date" datetime="2026-11-09">2026 年 11 月 9 日</time>
             <span class="tag">界面更新</span>
           </div>
           <h3>全站配色更新：改为与 logo 一致的黑金主题</h3>
-          <p>本次把全站配色从原来的蓝黑调整为与 logo 同源的黑金：底色换成更中性的黑，链接与按钮统一改为金色系，主按钮改为金色底配深色文字。</p>
-          <p>下载入口与全部文件均未变动，已保存的链接照常可用。停更提示与下载异常等警示仍保留原来的黄色，以便与普通链接区分；若发现某处颜色不协调或文字不易辨认，可在 <a href="home.html">关于</a> 页找到联系方式反馈。</p>
+          <p>本次将全站配色由原先的蓝黑调整为与 logo 同源的黑金：底色改为中性黑，链接与按钮统一为金色系，主按钮采用金色底配深色文字。</p>
+          <p>下载入口与全部文件均未变动，已保存的链接照常可用。停更提示与下载异常等警示仍保留原来的黄色，以便与普通链接区分；若发现某处颜色不协调或文字不易辨认，可在 <a href="index.html#about">关于</a> 页找到联系方式反馈。</p>
         </article>
 
         <!-- 开源电脑工具整合：简单预告 -->
@@ -345,8 +550,8 @@
             <time class="notice-date" datetime="2026-11-08">2026 年 11 月 8 日</time>
             <span class="tag">项目预告</span>
           </div>
-          <h3>开源电脑工具整合筹备中</h3>
-          <p>计划把日常好用的开源 Windows 工具整理成一份清单，按用途分类，逐项写清来源、安装方式与常用设置，换新电脑或重装系统时照着装一遍就能用。整理完成后在 <a href="start.html">项目页</a> 公布。</p>
+          <h3>开源电脑工具整合即将推出</h3>
+          <p>计划将常用开源 Windows 工具整理为一份清单：按用途分类，逐项列明来源、安装方式与推荐设置，便于在新设备或重装系统后按序配置。整理完成后将在 <a href="index.html">首页</a> 公布。</p>
         </article>
 
         <!-- 开源软件汉化索引：简单预告 -->
@@ -355,21 +560,8 @@
             <time class="notice-date" datetime="2026-11-08">2026 年 11 月 8 日</time>
             <span class="tag">项目预告</span>
           </div>
-          <h3>开源软件汉化索引筹备中</h3>
-          <p>计划收录常用开源软件的官方中文版与可用汉化资源，逐项标注版本号、授权方式与下载位置，找中文界面不必再翻十几个论坛帖。整理完成后在 <a href="start.html">项目页</a> 公布。</p>
-        </article>
-
-        <!-- Silverdaw 中文汉化上线（原置顶，置顶位置让给 Prism） -->
-        <article class="notice">
-          <div class="notice-head">
-            <time class="notice-date" datetime="2026-11-08">2026 年 11 月 8 日</time>
-            <span class="tag">版本发布</span>
-          </div>
-          <h3>Silverdaw 中文汉化正式上线</h3>
-          <p>Silverdaw 中文本地化工作已完成，即日起正式发布。本次提供两种形式，二者对应的官方基准版本不同，请按需选用。</p>
-          <p>完整汉化版以官方 1.3.0 版本为基准制作，中文语言资源已内置，安装后界面即为中文，无需任何额外操作，适合希望直接上手的使用者。</p>
-          <p>汉化补丁以官方 1.10.0 版本为基准制作，仅适配该基准版本。补丁不含安装程序，需借助编程工具按随附说明手动替换文件，适合已在使用 1.10.0 原版、并希望保留原版安装方式的使用者；该补丁后续不再随官方版本更新。</p>
-          <p>两种形式的基准版本不同，下载前请先确认所持原版的版本号，避免版本错配。下载入口位于 <a href="silverdaw.html">Silverdaw 项目页</a>，各下载方式均需在弹窗中确认后跳转。</p>
+          <h3>开源软件汉化索引即将推出</h3>
+          <p>计划收录常用开源软件的官方中文版本与可用汉化资源，逐项标注版本号、授权方式与下载位置，使中文界面的获取不必再依赖零散的论坛帖。整理完成后将在 <a href="index.html">首页</a> 公布。</p>
         </article>
 
         <!-- 下载方式调整：云盘分享页 -> 独立云存储直链 -->
@@ -411,5 +603,139 @@
 
   </div>
 
+  <script>
+    /* 导航滚动态：一滚动就补一条细线 */
+    (function () {
+      var nav = document.getElementById('globalnav');
+      if (!nav) return;
+      function onScroll() {
+        nav.classList.toggle('is-stuck', window.scrollY > 4);
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+  </script>
+
+  <!-- ============ 跨页返回 + 锚点落点 ============
+       1. 离开页面时把当前滚动位置按路径记进 sessionStorage（按标签页隔离）；
+       2. 从站内别的页面点进来时瞬时还原，新开标签或首次进入仍停在顶部；
+       3. 带 # 锚点进来时瞬时对准锚点 —— 浏览器默认会从页顶平滑滑过去，淡入那一下看着像跳错位置；
+       4. 浏览器自带的前进/后退会自己还原，这里不插手。
+       与 index / silverdaw 两页保持一致。 -->
+  <script>
+    (function () {
+      var KEY = 'arthur-scroll';
+      // 根目录可能写成 "/" 也可能写成 "/index.html"，视作同一页，位置才对得上
+      var here = location.pathname.replace(/index\.html$/, '') + location.search;
+      var root = document.documentElement;
+
+      // 用户一开始操作就停手，绝不抢滚动
+      var touched = false;
+      ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (type) {
+        window.addEventListener(type, function () { touched = true; }, { passive: true, once: true });
+      });
+
+      // 在「瞬时滚动」窗口里定位：is-restoring 把 scroll-behavior 换回 auto，
+      // 两帧后放开，之后用户点页内锚点依旧是平滑滚动
+      function snap(fn) {
+        root.classList.add('is-restoring');
+        fn();
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { root.classList.remove('is-restoring'); });
+        });
+      }
+
+      // ---------- A) 带 # 锚点进来：解析期先把位置对上 ----------
+      // 首次锚点定位浏览器走的是 scroll-behavior: smooth —— 淡入那一下还停在页顶，
+      // 接着自己往下滑一段，看起来就像「跳错位置」。这里自己瞬时对准一次。
+      // 用 scrollIntoView 才能自动吃上元素自己的 scroll-margin-top（给吸顶导航让位）。
+      var hasHash = location.hash.length > 1;
+
+      var anchor = null;
+      if (hasHash) {
+        var hashId = location.hash.slice(1);
+        try { hashId = decodeURIComponent(hashId); } catch (err) {}
+        anchor = document.getElementById(hashId);
+      }
+
+      if (anchor) {
+        // 图片、字体没到位时页面高度还会变，所以每次都重新「对准」，不记绝对坐标
+        var alignToAnchor = function () {
+          if (touched) return;
+          snap(function () {
+            anchor.scrollIntoView({ block: 'start', inline: 'nearest' });
+          });
+        };
+        alignToAnchor();
+        document.addEventListener('DOMContentLoaded', alignToAnchor);
+        window.addEventListener('load', function () { requestAnimationFrame(alignToAnchor); });
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(alignToAnchor);
+      }
+
+      function read() {
+        try {
+          var raw = sessionStorage.getItem(KEY);
+          return raw ? JSON.parse(raw) : { pos: {}, last: '' };
+        } catch (err) {
+          return null; // 隐私模式或文件协议禁用了存储，直接放弃，不影响页面
+        }
+      }
+
+      function write(data) {
+        try {
+          sessionStorage.setItem(KEY, JSON.stringify(data));
+        } catch (err) {}
+      }
+
+      // 1) 记下离开时的位置（pagehide 与切到后台各记一次，移动端更稳）
+      function save() {
+        var data = read();
+        if (!data) return;
+        data.pos[here] = Math.round(window.pageYOffset || document.documentElement.scrollTop || 0);
+        data.last = here;
+        write(data);
+      }
+
+      window.addEventListener('pagehide', save);
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden') save();
+      });
+
+      // 2) 只有「从站内别的页面点进来」才还原（带 # 的上面已按锚点对准）
+      var data = read();
+      if (hasHash || !data || !data.last || data.last === here) return;
+
+      var navType = '';
+      try {
+        var entry = performance.getEntriesByType('navigation')[0];
+        navType = entry ? entry.type : '';
+      } catch (err) {}
+      if (navType === 'back_forward' || navType === 'prerender') return;
+
+      var target = data.pos[here];
+      if (typeof target !== 'number' || target < 1) return;
+
+      function apply() {
+        snap(function () { window.scrollTo(0, target); });
+      }
+
+      // 图片没加载完时页面还短，滚动会被截断，加载完再补一次
+      function fixLater() {
+        if (touched) return;
+        if (Math.abs((window.pageYOffset || 0) - target) > 4) apply();
+      }
+
+      apply();
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+          if (!touched) apply();
+        });
+      }
+      window.addEventListener('load', function () {
+        requestAnimationFrame(fixLater);
+      });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fixLater);
+    })();
+  </script>
 </body>
 </html>

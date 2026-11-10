@@ -3,195 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arthur 工作室 - 项目与关于</title>
-  <meta name="description" content="Arthur 工作室由 Harvey 创建：把需要复杂网络环境才能下载的软件做成点击即得，把英文界面的优秀工具做成中文界面。">
+  <title>Arthur 工作室 - 关于</title>
+  <meta name="robots" content="noindex">
+  <!-- 「关于」已并入首页：这个文件只负责接住旧链接和旧收藏，不做内容 -->
+  <meta http-equiv="refresh" content="0; url=index.html#about">
+  <link rel="canonical" href="index.html">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    /* ---------- 色板：与 logo 同源的黑金。以后改配色只改这一段 ---------- */
-    :root {
-      /* 底色：中性黑，去掉原来的蓝调 */
-      --bg: #0b0b0d;
-      --bg-soft: #111216;
-      --bg-deep: #08080a;
-      --card: #17181c;
-      --card-sel: #221d12;
-      --line: #26272c;
-      --line-soft: #232429;
-      --line-strong: #3a3b42;
-      /* 文字 */
-      --text: #eaeaec;
-      --text-dim: #c4c6cb;
-      --text-mute: #9a9da4;
-      --text-faint: #6c6f76;
-      --text-ghost: #565a61;
-      /* 品牌金：取自 logo 渐变，只用于状态与身份标识 */
-      --gold: #c9a227;
-      --gold-line: rgba(201, 162, 39, 0.45);
-      --gold-edge: #6b5620;
-      --gold-wash: rgba(201, 162, 39, 0.08);
-      --gold-wash-soft: rgba(201, 162, 39, 0.06);
-      --gold-shadow: rgba(201, 162, 39, 0.26);
-      /* 交互层：浅金，比标志金亮一档，小字号和按钮都清楚 */
-      --accent: #e3c274;
-      --accent-hover: #f0d79a;
-      --accent-line: rgba(227, 194, 116, 0.45);
-      --accent-line-strong: rgba(227, 194, 116, 0.6);
-      --accent-dot: rgba(227, 194, 116, 0.55);
-      --accent-glow: rgba(227, 194, 116, 0.16);
-      --accent-grad: linear-gradient(180deg, #f2d99b, #d9b25c);
-      --accent-grad-hover: linear-gradient(180deg, #f9e5b8, #e6c877);
-      --on-accent: #17181a;
-      /* 状态色：警示保留独立暖黄，不参与品牌金 */
-      --warn: #f0b429;
-      --warn-hover: #ffc95c;
-      --warn-wash: rgba(240, 180, 41, 0.08);
-      --warn-line: rgba(240, 180, 41, 0.38);
-      --danger: #ff9c8a;
-    }
-
-    /* 正文链接兜底：没单独设色的链接不要退回浏览器默认蓝 */
-    a { color: var(--accent); }
-
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
-      line-height: 1.7;
-    }
-
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .container {
-      width: min(1080px, 92%);
-      margin: 0 auto;
-    }
-
-    /* 顶部一行：左返回，右名字 */
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 4%;
-    }
-
-    .back-link {
-      color: var(--text-faint);
-      font-size: 1.1rem;
-      text-decoration: none;
-      transition: 0.2s;
-    }
-    .back-link:hover { color: var(--accent); text-decoration: none; }
-
-    .brand {
-      font-weight: 700;
-      color: var(--text);
-      font-size: 1.05rem;
-    }
-    .brand:hover { color: var(--accent); text-decoration: none; }
-
-    /* 通用区块 */
-    .section {
-      padding: 80px 0;
-      border-top: 1px solid var(--line);
-    }
-
-    .section h2 {
-      font-size: 1.8rem;
-      margin-bottom: 10px;
-    }
-
-    /* 关于区 */
-    .about-text {
-      max-width: 720px;
-      color: var(--text-dim);
-    }
-
-    .about-text p + p {
-      margin-top: 18px;
-    }
-
-    /* 首段引子：字号略大、颜色更亮，作为整段的立论 */
-    .about-text .lead {
-      font-size: 1.15rem;
-      line-height: 1.75;
-      color: var(--text);
-    }
-
-    /* 联系区 */
-    .contact-list {
-      list-style: none;
+      min-height: 100vh;
       display: grid;
-      gap: 12px;
-      max-width: 480px;
-    }
-
-    .contact-list li {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 14px 18px;
+      place-items: center;
+      padding: 24px;
+      background: #0b0b0d;
+      color: #9a9da4;
+      font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
       font-size: 0.95rem;
-    }
-
-    footer {
-      border-top: 1px solid var(--line);
-      padding: 32px 0 48px;
+      line-height: 1.9;
       text-align: center;
-      color: var(--text-faint);
-      font-size: 0.88rem;
     }
 
-    @media (max-width: 640px) {
-      .section { padding: 56px 0; }
-    }
+    a { color: #e3c274; }
   </style>
 </head>
 <body>
 
-  <!-- 顶部一行：左返回，右名字 -->
-  <div class="topbar">
-    <a class="back-link" href="index.html">返回欢迎页</a>
-    <a class="brand" href="index.html">Arthur 工作室</a>
-  </div>
-
-  <main>
-
-    <!-- 关于区（放最上面） -->
-    <section id="about" class="section" style="border-top: none;">
-      <div class="container">
-        <h2>关于</h2>
-        <div class="about-text">
-          <p class="lead">技术的初衷是连接世界，但语言和网络的鸿沟，却时常让优秀的技术产品被挡在门外。</p>
-          <p>我是 Harvey，Arthur 工作室的创建者。我建立这个网站，是为了给大家提供一个“无门槛”的避风港：让那些需要复杂网络环境才能下载的软件，变得点击即得；让那些因为英文界面而难以使用的优秀工具，变得平易近人。</p>
-          <p>无论你是想找工具，还是想体验汉化后的流畅感，这里的大门永远为你敞开。</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 联系区 -->
-    <section id="contact" class="section">
-      <div class="container">
-        <h2>联系</h2>
-        <ul class="contact-list">
-          <li>GitHub：<a href="https://github.com/harvey-music" target="_blank" rel="noopener">github.com/harvey-music</a></li>
-          <li>邮箱：zjh041106@qq.com</li>
-        </ul>
-      </div>
-    </section>
-
-  </main>
-
-  <footer>
-    <div class="container">
-      <p>© <span id="year"></span> Arthur 工作室 · 所有项目均开源免费发布</p>
-    </div>
-  </footer>
-
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+  <p>关于内容已并入首页，正在跳转…<br><a href="index.html#about">如果没有自动跳转，点这里</a></p>
 
 </body>
 </html>

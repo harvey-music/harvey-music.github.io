@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arthur 工作室 - 软件库</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ---------- 色板：与 logo 同源的黑金。以后改配色只改这一段 ---------- */
+    :root {
+      /* 底色：中性黑，去掉原来的蓝调 */
+      --bg: #0b0b0d;
+      --bg-soft: #111216;
+      --bg-deep: #08080a;
+      --card: #17181c;
+      --card-hover: #1b1c21;
+      --card-sel: #221d12;
+      --line: #26272c;
+      --line-soft: #232429;
+      --line-strong: #3a3b42;
+      /* 文字 */
+      --text: #eaeaec;
+      --text-dim: #c4c6cb;
+      --text-mute: #9a9da4;
+      --text-faint: #6c6f76;
+      --text-ghost: #565a61;
+      /* 品牌金：取自 logo 渐变，只用于状态与身份标识 */
+      --gold: #c9a227;
+      --gold-line: rgba(201, 162, 39, 0.45);
+      --gold-edge: #6b5620;
+      --gold-wash: rgba(201, 162, 39, 0.08);
+      --gold-wash-soft: rgba(201, 162, 39, 0.06);
+      --gold-shadow: rgba(201, 162, 39, 0.26);
+      /* 交互层：浅金，比标志金亮一档，小字号和按钮都清楚 */
+      --accent: #e3c274;
+      --accent-hover: #f0d79a;
+      --accent-line: rgba(227, 194, 116, 0.45);
+      --accent-line-strong: rgba(227, 194, 116, 0.6);
+      --accent-dot: rgba(227, 194, 116, 0.55);
+      --accent-glow: rgba(227, 194, 116, 0.16);
+      --accent-grad: linear-gradient(180deg, #f2d99b, #d9b25c);
+      --accent-grad-hover: linear-gradient(180deg, #f9e5b8, #e6c877);
+      --on-accent: #17181a;
+      /* 状态色：警示保留独立暖黄，不参与品牌金 */
+      --warn: #f0b429;
+      --warn-hover: #ffc95c;
+      --warn-wash: rgba(240, 180, 41, 0.08);
+      --warn-line: rgba(240, 180, 41, 0.38);
+      --danger: #ff9c8a;
+      --nav-h: 54px;
+    }
+
+    /* 正文链接兜底：没单独设色的链接不要退回浏览器默认蓝 */
+    a { color: var(--accent); }
+
+    /* ---------- 跨页面切换：0.24s 交叉淡入，无位移 ----------
+       只淡不滑；顶部导航命名后原地保留，不跟着内容一起淡。 */
+    @view-transition {
+      navigation: auto;
+    }
+
+    .globalnav { view-transition-name: site-nav; }
+
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 0.24s;
+      animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
+    }
+
+    ::view-transition-old(site-nav),
+    ::view-transition-new(site-nav) {
+      animation: none;
+    }
+
+    @supports not (view-transition-name: none) {
+      body { animation: page-fade-in 0.26s ease-out both; }
+    }
+
+    @keyframes page-fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* 页内锚点平滑滚动 */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* 跨页返回时用瞬时定位还原滚动位置，避免平滑滚动把整页"扫"一遍 */
+    html.is-restoring {
+      scroll-behavior: auto;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+      line-height: 1.8;
+    }
+
+    /* ---------- 常驻顶部导航：与首页、公告页、Silverdaw 页同一套 ---------- */
+    .globalnav {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      height: var(--nav-h);
+      background: rgba(11, 11, 13, 0.72);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.25s, background 0.25s;
+    }
+
+    /* 一滚动就补一条细线，让导航和内容分层 */
+    .globalnav.is-stuck {
+      background: rgba(11, 11, 13, 0.86);
+      border-bottom-color: var(--line);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      width: min(1160px, 92%);
+      height: 100%;
+      margin-inline: auto;
+    }
+
+    .nav-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+
+    .nav-brand img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin-left: auto;
+    }
+
+    .nav-link {
+      padding: 7px 14px;
+      border-radius: 999px;
+      color: var(--text-mute);
+      font-size: 0.9rem;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 0.2s, background 0.2s, transform 0.16s;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* 当前所在栏目 */
+    .nav-link.is-active {
+      color: var(--accent);
+      background: var(--gold-wash);
+    }
+
+    .nav-gh {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      margin-left: 6px;
+      border-radius: 50%;
+      color: var(--text-faint);
+      text-decoration: none;
+      transition: color 0.2s, background 0.2s, transform 0.16s;
+    }
+
+    .nav-gh:hover {
+      color: var(--accent);
+      background: var(--gold-wash);
+    }
+
+    @media (max-width: 640px) {
+      :root { --nav-h: 50px; }
+      .nav-inner { gap: 10px; }
+      .nav-brand { font-size: 0.86rem; gap: 7px; }
+      .nav-brand img { width: 22px; height: 22px; }
+      .nav-link { padding: 6px 8px; font-size: 0.82rem; }
+      .nav-gh { width: 28px; height: 28px; margin-left: 2px; }
+    }
+
+    /* 页内锚点落地时，给吸顶导航让出高度 */
+    [id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
+
+    /* ---------- 返回入口：与公告页、Silverdaw 产品页同款胶囊 ---------- */
+    .page-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      margin-bottom: 22px;
+      padding: 5px 14px 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text-mute);
+      font-size: 0.82rem;
+      text-decoration: none;
+      transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.16s;
+    }
+
+    .page-back:hover {
+      color: var(--accent);
+      border-color: var(--accent-line);
+      background: var(--gold-wash);
+    }
+
+    /* 尖角用文字画，与产品页保持一致 */
+    .page-back .chev-l {
+      font-size: 1.1em;
+      line-height: 1;
+      transform: translateY(-0.5px);
+    }
+
+    /* ---------- 点击反馈：与其它页同一套，按下缩 4%，松手回弹 ---------- */
+    .nav-link:active { transform: scale(0.96); }
+    .nav-gh:active { transform: scale(0.92); }
+    .page-back:active { transform: scale(0.96); }
+
+    /* 软件库比公告页宽：一排要放下 5 张方形卡片 */
+    .page {
+      width: min(1080px, 92%);
+      margin: 56px auto 72px;
+    }
+
+    /* ---------- 欢迎区 ---------- */
+    .hero {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.75rem, 4.5vw, 2.5rem);
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .hero p {
+      color: var(--text-mute);
+      font-size: 0.98rem;
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    /* ---------- 分组标题 ---------- */
+    .group-head {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .group-head h2 {
+      font-size: 1.25rem;
+      letter-spacing: 0.5px;
+    }
+
+    .group-head .count {
+      font-size: 0.82rem;
+      color: var(--text-faint);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 1px 10px;
+      line-height: 1.7;
+      white-space: nowrap;
+    }
+
+    .group-hint {
+      color: var(--text-faint);
+      font-size: 0.88rem;
+      margin-bottom: 20px;
+    }
+
+    .group-hint a { color: var(--text-mute); text-decoration: none; border-bottom: 1px solid var(--line-strong); }
+    .group-hint a:hover { color: var(--accent); border-bottom-color: var(--accent-line); }
+
+    /* ---------- 访问提示：外网站点打不开时走邮箱 ---------- */
+    .tip {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin: 0 0 34px;
+      padding: 13px 16px;
+      border: 1px solid var(--line);
+      border-left: 2px solid var(--accent-line);
+      border-radius: 14px;
+      background: var(--gold-wash-soft);
+      color: var(--text-mute);
+      font-size: 0.87rem;
+      line-height: 1.75;
+    }
+
+    .tip-label {
+      flex: none;
+      color: var(--accent);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      /* 与正文首行对齐 */
+      line-height: 1.95;
+    }
+
+    .tip p {
+      margin: 0;
+      /* 末行不留孤字，Chromium 系生效，其余浏览器忽略 */
+      text-wrap: pretty;
+    }
+
+    /* 邮箱做成胶囊：整体不可拆行，换行时整枚移到下一行，不会出现半个邮箱 */
+    .tip-mail {
+      display: inline-block;
+      padding: 0 10px;
+      border: 1px solid var(--accent-line);
+      border-radius: 999px;
+      background: var(--gold-wash);
+      color: var(--accent);
+      font-size: 0.83rem;
+      line-height: 1.7;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: border-color 0.22s, background 0.22s;
+    }
+
+    .tip-mail:hover {
+      border-color: var(--accent-line-strong);
+      background: var(--gold-wash-soft);
+    }
+
+    /* ---------- 页尾备注：与提示呼应，同时给页面一个收尾 ---------- */
+    .lib-foot {
+      margin-top: 36px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--text-faint);
+      font-size: 0.84rem;
+      line-height: 1.9;
+      text-align: center;
+    }
+
+    .lib-foot a {
+      color: var(--text-mute);
+      text-decoration: none;
+      border-bottom: 1px solid var(--line-strong);
+      overflow-wrap: break-word;
+    }
+
+    .lib-foot a:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent-line);
+    }
+
+    /* ---------- 分类筛选：胶囊，选中为金描边 ---------- */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .chip {
+      padding: 6px 15px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: transparent;
+      color: var(--text-mute);
+      font-family: inherit;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.16s;
+    }
+
+    .chip:hover {
+      color: var(--text);
+      border-color: var(--line-strong);
+    }
+
+    .chip[aria-pressed="true"] {
+      color: var(--accent);
+      border-color: var(--accent-line);
+      background: var(--gold-wash);
+    }
+
+    .chip:active { transform: scale(0.96); }
+
+    .chip:focus-visible,
+    .app:focus-visible {
+      outline: 2px solid var(--accent-line-strong);
+      outline-offset: 2px;
+    }
+
+    /* ---------- 应用方格：正方形卡片，5 列自适应 ---------- */
+    .lib-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(186px, 1fr));
+      gap: 14px;
+    }
+
+    .app {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      /* 正方形：宽度由网格决定，高度跟随宽度 */
+      aspect-ratio: 1 / 1;
+      padding: 16px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--card);
+      color: inherit;
+      text-decoration: none;
+      transition: transform 0.22s, border-color 0.22s, background 0.22s, box-shadow 0.22s;
+    }
+
+    .app:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent-line);
+      background: var(--card-hover);
+      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.4);
+    }
+
+    .app:active { transform: scale(0.985); }
+
+    /* 被筛选掉的条目直接不占位 */
+    .app[hidden] { display: none; }
+
+    .app-icon {
+      flex: none;
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--line-strong);
+      border-radius: 13px;
+      background: var(--bg-soft);
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      line-height: 1;
+      transition: border-color 0.22s, color 0.22s, background 0.22s;
+    }
+
+    .app:hover .app-icon {
+      border-color: var(--accent-line);
+      background: var(--gold-wash-soft);
+    }
+
+    .app-name {
+      font-size: 0.92rem;
+      font-weight: 700;
+      line-height: 1.4;
+      /* 长名字压成一行，卡片高度才稳定 */
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .app-desc {
+      font-size: 0.79rem;
+      line-height: 1.55;
+      color: var(--text-mute);
+      /* 最多两行，超出的部分裁掉，正方形不会被文字撑破 */
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .app-foot {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: auto;
+      font-size: 0.72rem;
+      color: var(--text-ghost);
+      line-height: 1.4;
+    }
+
+    .app-foot .sep { opacity: 0.6; }
+
+    /* 外链提示：右上角一个箭头，悬停变金 */
+    .app-ext {
+      position: absolute;
+      top: 15px;
+      right: 16px;
+      font-size: 0.78rem;
+      color: var(--text-ghost);
+      transition: color 0.22s, transform 0.22s;
+    }
+
+    .app:hover .app-ext {
+      color: var(--accent);
+      transform: translate(1px, -1px);
+    }
+
+    /* ---------- 窄屏：两列，方格外边距收一点 ---------- */
+    @media (max-width: 640px) {
+      .page { margin: 36px auto 56px; }
+      .hero { margin-bottom: 36px; }
+      .lib-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .app { padding: 13px; border-radius: 17px; gap: 6px; }
+      .app-icon { width: 38px; height: 38px; border-radius: 11px; font-size: 0.74rem; }
+      .app-name { font-size: 0.86rem; }
+      .app-desc { font-size: 0.74rem; -webkit-line-clamp: 2; }
+      .app-foot { font-size: 0.68rem; }
+      .app-ext { top: 12px; right: 13px; }
+      /* 提示块在窄屏改成上下两行，邮箱不挤在标签右边 */
+      .tip { flex-direction: column; gap: 4px; font-size: 0.82rem; padding: 12px 14px; margin-bottom: 26px; }
+      .tip-label { line-height: 1.6; }
+      .lib-foot { font-size: 0.79rem; margin-top: 28px; }
+    }
+
+    /* 系统开了「减少动态效果」：淡入与点亮动画全部关掉 */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      body { animation: none; }
+
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation: none;
+      }
+
+      .app,
+      .chip,
+      .nav-link:active,
+      .nav-gh:active,
+      .page-back:active { transform: none; transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <!-- ============ 常驻顶部导航：与首页、公告页同一套，「软件库」为当前栏目 ============ -->
+  <nav class="globalnav" id="globalnav" aria-label="主导航">
+    <div class="nav-inner">
+      <a class="nav-brand" href="index.html">
+        <img src="logo-mark.png" alt="" width="26" height="26">
+        Arthur 工作室
+      </a>
+
+      <div class="nav-links">
+        <a class="nav-link" href="index.html#hanhua">汉化</a>
+        <a class="nav-link is-active" href="softlib.html" aria-current="page">软件库</a>
+        <a class="nav-link" href="notice.html">公告</a>
+        <a class="nav-link" href="index.html#about">关于</a>
+        <a class="nav-gh" href="https://github.com/harvey-music" target="_blank" rel="noopener" aria-label="GitHub 主页">
+          <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- 返回入口：软件库是独立页面，没有栏目内导航，单独给一个返回首页的落点 -->
+    <a class="page-back" href="index.html"><span class="chev-l" aria-hidden="true">‹</span> 返回首页</a>
+
+    <!-- 欢迎区 -->
+    <header class="hero">
+      <h1>软件库</h1>
+      <p>常用开源工具按用途分类整理，列明许可协议与官方来源。</p>
+    </header>
+
+    <!-- 访问提示：GitHub / 境外站点打不开时改走邮箱 -->
+    <aside class="tip" aria-label="访问提示">
+      <span class="tip-label">访问提示</span>
+      <p>部分条目托管在 GitHub 或境外站点，网络受限时可能打不开。遇到这种情况可发邮件索取：<a class="tip-mail" href="mailto:zjh041106@qq.com">zjh041106@qq.com</a></p>
+    </aside>
+
+    <section class="group">
+      <div class="group-head">
+        <h2>全部条目</h2>
+        <span class="count" id="lib-count">共 18 个条目</span>
+      </div>
+      <p class="group-hint">点击卡片前往项目官网或仓库，许可与版本以各项目发布页为准；站内汉化与下载整理进度见 <a href="notice.html">公告栏</a>。</p>
+
+      <!-- 分类筛选：点一下只留该类条目，再点「全部」恢复 -->
+      <div class="chips" role="group" aria-label="按用途筛选">
+        <button class="chip" type="button" data-cat="all" aria-pressed="true">全部 18</button>
+        <button class="chip" type="button" data-cat="系统工具" aria-pressed="false">系统工具 5</button>
+        <button class="chip" type="button" data-cat="影音与图像" aria-pressed="false">影音与图像 5</button>
+        <button class="chip" type="button" data-cat="网络与传输" aria-pressed="false">网络与传输 4</button>
+        <button class="chip" type="button" data-cat="文档与效率" aria-pressed="false">文档与效率 4</button>
+      </div>
+
+      <!-- 应用方格：正方形卡片。加条目照抄一节，data-cat 与筛选按钮的 data-cat 保持一致 -->
+      <div class="lib-grid" id="lib-grid">
+        <a class="app" href="https://www.7-zip.org/" target="_blank" rel="noopener" data-cat="系统工具">
+          <span class="app-icon" aria-hidden="true">7Z</span>
+          <span class="app-name">7-Zip</span>
+          <span class="app-desc">压缩解压，格式支持最全。</span>
+          <span class="app-foot">系统工具 · LGPL</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://github.com/microsoft/PowerToys" target="_blank" rel="noopener" data-cat="系统工具">
+          <span class="app-icon" aria-hidden="true">PT</span>
+          <span class="app-name">PowerToys</span>
+          <span class="app-desc">微软官方 Windows 工具集。</span>
+          <span class="app-foot">系统工具 · MIT</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://rufus.ie/" target="_blank" rel="noopener" data-cat="系统工具">
+          <span class="app-icon" aria-hidden="true">RU</span>
+          <span class="app-name">Rufus</span>
+          <span class="app-desc">把镜像写入 U 盘做启动盘。</span>
+          <span class="app-foot">系统工具 · GPL-3.0</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://www.ventoy.net/" target="_blank" rel="noopener" data-cat="系统工具">
+          <span class="app-icon" aria-hidden="true">VE</span>
+          <span class="app-name">Ventoy</span>
+          <span class="app-desc">一个 U 盘放多个系统镜像。</span>
+          <span class="app-foot">系统工具 · GPL-3.0</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://keepassxc.org/" target="_blank" rel="noopener" data-cat="系统工具">
+          <span class="app-icon" aria-hidden="true">KX</span>
+          <span class="app-name">KeePassXC</span>
+          <span class="app-desc">密码存在本地，不上传云端。</span>
+          <span class="app-foot">系统工具 · GPL</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://obsproject.com/" target="_blank" rel="noopener" data-cat="影音与图像">
+          <span class="app-icon" aria-hidden="true">OBS</span>
+          <span class="app-name">OBS Studio</span>
+          <span class="app-desc">录屏与直播推流工具。</span>
+          <span class="app-foot">影音与图像 · GPL-2.0</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://www.videolan.org/vlc/" target="_blank" rel="noopener" data-cat="影音与图像">
+          <span class="app-icon" aria-hidden="true">VLC</span>
+          <span class="app-name">VLC</span>
+          <span class="app-desc">几乎什么格式都能放。</span>
+          <span class="app-foot">影音与图像 · GPL-2.0</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://handbrake.fr/" target="_blank" rel="noopener" data-cat="影音与图像">
+          <span class="app-icon" aria-hidden="true">HB</span>
+          <span class="app-name">HandBrake</span>
+          <span class="app-desc">视频转码与压缩，预设齐全。</span>
+          <span class="app-foot">影音与图像 · GPL-2.0</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://www.audacityteam.org/" target="_blank" rel="noopener" data-cat="影音与图像">
+          <span class="app-icon" aria-hidden="true">AU</span>
+          <span class="app-name">Audacity</span>
+          <span class="app-desc">音频录制与剪辑，多轨编辑。</span>
+          <span class="app-foot">影音与图像 · GPL-2.0</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://krita.org/" target="_blank" rel="noopener" data-cat="影音与图像">
+          <span class="app-icon" aria-hidden="true">KR</span>
+          <span class="app-name">Krita</span>
+          <span class="app-desc">数字绘画与插画创作。</span>
+          <span class="app-foot">影音与图像 · GPL-3.0</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://www.qbittorrent.org/" target="_blank" rel="noopener" data-cat="网络与传输">
+          <span class="app-icon" aria-hidden="true">QB</span>
+          <span class="app-name">qBittorrent</span>
+          <span class="app-desc">无广告的 BT 客户端。</span>
+          <span class="app-foot">网络与传输 · GPL-2.0</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://motrix.app/" target="_blank" rel="noopener" data-cat="网络与传输">
+          <span class="app-icon" aria-hidden="true">MO</span>
+          <span class="app-name">Motrix</span>
+          <span class="app-desc">界面简洁的多线程下载器。</span>
+          <span class="app-foot">网络与传输 · MIT</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://syncthing.net/" target="_blank" rel="noopener" data-cat="网络与传输">
+          <span class="app-icon" aria-hidden="true">SY</span>
+          <span class="app-name">Syncthing</span>
+          <span class="app-desc">点对点同步，不经服务器。</span>
+          <span class="app-foot">网络与传输 · MPL-2.0</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://www.wireshark.org/" target="_blank" rel="noopener" data-cat="网络与传输">
+          <span class="app-icon" aria-hidden="true">WS</span>
+          <span class="app-name">Wireshark</span>
+          <span class="app-desc">抓包与网络协议分析。</span>
+          <span class="app-foot">网络与传输 · GPL-2.0</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://notepad-plus-plus.org/" target="_blank" rel="noopener" data-cat="文档与效率">
+          <span class="app-icon" aria-hidden="true">N+</span>
+          <span class="app-name">Notepad++</span>
+          <span class="app-desc">轻量文本与代码编辑器。</span>
+          <span class="app-foot">文档与效率 · GPL-3.0</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://www.sumatrapdfreader.org/free-pdf-reader" target="_blank" rel="noopener" data-cat="文档与效率">
+          <span class="app-icon" aria-hidden="true">SP</span>
+          <span class="app-name">SumatraPDF</span>
+          <span class="app-desc">启动快的 PDF 阅读器。</span>
+          <span class="app-foot">文档与效率 · AGPL-3.0</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://getsharex.com/" target="_blank" rel="noopener" data-cat="文档与效率">
+          <span class="app-icon" aria-hidden="true">SX</span>
+          <span class="app-name">ShareX</span>
+          <span class="app-desc">截图、录屏与上传。</span>
+          <span class="app-foot">文档与效率 · GPL-3.0</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+        <a class="app" href="https://github.com/microsoft/terminal" target="_blank" rel="noopener" data-cat="文档与效率">
+          <span class="app-icon" aria-hidden="true">WT</span>
+          <span class="app-name">Windows Terminal</span>
+          <span class="app-desc">标签式命令行窗口。</span>
+          <span class="app-foot">文档与效率 · MIT</span>
+          <span class="app-ext" aria-hidden="true">↗</span>
+        </a>
+
+
+
+      </div>
+    </section>
+
+    <!-- 页尾备注：缺软件、链接失效同样可以邮件说明 -->
+    <p class="lib-foot">以上条目均指向各项目官方来源。缺少想找的软件，或发现链接失效，同样可以邮件告知：<a href="mailto:zjh041106@qq.com">zjh041106@qq.com</a>。</p>
+
+  </div>
+
+  <script>
+    /* 导航滚动态：一滚动就补一条细线 */
+    (function () {
+      var nav = document.getElementById('globalnav');
+      if (!nav) return;
+      function onScroll() {
+        nav.classList.toggle('is-stuck', window.scrollY > 4);
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+  </script>
+
+  <!-- ============ 跨页返回 + 锚点落点 ============
+       1. 离开页面时把当前滚动位置按路径记进 sessionStorage（按标签页隔离）；
+       2. 从站内别的页面点进来时瞬时还原，新开标签或首次进入仍停在顶部；
+       3. 带 # 锚点进来时瞬时对准锚点 —— 浏览器默认会从页顶平滑滑过去，淡入那一下看着像跳错位置；
+       4. 浏览器自带的前进/后退会自己还原，这里不插手。
+       与首页、公告页、Silverdaw 页保持一致。 -->
+  <script>
+    (function () {
+      var KEY = 'arthur-scroll';
+      // 根目录可能写成 "/" 也可能写成 "/index.html"，视作同一页，位置才对得上
+      var here = location.pathname.replace(/index\.html$/, '') + location.search;
+      var root = document.documentElement;
+
+      // 用户一开始操作就停手，绝不抢滚动
+      var touched = false;
+      ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (type) {
+        window.addEventListener(type, function () { touched = true; }, { passive: true, once: true });
+      });
+
+      // 在「瞬时滚动」窗口里定位：is-restoring 把 scroll-behavior 换回 auto，
+      // 两帧后放开，之后用户点页内锚点依旧是平滑滚动
+      function snap(fn) {
+        root.classList.add('is-restoring');
+        fn();
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { root.classList.remove('is-restoring'); });
+        });
+      }
+
+      // ---------- A) 带 # 锚点进来：解析期先把位置对上 ----------
+      // 首次锚点定位浏览器走的是 scroll-behavior: smooth —— 淡入那一下还停在页顶，
+      // 接着自己往下滑一段，看起来就像「跳错位置」。这里自己瞬时对准一次。
+      // 用 scrollIntoView 才能自动吃上元素自己的 scroll-margin-top（给吸顶导航让位）。
+      var hasHash = location.hash.length > 1;
+
+      var anchor = null;
+      if (hasHash) {
+        var hashId = location.hash.slice(1);
+        try { hashId = decodeURIComponent(hashId); } catch (err) {}
+        anchor = document.getElementById(hashId);
+      }
+
+      if (anchor) {
+        // 图片、字体没到位时页面高度还会变，所以每次都重新「对准」，不记绝对坐标
+        var alignToAnchor = function () {
+          if (touched) return;
+          snap(function () {
+            anchor.scrollIntoView({ block: 'start', inline: 'nearest' });
+          });
+        };
+        alignToAnchor();
+        document.addEventListener('DOMContentLoaded', alignToAnchor);
+        window.addEventListener('load', function () { requestAnimationFrame(alignToAnchor); });
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(alignToAnchor);
+      }
+
+      function read() {
+        try {
+          var raw = sessionStorage.getItem(KEY);
+          return raw ? JSON.parse(raw) : { pos: {}, last: '' };
+        } catch (err) {
+          return null; // 隐私模式或文件协议禁用了存储，直接放弃，不影响页面
+        }
+      }
+
+      function write(data) {
+        try {
+          sessionStorage.setItem(KEY, JSON.stringify(data));
+        } catch (err) {}
+      }
+
+      // 1) 记下离开时的位置（pagehide 与切到后台各记一次，移动端更稳）
+      function save() {
+        var data = read();
+        if (!data) return;
+        data.pos[here] = Math.round(window.pageYOffset || document.documentElement.scrollTop || 0);
+        data.last = here;
+        write(data);
+      }
+
+      window.addEventListener('pagehide', save);
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden') save();
+      });
+
+      // 2) 只有「从站内别的页面点进来」才还原（带 # 的上面已按锚点对准）
+      var data = read();
+      if (hasHash || !data || !data.last || data.last === here) return;
+
+      var navType = '';
+      try {
+        var entry = performance.getEntriesByType('navigation')[0];
+        navType = entry ? entry.type : '';
+      } catch (err) {}
+      if (navType === 'back_forward' || navType === 'prerender') return;
+
+      var target = data.pos[here];
+      if (typeof target !== 'number' || target < 1) return;
+
+      function apply() {
+        snap(function () { window.scrollTo(0, target); });
+      }
+
+      // 图片没加载完时页面还短，滚动会被截断，加载完再补一次
+      function fixLater() {
+        if (touched) return;
+        if (Math.abs((window.pageYOffset || 0) - target) > 4) apply();
+      }
+
+      apply();
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+          if (!touched) apply();
+        });
+      }
+      window.addEventListener('load', function () {
+        requestAnimationFrame(fixLater);
+      });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fixLater);
+    })();
+  </script>
+
+  <!-- ============ 分类筛选：纯前端，不刷新页面 ============
+       点某个分类只留该类卡片，「全部」恢复；条目计数跟着变。 -->
+  <script>
+    (function () {
+      var chips = [].slice.call(document.querySelectorAll('.chips .chip'));
+      var tiles = [].slice.call(document.querySelectorAll('#lib-grid .app'));
+      var count = document.getElementById('lib-count');
+      if (!chips.length || !tiles.length) return;
+
+      function apply(cat) {
+        var shown = 0;
+        tiles.forEach(function (tile) {
+          var hit = cat === 'all' || tile.getAttribute('data-cat') === cat;
+          tile.hidden = !hit;
+          if (hit) shown++;
+        });
+        if (count) {
+          count.textContent = cat === 'all'
+            ? '共 ' + shown + ' 个条目'
+            : cat + ' · ' + shown + ' 个条目';
+        }
+      }
+
+      chips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          chips.forEach(function (other) {
+            other.setAttribute('aria-pressed', other === chip ? 'true' : 'false');
+          });
+          apply(chip.getAttribute('data-cat'));
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

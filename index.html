@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arthur 工作室</title>
-  <meta name="description" content="Arthur 工作室 —— 专注于开源汉化与独立软件开发的小工作室">
+  <meta name="description" content="Arthur 工作室 —— 专注于开源汉化与独立软件开发的工作室">
   <meta name="theme-color" content="#0b0b0d">
   <!-- 分享卡片（og:image 若要生效，部署后可换成绝对地址） -->
   <meta property="og:title" content="Arthur 工作室">
-  <meta property="og:description" content="专注于开源汉化与独立软件开发的小工作室">
+  <meta property="og:description" content="专注于开源汉化与独立软件开发的工作室">
   <meta property="og:type" content="website">
   <meta property="og:image" content="logo-mark.png">
   <link rel="icon" href="logo-mark.png">
@@ -55,215 +55,1303 @@
       --warn-wash: rgba(240, 180, 41, 0.08);
       --warn-line: rgba(240, 180, 41, 0.38);
       --danger: #ff9c8a;
+      /* 布局尺寸：两层吸顶导航的实测高度，锚点跳转与 sticky 定位都靠它算 */
+      --nav-h: 54px;
+      --ribbon-h: 46px;
+      --chapter-h: 74px;
     }
 
     /* 正文链接兜底：没单独设色的链接不要退回浏览器默认蓝 */
     a { color: var(--accent); }
 
+    /* ---------- 跨页面切换：同源跳转做一次 0.24s 的交叉淡入 ----------
+       只用淡入淡出，不做位移，切页时不会出现整页"滑过去"的突兀感。
+       Chrome 126+ / Safari 18+ 支持跨文档过渡；其余浏览器直接切页。
+       顶部导航三页同位，单独命名后原地保留，不跟着内容一起淡。 */
+    @view-transition {
+      navigation: auto;
+    }
+
+    .globalnav { view-transition-name: site-nav; }
+
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 0.24s;
+      animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
+    }
+
+    ::view-transition-old(site-nav),
+    ::view-transition-new(site-nav) {
+      animation: none;
+    }
+
+    /* 不支持跨文档过渡的浏览器：补一个极短的淡入，不做位移 */
+    @supports not (view-transition-name: none) {
+      body { animation: page-fade-in 0.26s ease-out both; }
+    }
+
+    @keyframes page-fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* 锚点跳转平滑滚动；系统开「减少动态效果」时退回瞬时定位。
+       html 上不要写 overflow：hidden 会破坏吸顶，clip 又会让 html 不再是滚动容器，
+       页面本身没有横向溢出，用各区块的 min-width: 0 兜住就够了 */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* 跨页返回时用瞬时定位还原滚动位置，避免平滑滚动把整页"扫"一遍 */
+    html.is-restoring {
+      scroll-behavior: auto;
+    }
+
     body {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;          /* 顶部对齐，不再死居中（屏越大越不空） */
-      /* 顶部留白有上限：小屏贴边、大屏不散开；整体重心比之前下移一档 */
-      padding: clamp(72px, 20vh, 220px) 20px 36px;
-      /* 顶部一层极淡暖光，给金色 logo 一个落点，不再是浮在纯黑上 */
-      background:
-        radial-gradient(90% 60% at 50% 0%, var(--gold-wash-soft) 0%, transparent 60%),
-        var(--bg);
+      background: var(--bg);
       color: var(--text);
       font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+      line-height: 1.7;
+    }
+
+    /* 通用内容宽度：全站一条基准线，卡片和标题左右对齐到同一处 */
+    .wrap {
+      width: min(1160px, 92%);
+      margin-inline: auto;
+    }
+
+    /* ================= 常驻顶部导航（学 Apple 全局导航：细、吸顶、毛玻璃） ================= */
+    .globalnav {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      height: var(--nav-h);
+      background: rgba(11, 11, 13, 0.72);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.25s, background 0.25s;
+    }
+
+    /* 一滚动就补一条细线，让导航和内容分层；回到顶部时收掉，首屏更干净 */
+    .globalnav.is-stuck {
+      background: rgba(11, 11, 13, 0.86);
+      border-bottom-color: var(--line);
+    }
+
+    .globalnav .wrap {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      height: 100%;
+    }
+
+    .nav-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--text);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      text-decoration: none;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+
+    .nav-brand img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin-left: auto;
+    }
+
+    .nav-link {
+      position: relative;
+      padding: 7px 14px;
+      border-radius: 999px;
+      color: var(--text-mute);
+      font-size: 0.9rem;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 0.2s, background 0.2s, transform 0.16s;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    /* 当前所在栏目：浅金底 + 金字，与 Apple 的选中态同义 */
+    .nav-link.is-active {
+      color: var(--accent);
+      background: var(--gold-wash);
+    }
+
+    .nav-gh {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      margin-left: 6px;
+      border-radius: 50%;
+      color: var(--text-faint);
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: color 0.2s, background 0.2s, transform 0.16s;
+    }
+
+    .nav-gh:hover {
+      color: var(--accent);
+      background: var(--gold-wash);
+    }
+
+    /* ================= 公告条（学 Apple 的促销条：一行文字 + 一个入口） ================= */
+    .ribbon {
+      background: var(--gold-wash-soft);
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .ribbon .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 11px 0;
+      font-size: 0.86rem;
+      color: var(--text-dim);
       text-align: center;
     }
 
-    .logo {
-      /* logo-mark.png 只保留 A 图标（538×361）：按高度控制，viewport 越高放得越大 */
-      width: auto;
-      max-width: 100%;
-      height: clamp(112px, 16vh, 152px);
-      margin-bottom: 24px;
-      /* 暖色光晕：金色是全站唯一的暖色，给 logo 一个落点 */
-      filter: drop-shadow(0 12px 34px var(--gold-shadow));
+    .ribbon-text {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    h1 {
-      /* 让 logo 当主角：标题比 logo 小一档，只做名称标注 */
-      font-size: clamp(1.35rem, 2.8vw, 1.75rem);
-      letter-spacing: 1px;
-      margin-bottom: 12px;
+    .ribbon a {
+      flex: 0 0 auto;
+      color: var(--accent);
+      text-decoration: none;
+      white-space: nowrap;
     }
 
-    .subtitle {
-      color: var(--text-mute);
-      font-size: 1rem;
-      margin-bottom: 28px;
-      max-width: 480px;
-      line-height: 1.8;
-    }
+    .ribbon a:hover { text-decoration: underline; }
 
-    /* 两个按钮两等分，宽度正好与下方公告卡对齐 */
-    .buttons {
+    /* ================= 第 1 屏：简约品牌位（logo + 站名，不放别的东西） ================= */
+    .hero {
+      position: relative;
+      /* 减去导航与公告条，首屏正好占满一屏，滚动提示不会被挤出视野 */
+      min-height: calc(100vh - var(--nav-h) - var(--ribbon-h));    /* 老浏览器回退 */
+      min-height: calc(100svh - var(--nav-h) - var(--ribbon-h));   /* 手机地址栏伸缩时不跳 */
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      place-items: center;
+      padding: 56px 20px 88px;
+      text-align: center;
+      /* 暖光以品牌块为圆心，给金色一个落点 */
+      background: radial-gradient(62% 50% at 50% 44%, var(--gold-wash-soft) 0%, transparent 63%);
+    }
+
+    .hero-inner { max-width: 640px; }
+
+    .hero-mark {
+      /* 首屏独占但不喧宾夺主；宽高同时约束，窄屏按比例缩，不会拉变形 */
+      width: auto;
+      height: auto;
+      max-width: min(100%, 300px);
+      max-height: clamp(120px, 22vh, 196px);
+      filter: drop-shadow(0 14px 40px var(--gold-shadow));
+    }
+
+    .hero h1 {
+      margin-top: 28px;
+      font-size: clamp(1.85rem, 4.2vw, 2.75rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      line-height: 1.25;
+    }
+
+    .hero-sub {
+      margin-top: 14px;
+      color: var(--text-mute);
+      font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+    }
+
+    /* 底部滚动提示 */
+    .scroll-hint {
+      position: absolute;
+      left: 50%;
+      bottom: 30px;
+      transform: translateX(-50%);
+      color: var(--text-faint);
+      font-size: 1.15rem;
+      line-height: 1;
+      text-decoration: none;
+      opacity: 0.45;
+      animation: hint-bob 2.4s ease-in-out infinite;
+    }
+
+    .scroll-hint:hover { opacity: 0.9; color: var(--accent); }
+
+    @keyframes hint-bob {
+      0%, 100% { transform: translate(-50%, 0); }
+      50%      { transform: translate(-50%, 7px); }
+    }
+
+    /* ================= 二级栏目条（学 Apple 的 chapternav：缩略图 + 名称，吸顶） ================= */
+    .chapternav {
+      position: sticky;
+      top: var(--nav-h);
+      z-index: 55;
+      background: rgba(11, 11, 13, 0.82);
+      -webkit-backdrop-filter: saturate(180%) blur(18px);
+      backdrop-filter: saturate(180%) blur(18px);
+      border-block: 1px solid var(--line-soft);
+    }
+
+    .chapternav-inner {
+      display: flex;
+      gap: 6px;
+      height: var(--chapter-h);
+      align-items: center;
+      overflow-x: auto;
+      /* 手机上横滑，滚动条藏起来，靠边缘渐隐提示还有内容 */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .chapternav-inner::-webkit-scrollbar { display: none; }
+
+    .chapter {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      width: 96px;
+      padding: 9px 6px;
+      border-radius: 14px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .chapter:hover { background: rgba(255, 255, 255, 0.045); }
+
+    /* 首个缩略图对齐到标题的左边缘，不然会缩进 6px */
+    .chapter:first-child { margin-left: -6px; }
+
+    .chapter-thumb {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 11px;
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      overflow: hidden;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .chapter-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* logo 类图不要被裁成方块，留白更好看 */
+    .chapter-thumb--contain img { object-fit: contain; padding: 4px; }
+
+    .chapter-name {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .chapter:hover .chapter-name { color: var(--accent); }
+
+
+    /* ================= 内容区通用 ================= */
+    .section {
+      padding: clamp(60px, 8vw, 104px) 0;
+      /* 跳转锚点要给两层吸顶导航让出高度，否则标题正好被盖住 */
+      scroll-margin-top: calc(var(--nav-h) + var(--chapter-h) + 12px);
+    }
+
+    .section + .section { border-top: 1px solid var(--line-soft); }
+
+    /* 栏目条里的 Prism 直接跳到汉化区那张卡，落地同样要给两层吸顶导航让位 */
+    #prism {
+      scroll-margin-top: calc(var(--nav-h) + var(--chapter-h) + 12px);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: clamp(28px, 4vw, 44px);
+    }
+
+    .section-head h2 {
+      font-size: clamp(1.6rem, 3.4vw, 2.25rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+    }
+
+    .section-head p {
+      margin-top: 10px;
+      color: var(--text-mute);
+      font-size: 0.94rem;
+      /* 用 em 而不是 ch：ch 在中文字体下只有半个汉字宽，一长句会被挤成两行只剩一两个字 */
+      max-width: 40em;
+      text-wrap: pretty;
+    }
+
+    /* 区块右上角的「全部 ›」入口 */
+    .section-more {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex: 0 0 auto;
+      color: var(--accent);
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: gap 0.2s;
+    }
+
+    .section-more:hover { gap: 10px; }
+
+    /* ================= 主推卡（学 Apple 的 banner card：左文案 + 右大图） ================= */
+    .banner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      gap: clamp(24px, 4vw, 54px);
+      align-items: center;
+      padding: clamp(26px, 3.6vw, 48px);
+      border-radius: 24px;
+      background: linear-gradient(150deg, #17181c 0%, #101116 100%);
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .banner-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      font-size: 0.76rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+    }
+
+    .banner-eyebrow::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent-dot);
+    }
+
+    .banner h3 {
+      margin-top: 14px;
+      font-size: clamp(1.45rem, 3vw, 2.15rem);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.28;
+    }
+
+    .banner-lead {
+      margin-top: 14px;
+      color: var(--text-mute);
+      font-size: 0.94rem;
+      max-width: 30em;
+      text-wrap: pretty;
+    }
+
+    .banner-facts {
+      list-style: none;
+      margin-top: 20px;
+      display: grid;
+      gap: 7px;
+      font-size: 0.88rem;
+      color: var(--text-dim);
+    }
+
+    .banner-facts li { display: flex; gap: 9px; }
+
+    .banner-facts li::before {
+      content: "·";
+      color: var(--accent);
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    /* 两个按钮并排：实心金给「进一步了解」，描边金给外链（同 Apple 的蓝实心 + 蓝描边） */
+    .ctas {
+      display: flex;
+      flex-wrap: wrap;
       gap: 12px;
-      width: min(340px, 100%);
-      margin-bottom: 32px;
+      margin-top: 28px;
     }
 
     .btn {
-      display: inline-block;
-      padding: 12px 20px;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 24px;
+      border-radius: 999px;
       border: 1px solid transparent;
-    }
-
-    .btn:focus-visible,
-    .notice-entry:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 3px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s, box-shadow 0.2s;
     }
 
     .btn-primary {
       background: var(--accent-grad);
       color: var(--on-accent);
-      border-color: var(--gold-line);
+      font-weight: 600;
     }
 
     .btn-primary:hover {
       background: var(--accent-grad-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 26px var(--gold-shadow);
     }
 
-    .btn-secondary {
-      background: transparent;
-      color: var(--text);
-      border-color: var(--line);
-    }
-
-    .btn-secondary:hover {
-      border-color: var(--accent);
-    }
-
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 6px 22px;
-      width: min(340px, 100%);
-      margin-top: auto;              /* 页脚吸到视口底部，页面才有「头—身—脚」 */
-      padding-top: 40px;
-      color: var(--text-faint);
-      font-size: 0.88rem;
-    }
-
-    .footer-links a {
-      color: var(--text-mute);
-      text-decoration: none;
-      transition: 0.2s;
-    }
-
-    .footer-links a:hover {
+    .btn-ghost {
+      border-color: var(--accent-line);
       color: var(--accent);
     }
 
-    /* ---------- 公告栏入口（两个按钮下方居中） ---------- */
-    .notice-entry {
-      display: flex;
-      align-items: flex-start;        /* 顶对齐：标题折行时圆点、箭头仍与首行齐 */
-      gap: 14px;
-      width: min(340px, 100%);
-      margin: 0 auto;
-      padding: 14px 18px;
-      background: var(--card);
-      border: 1px solid var(--line);
+    .btn-ghost:hover {
+      border-color: var(--accent-line-strong);
+      background: var(--gold-wash);
+    }
+
+    /* ---------- 点击反馈：按下缩 3%，松手回弹 ----------
+       只动 transform，不改宽高，周围元素不会跟着跳 */
+    .btn:active { transform: scale(0.97); }
+    .nav-link:active { transform: scale(0.96); }
+    .nav-gh:active { transform: scale(0.92); }
+    .tile:active { transform: scale(0.985); }
+    .notice-row:active { background: var(--gold-wash); }
+
+    /* 主推卡里的大图：深色界面截图贴一圈亮边，从卡片里浮起来 */
+    .banner-shot {
+      display: block;
+      width: 100%;
+      height: auto;
       border-radius: 14px;
-      text-align: left;
-      text-decoration: none;
-      color: inherit;
-      transition: 0.2s;
+      border: 1px solid var(--line-strong);
+      box-shadow: 0 26px 64px rgba(0, 0, 0, 0.55);
     }
 
-    .notice-entry:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
+    /* ================= 瓦片网格（学 Apple 的 card-set grid） ================= */
+    .tiles {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 16px;
     }
 
-    .notice-dot {
-      flex: none;
-      width: 8px;
-      height: 8px;
-      margin-top: 6px;                /* 与首行标题的视觉中心对齐 */
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 0 4px var(--accent-glow);
-    }
-
-    .notice-text {
-      flex: 1 1 auto;
-      min-width: 0;                  /* 长标题才能正常折行，不会把箭头挤出去 */
+    .tile {
       display: flex;
       flex-direction: column;
-      gap: 3px;
-      line-height: 1.45;
+      gap: 10px;
+      padding: clamp(20px, 2.6vw, 30px);
+      border-radius: 20px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      color: inherit;
+      text-decoration: none;
+      transition: transform 0.22s, border-color 0.22s, background 0.22s;
     }
 
-    .notice-text strong {
-      font-size: 0.9rem;
+    .tile:hover {
+      transform: translateY(-3px);
+      border-color: var(--line-strong);
+      background: #1a1b20;
+    }
+
+    .tile-tag {
+      font-size: 0.72rem;
       font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--accent);
     }
 
-    .notice-text em {
-      font-style: normal;
-      font-size: 0.78rem;
-      color: var(--text-mute);                /* 原 var(--text-faint) 在 var(--card) 上只有 3.3:1，偏糊 */
+    .tile h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .tile p {
+      font-size: 0.87rem;
+      color: var(--text-mute);
+    }
+
+    /* 卡片配图：统一 16:9 裁切，行高才不会参差 */
+    .tile-shot {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid var(--line-soft);
+      margin-top: 4px;
+      background: var(--bg-soft);
+    }
+
+    .tile-more {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: auto;
+      padding-top: 6px;
+      font-size: 0.85rem;
+      color: var(--accent);
+    }
+
+    /* 尚未推出的瓦片：压一档亮度，别和已发布内容抢注意力 */
+    .tile--soon { background: var(--bg-soft); }
+    .tile--soon .tile-tag { color: var(--warn); }
+    .tile--soon .tile-more { color: var(--text-faint); }
+
+    /* 还没有内容的一节：一条横向预告，比几个空占位体面得多 */
+    .teaser {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px 40px;
+      padding: clamp(24px, 3.4vw, 38px) clamp(24px, 3.6vw, 44px);
+      border-radius: 22px;
+      background: var(--bg-soft);
+      border: 1px solid var(--line-soft);
+    }
+
+    .teaser-body {
+      display: grid;
+      gap: 9px;
+      max-width: 46em;
+    }
+
+    .teaser-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      color: var(--gold);
+    }
+
+    .teaser h3 {
+      font-size: clamp(1.05rem, 2vw, 1.3rem);
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .teaser p {
+      font-size: 0.88rem;
+      color: var(--text-mute);
+    }
+
+    .teaser-note {
+      flex: none;
+      padding: 8px 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text-faint);
+      font-size: 0.84rem;
+      white-space: nowrap;
+    }
+
+    /* 预告卡里的按钮：.ctas 默认顶 28px，这里收紧一点，别把卡片撑高 */
+    .teaser .ctas { margin-top: 6px; }
+
+    /* 瓦片里的按钮同理：.ctas 默认顶 28px，收紧一点别把瓦片撑高 */
+    .tile .ctas { margin-top: 6px; }
+
+    /* 只有一张瓦片时横跨整行，左文右图，避免两列网格里空掉一半 */
+    .tile--solo { grid-column: 1 / -1; }
+
+    .tile-body {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    @media (min-width: 861px) {
+      .tile--solo {
+        flex-direction: row;
+        align-items: center;
+        gap: 30px;
+      }
+      .tile--solo .tile-body { flex: 1 1 0; }
+      .tile--solo .tile-shot { flex: 0 0 46%; margin-top: 0; }
+    }
+
+    /* 区块内的小标题（关于区里的「联系」） */
+    .sub-head {
+      margin-top: clamp(32px, 4vw, 46px);
+      margin-bottom: 14px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+
+    /* ================= 公告列表（首页只放最新几条，全部在公告页） ================= */
+    .notices {
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .notice-row {
+      display: grid;
+      grid-template-columns: 104px minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: baseline;
+      padding: 20px 10px;
+      border-bottom: 1px solid var(--line-soft);
+      color: inherit;
+      text-decoration: none;
+      transition: background 0.2s, padding 0.2s;
+    }
+
+    .notice-row:hover {
+      background: var(--gold-wash-soft);
+      padding-left: 16px;
+    }
+
+    .notice-date {
+      color: var(--text-faint);
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .notice-title {
+      font-size: 0.97rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .notice-pin {
+      flex: 0 0 auto;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--gold-wash);
+      border: 1px solid var(--gold-line);
+      color: var(--accent);
+      font-size: 0.7rem;
+      font-weight: 600;
+      line-height: 1.6;
     }
 
     .notice-arrow {
-      margin-left: auto;
-      margin-top: 1px;
-      line-height: 1.45;              /* 与标题首行同一行高，箭头才不会吊在中间 */
       color: var(--text-faint);
       font-size: 0.95rem;
-      transition: 0.2s;
+      transition: color 0.2s, transform 0.2s;
     }
 
-    .notice-entry:hover .notice-arrow {
+    .notice-row:hover .notice-arrow {
       color: var(--accent);
       transform: translateX(3px);
     }
+
+    /* ================= 关于 / 联系 ================= */
+    .about-text {
+      max-width: 34em;
+      font-size: 0.98rem;
+      color: var(--text-dim);
+      text-wrap: pretty;
+    }
+
+    .about-text p + p { margin-top: 16px; }
+
+    .about-text .lead {
+      color: var(--text);
+      font-size: clamp(1.05rem, 2vw, 1.22rem);
+      line-height: 1.65;
+    }
+
+    .contact-list {
+      list-style: none;
+      display: grid;
+      gap: 10px;
+      margin-top: 24px;
+      max-width: 460px;
+    }
+
+    .contact-list li {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      font-size: 0.9rem;
+      color: var(--text-dim);
+    }
+
+    .contact-list a { text-decoration: none; }
+    .contact-list a:hover { text-decoration: underline; }
+
+    /* ================= 页脚（学 Apple 的多列目录） ================= */
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 52px 0 36px;
+      background: var(--bg-deep);
+    }
+
+    .footer-cols {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 28px;
+    }
+
+    .footer-col h4 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .footer-col a {
+      display: block;
+      padding: 5px 0;
+      font-size: 0.84rem;
+      color: var(--text-faint);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-col a:hover { color: var(--accent); }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 40px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line-soft);
+      font-size: 0.8rem;
+      color: var(--text-ghost);
+    }
+
+    .footer-bottom a {
+      color: var(--text-faint);
+      text-decoration: none;
+    }
+
+    .footer-bottom a:hover { color: var(--accent); }
+
+    /* ================= 响应式 ================= */
+    /* 平板：主推卡改成上下排，图在文案下方 */
+    @media (max-width: 860px) {
+      .banner {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+      .banner-lead { max-width: none; }
+      .footer-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+    }
+
+    /* 手机：导航收窄，栏目条横滑，瓦片单列 */
+    @media (max-width: 640px) {
+      :root { --nav-h: 50px; --ribbon-h: 40px; --chapter-h: 68px; }
+
+      .globalnav .wrap { gap: 12px; width: 96%; }
+      .nav-brand { font-size: 0.88rem; gap: 7px; }
+      .nav-brand img { width: 22px; height: 22px; }
+      .nav-link { padding: 6px 9px; font-size: 0.82rem; }
+      .nav-gh { width: 28px; height: 28px; margin-left: 2px; }
+
+      .ribbon .wrap { font-size: 0.8rem; gap: 8px; }
+      .ribbon-text { display: none; }          /* 手机只留入口，标题在公告区看 */
+      .ribbon .wrap { justify-content: center; }
+
+      .hero { padding: 44px 18px 76px; }
+      .hero-mark { max-height: clamp(104px, 18vh, 150px); }
+      .hero h1 { margin-top: 22px; }
+
+      .tiles { grid-template-columns: 1fr; }
+      .tile:hover { transform: none; }
+      /* 触屏上 :hover 会一直挂着，把按下的缩放补回来，点击才有反馈 */
+      .tile:active { transform: scale(0.985); }
+
+      .notice-row {
+        grid-template-columns: 1fr auto;
+        gap: 6px 14px;
+        padding: 16px 6px;
+      }
+      .notice-date { grid-column: 1 / -1; font-size: 0.76rem; }
+      .notice-row:hover { padding-left: 6px; }
+
+      .contact-list li { padding: 12px 14px; font-size: 0.86rem; }
+      .footer-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .footer-bottom { justify-content: center; text-align: center; }
+    }
+
+    /* 系统开了「减少动态效果」：动画与位移动效全部关掉 */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      body { animation: none; }
+      .scroll-hint { animation: none; }
+
+      /* 跨页面过渡退回直接切换 */
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation: none;
+      }
+
+      .tile:hover,
+      .tile:active,
+      .btn-primary:hover,
+      .btn:active,
+      .nav-link:active,
+      .nav-gh:active { transform: none; }
+
+      .notice-row:hover { padding-left: 10px; }
+      .notice-row:hover .notice-arrow { transform: none; }
+    }
   </style>
 </head>
+
 <body>
 
-  <img class="logo" src="logo-mark.png" alt="Arthur 工作室 logo" width="226" height="152">
+  <!-- ============ 常驻顶部导航：全站一直吸在顶上 ============ -->
+  <nav class="globalnav" id="globalnav" aria-label="主导航">
+    <div class="wrap">
+      <a class="nav-brand" href="#top">
+        <img src="logo-mark.png" alt="" width="26" height="26">
+        Arthur 工作室
+      </a>
 
-  <h1>Arthur 工作室</h1>
-  <p class="subtitle">专注于开源汉化与独立软件开发的小工作室</p>
+      <div class="nav-links">
+        <a class="nav-link" href="#hanhua">汉化</a>
+        <a class="nav-link" href="#ku">软件库</a>
+        <a class="nav-link" href="#gonggao">公告</a>
+        <a class="nav-link" href="#about">关于</a>
+        <a class="nav-gh" href="https://github.com/harvey-music" target="_blank" rel="noopener" aria-label="GitHub 主页">
+          <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </nav>
 
-  <div class="buttons">
-    <a class="btn btn-primary" href="start.html">浏览项目</a>
-    <a class="btn btn-secondary" href="home.html">关于</a>
+  <!-- ============ 公告条：发新公告时改这里的标题和条数 ============ -->
+  <div class="ribbon">
+    <div class="wrap">
+      <span class="ribbon-text">软件库上线：18 个开源工具按用途分类</span>
+      <a href="notice.html">全部 10 条公告 ›</a>
+    </div>
   </div>
 
-  <!-- 公告栏入口：显示最新一条公告摘要，宽度与上方按钮组对齐
-       发新公告时，把 strong 里的标题和 em 里的日期、条数同步改一下 -->
-  <a class="notice-entry" href="notice.html">
-    <span class="notice-dot" aria-hidden="true"></span>
-    <span class="notice-text">
-      <strong>项目页三个分组支持折叠</strong>
-      <em>公告栏 · 11 月 9 日 · 共 9 条</em>
-    </span>
-    <span class="notice-arrow" aria-hidden="true">→</span>
-  </a>
+  <!-- ============ 第 1 屏：只有 logo 和站名，不放别的东西 ============ -->
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <img class="hero-mark" src="logo-mark.png" alt="Arthur 工作室 logo" width="300" height="196">
+      <h1>Arthur 工作室</h1>
+      <p class="hero-sub">专注于开源汉化与独立软件开发</p>
+    </div>
+    <a class="scroll-hint" href="#hanhua" aria-label="向下浏览">⌄</a>
+  </section>
 
-  <div class="footer-links">
-    <a href="https://github.com/harvey-music" target="_blank" rel="noopener">GitHub</a>
-    <a href="mailto:zjh041106@qq.com">zjh041106@qq.com</a>
+  <!-- ============ 二级栏目条：缩略图 + 名称，往下滚动时贴在导航下方 ============ -->
+  <div class="chapternav" aria-label="项目快捷入口">
+    <div class="wrap">
+      <div class="chapternav-inner">
+        <a class="chapter" href="#hanhua">
+          <span class="chapter-thumb chapter-thumb--contain">
+            <img src="images/silverdaw-logo.png" alt="" width="44" height="44" loading="lazy" decoding="async">
+          </span>
+          <span class="chapter-name">Silverdaw</span>
+        </a>
+
+        <a class="chapter" href="#prism">
+          <span class="chapter-thumb">
+            <img src="images/prism-scopes.jpg" alt="" width="44" height="44" loading="lazy" decoding="async">
+          </span>
+          <span class="chapter-name">Prism</span>
+        </a>
+
+        <a class="chapter" href="#ku">
+          <span class="chapter-thumb">工具</span>
+          <span class="chapter-name">软件库</span>
+        </a>
+
+        <a class="chapter" href="#gonggao">
+          <span class="chapter-thumb">公告</span>
+          <span class="chapter-name">公告栏</span>
+        </a>
+      </div>
+    </div>
   </div>
 
+  <main>
+
+    <!-- ============ 汉化 ============ -->
+    <section class="section" id="hanhua">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <h2>汉化</h2>
+            <p>将英文界面的开源软件完整本地化：术语统一、说明补齐，安装后即可直接使用中文界面。</p>
+          </div>
+        </div>
+
+        <!-- 已发布项目的主推卡 -->
+        <article class="banner">
+          <div>
+            <span class="banner-eyebrow">2026 年 11 月</span>
+            <h3>Silverdaw 中文汉化</h3>
+            <p class="banner-lead">Windows 平台开源数字音频工作站（DAW）的完整中文本地化，官方原版、完整汉化版与汉化补丁三种获取方式均已整理发布。</p>
+            <ul class="banner-facts">
+              <li>完整汉化版内置中文资源，无需另行安装补丁</li>
+              <li>汉化补丁基于官方原版 1.10.0 制作</li>
+              <li>开源免费发布，许可证 AGPL-3.0</li>
+            </ul>
+            <div class="ctas">
+              <a class="btn btn-primary" href="silverdaw.html">进一步了解</a>
+              <a class="btn btn-ghost" href="https://www.silverdaw.com/" target="_blank" rel="noopener">前往官网</a>
+            </div>
+          </div>
+          <img class="banner-shot" src="images/silverdaw-stem-separation.jpg"
+               alt="Silverdaw 原版界面：分轨分离后的四条轨道与素材库"
+               width="1400" height="831" fetchpriority="high" decoding="async">
+        </article>
+
+        <!-- 汉化区第二张卡：还没发布，横跨整行（栏目条里的 Prism 框跳到这里） -->
+        <div class="tiles">
+          <article class="tile tile--soon tile--solo" id="prism">
+            <div class="tile-body">
+              <span class="tile-tag">预计 12 月推出</span>
+              <h3>Prism 中文汉化</h3>
+              <p>免费开源的跨平台音频分析与电平表机架，频谱、示波、矢量、响度等八种实时仪表可自由排布，也能作为 VST3 / AU / CLAP 插件使用。目前正在梳理界面文本与术语对照。</p>
+              <div class="ctas">
+                <a class="btn btn-ghost" href="prism.html">进一步了解</a>
+              </div>
+            </div>
+            <img class="tile-shot" src="images/prism-scopes.jpg"
+                 alt="Prism 原版界面：多种实时音频仪表排布"
+                 width="1800" height="426" loading="lazy" decoding="async">
+          </article>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============ 软件库 ============ -->
+    <section class="section" id="ku">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <h2>软件库</h2>
+            <p>精选常用开源工具并按用途分类整理，便于在新设备或重装系统后逐项配置。</p>
+          </div>
+          <a class="section-more" href="softlib.html">打开软件库 ›</a>
+        </div>
+
+        <!-- 软件库已独立成页：首页只留一张入口卡，条目别往首页搬 -->
+        <div class="teaser">
+          <div class="teaser-body">
+            <span class="teaser-tag">持续更新</span>
+            <h3>18 个开源工具 · 4 个分类</h3>
+            <p>系统工具、影音与图像、网络与传输、文档与效率四类，每项标注用途、许可协议与官方来源；开源软件的汉化条目仍在整理，进度见公告栏。</p>
+            <div class="ctas">
+              <a class="btn btn-primary" href="softlib.html">打开软件库</a>
+            </div>
+          </div>
+          <span class="teaser-note">持续收录</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 公告 ============ -->
+    <section class="section" id="gonggao">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <h2>公告</h2>
+            <p>版本发布、界面更新与项目预告。</p>
+          </div>
+          <a class="section-more" href="notice.html">全部 10 条 ›</a>
+        </div>
+
+        <!-- 首页只放最新三条，完整内容在公告页 -->
+        <div class="notices">
+          <a class="notice-row" href="notice.html#notice-softlib">
+            <time class="notice-date" datetime="2026-11-10">2026 年 11 月 10 日</time>
+            <span class="notice-title">软件库上线：18 个开源工具按用途分类</span>
+            <span class="notice-arrow" aria-hidden="true">→</span>
+          </a>
+
+          <a class="notice-row" href="notice.html#notice-silverdaw-ui">
+            <time class="notice-date" datetime="2026-11-10">2026 年 11 月 10 日</time>
+            <span class="notice-title">Silverdaw 项目页改版：新增返回入口、统一内容区宽度、修复弹窗位移</span>
+            <span class="notice-arrow" aria-hidden="true">→</span>
+          </a>
+
+          <a class="notice-row" href="notice.html#notice-mergelist">
+            <time class="notice-date" datetime="2026-11-10">2026 年 11 月 10 日</time>
+            <span class="notice-title">项目列表并入首页，不再分「已完成 / 正在进行 / 正在准备」</span>
+            <span class="notice-arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 关于 / 联系 ============ -->
+    <section class="section" id="about">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <h2>关于</h2>
+          </div>
+        </div>
+
+        <div class="about-text">
+          <p class="lead">技术的初衷是连接世界，但语言与网络的壁垒，常使优秀的技术产品难以抵达需要它的使用者。</p>
+          <p>我是 Harvey，Arthur 工作室的创建者。建立这个站点，是为了提供一个低门槛的获取渠道：需要复杂网络环境才能下载的软件，改为直接获取；因英文界面而难以使用的优秀工具，提供完整的中文版本。</p>
+          <p>无论是寻找工具，还是使用汉化后的完整界面，都可以从这里开始。</p>
+        </div>
+
+        <h3 class="sub-head">联系</h3>
+        <ul class="contact-list">
+          <li>GitHub：<a href="https://github.com/harvey-music" target="_blank" rel="noopener">github.com/harvey-music</a></li>
+          <li>邮箱：zjh041106@qq.com</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- ============ 页脚：多列目录 ============ -->
+  <footer>
+    <div class="wrap">
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>汉化</h4>
+          <a href="silverdaw.html">Silverdaw 中文汉化</a>
+          <a href="prism.html">Prism 中文汉化</a>
+          <a href="softlib.html">开源软件汉化索引</a>
+        </div>
+        <div class="footer-col">
+          <h4>软件库</h4>
+          <a href="softlib.html">开源电脑工具整合</a>
+          <a href="softlib.html">汉化索引</a>
+        </div>
+        <div class="footer-col">
+          <h4>公告</h4>
+          <a href="notice.html">全部公告 · 10 条</a>
+          <a href="notice.html#notice-prism">Prism 汉化预告</a>
+        </div>
+        <div class="footer-col">
+          <h4>关于</h4>
+          <a href="#about">工作室简介</a>
+          <a href="#about">联系方式</a>
+          <a href="https://github.com/harvey-music" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> Arthur 工作室 · 所有项目均开源免费发布</span>
+        <a href="#top">回到顶部 ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      // 页脚年份
+      var yearEl = document.getElementById('year');
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+      var nav = document.getElementById('globalnav');
+      var links = Array.prototype.slice.call(document.querySelectorAll('.nav-link[href^="#"]'));
+
+      // 当前栏目高亮：留空表示「首屏，不属于任何栏目」
+      function setActive(id) {
+        links.forEach(function (a) {
+          a.classList.toggle('is-active', id !== '' && a.getAttribute('href') === '#' + id);
+        });
+      }
+
+      function onScroll() {
+        // 一滚动就给导航补一条细线，回到顶部时收掉
+        if (nav) nav.classList.toggle('is-stuck', window.scrollY > 4);
+        // 还在首屏：取消所有高亮
+        if (window.scrollY < 120) setActive('');
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      // 用屏幕中线附近的区块判断当前栏目，比监听 scroll 算位置更稳
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) setActive(entry.target.id);
+          });
+        }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+
+        links.forEach(function (a) {
+          var target = document.querySelector(a.getAttribute('href'));
+          if (target) io.observe(target);
+        });
+      }
+    })();
+  </script>
+
+  <!-- ============ 跨页返回 + 锚点落点 ============
+       1. 离开页面时把当前滚动位置按路径记进 sessionStorage（按标签页隔离）；
+       2. 从站内别的页面点进来时瞬时还原，新开标签或首次进入仍停在顶部；
+       3. 带 # 锚点进来时瞬时对准锚点 —— 浏览器默认会从页顶平滑滑过去，淡入那一下看着像跳错位置；
+       4. 浏览器自带的前进/后退会自己还原，这里不插手。 -->
+  <script>
+    (function () {
+      var KEY = 'arthur-scroll';
+      // 根目录可能写成 "/" 也可能写成 "/index.html"，视作同一页，位置才对得上
+      var here = location.pathname.replace(/index\.html$/, '') + location.search;
+      var root = document.documentElement;
+
+      // 用户一开始操作就停手，绝不抢滚动
+      var touched = false;
+      ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (type) {
+        window.addEventListener(type, function () { touched = true; }, { passive: true, once: true });
+      });
+
+      // 在「瞬时滚动」窗口里定位：is-restoring 把 scroll-behavior 换回 auto，
+      // 两帧后放开，之后用户点页内锚点依旧是平滑滚动
+      function snap(fn) {
+        root.classList.add('is-restoring');
+        fn();
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () { root.classList.remove('is-restoring'); });
+        });
+      }
+
+      // ---------- A) 带 # 锚点进来：解析期先把位置对上 ----------
+      // 首次锚点定位浏览器走的是 scroll-behavior: smooth —— 淡入那一下还停在页顶，
+      // 接着自己往下滑一段，看起来就像「跳错位置」。这里自己瞬时对准一次。
+      // 用 scrollIntoView 才能自动吃上元素自己的 scroll-margin-top（给吸顶导航让位）。
+      var hasHash = location.hash.length > 1;
+
+      var anchor = null;
+      if (hasHash) {
+        var hashId = location.hash.slice(1);
+        try { hashId = decodeURIComponent(hashId); } catch (err) {}
+        anchor = document.getElementById(hashId);
+      }
+
+      if (anchor) {
+        // 图片、字体没到位时页面高度还会变，所以每次都重新「对准」，不记绝对坐标
+        var alignToAnchor = function () {
+          if (touched) return;
+          snap(function () {
+            anchor.scrollIntoView({ block: 'start', inline: 'nearest' });
+          });
+        };
+        alignToAnchor();
+        document.addEventListener('DOMContentLoaded', alignToAnchor);
+        window.addEventListener('load', function () { requestAnimationFrame(alignToAnchor); });
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(alignToAnchor);
+      }
+
+      function read() {
+        try {
+          var raw = sessionStorage.getItem(KEY);
+          return raw ? JSON.parse(raw) : { pos: {}, last: '' };
+        } catch (err) {
+          return null; // 隐私模式或文件协议禁用了存储，直接放弃，不影响页面
+        }
+      }
+
+      function write(data) {
+        try {
+          sessionStorage.setItem(KEY, JSON.stringify(data));
+        } catch (err) {}
+      }
+
+      // 1) 记下离开时的位置（pagehide 与切到后台各记一次，移动端更稳）
+      function save() {
+        var data = read();
+        if (!data) return;
+        data.pos[here] = Math.round(window.pageYOffset || document.documentElement.scrollTop || 0);
+        data.last = here;
+        write(data);
+      }
+
+      window.addEventListener('pagehide', save);
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden') save();
+      });
+
+      // 2) 只有「从站内别的页面点进来」才还原（带 # 的上面已按锚点对准）
+      var data = read();
+      if (hasHash || !data || !data.last || data.last === here) return;
+
+      var navType = '';
+      try {
+        var entry = performance.getEntriesByType('navigation')[0];
+        navType = entry ? entry.type : '';
+      } catch (err) {}
+      if (navType === 'back_forward' || navType === 'prerender') return;
+
+      var target = data.pos[here];
+      if (typeof target !== 'number' || target < 1) return;
+
+      function apply() {
+        snap(function () { window.scrollTo(0, target); });
+      }
+
+      // 图片没加载完时页面还短，滚动会被截断，加载完再补一次
+      function fixLater() {
+        if (touched) return;
+        if (Math.abs((window.pageYOffset || 0) - target) > 4) apply();
+      }
+
+      apply();
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+          if (!touched) apply();
+        });
+      }
+      window.addEventListener('load', function () {
+        requestAnimationFrame(fixLater);
+      });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fixLater);
+    })();
+  </script>
 </body>
 </html>
+
