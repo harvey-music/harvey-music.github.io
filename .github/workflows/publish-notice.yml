@@ -1,0 +1,111 @@
+name: 发布公告
+
+# 纯静态站没有服务器，浏览器里存任何密钥都有泄露风险。
+# 这里改用 Issue 表单当发布入口：鉴权交给 GitHub 账号，
+# 工作流只用仓库自带的 GITHUB_TOKEN，没有需要保管的密钥。
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: write # 提交 data/notices.json
+  issues: write # 回评论、关 issue
+
+# 同一条 issue 连续编辑时排队执行，避免两次提交互相覆盖
+concurrency:
+  group: publish-notice-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    # 只处理带 notice 标签的（该标签由「发布公告」模板自动添加）
+    if: contains(github.event.issue.labels.*.name, 'notice')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 准备 Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 解析 Issue 并写入 JSON
+        id: write
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+          ISSUE_ACTION: ${{ github.event.action }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          # 想额外放行别的账号发布，在这里填逗号分隔的用户名
+          ALLOWED_AUTHORS: ''
+        run: node .github/scripts/publish-notice.mjs
+
+      - name: 提交
+        if: steps.write.outputs.changed == 'true'
+        env:
+          VERB: ${{ steps.write.outputs.verb }}
+          NOTICE_TITLE: ${{ steps.write.outputs.notice_title }}
+          NOTICE_ID: ${{ steps.write.outputs.notice_id }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/notices.json
+          git commit -m "chore(notices): ${VERB}「${NOTICE_TITLE}」(#${{ github.event.issue.number }})"
+          git push
+
+      - name: 回复并关闭 issue
+        if: success()
+        uses: actions/github-script@v7
+        env:
+          CHANGED: ${{ steps.write.outputs.changed }}
+          VERB: ${{ steps.write.outputs.verb }}
+          NOTICE_ID: ${{ steps.write.outputs.notice_id }}
+        with:
+          script: |
+            const { CHANGED, VERB, NOTICE_ID } = process.env;
+            const base = `https://github.com/${context.repo.owner}/${context.repo.repo}`;
+            const lines = CHANGED === 'true'
+              ? [
+                  `✅ 已${VERB}公告 \`${NOTICE_ID}\`，约 1 分钟后在网站上线（GitHub Pages 构建需要几十秒）。`,
+                  '',
+                  `- 首页与公告页：${base}/blob/main/data/notices.json`,
+                  `- 构建进度：${base}/actions`
+                ]
+              : ['ℹ️ 内容与现有条目完全一致，没有产生新的提交。'];
+            lines.push('', '以后要改这条公告，直接编辑本 issue 再保存即可，会按原条目覆盖，不会重复添加。');
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: lines.join('\n')
+            });
+            await github.rest.issues.update({
+              ...context.repo,
+              issue_number: context.issue.number,
+              state: 'closed'
+            });
+
+      - name: 回复失败原因
+        if: failure()
+        uses: actions/github-script@v7
+        env:
+          ERROR: ${{ steps.write.outputs.error }}
+        with:
+          script: |
+            const reason = process.env.ERROR || '工作流在写入阶段出错，请到 Actions 页面查看日志。';
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: [
+                '❌ 这次没有写入成功，仓库里的公告数据没有被改动。',
+                '',
+                '```',
+                reason,
+                '```',
+                '',
+                '改好上面的问题后，直接编辑本 issue 再保存，工作流会自动重跑。'
+              ].join('\n')
+            });

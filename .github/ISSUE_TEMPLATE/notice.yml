@@ -1,0 +1,73 @@
+name: 发布公告
+description: 填完自动写进 data/notices.json，约 1 分钟后在网站上线
+title: "[公告] "
+labels: ["notice"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        填好下面几项，点 **Submit new issue** 即可。机器人会把内容写进 `data/notices.json`、回一条评论并关闭本 issue。
+        要改已经发布的公告：**直接编辑本 issue 的内容再保存**，会按原条目覆盖，不会多出一条。
+
+  - type: input
+    id: title
+    attributes:
+      label: 公告标题
+      description: 一句话说清这次更新，首页公告条和列表都用它
+      placeholder: Prism 中文汉化已发布（0.4.1）
+    validations:
+      required: true
+
+  - type: input
+    id: date
+    attributes:
+      label: 日期
+      description: 格式 YYYY-MM-DD，月日要补零（如 2026-11-08）。留空则自动用今天（北京时间）
+      placeholder: 2026-11-15
+    validations:
+      required: false
+
+  - type: dropdown
+    id: tags
+    attributes:
+      label: 标签
+      description: 可多选，留空则不显示标签
+      multiple: true
+      options:
+        - 版本发布
+        - 界面更新
+        - 项目预告
+        - 服务调整
+        - 站点公告
+    validations:
+      required: false
+
+  - type: textarea
+    id: body
+    attributes:
+      label: 正文
+      description: 空一行分段。可用 <a href="prism.html">链接</a>、<b>粗体</b>、<code>代码</code>，其他 HTML 会被过滤掉
+      placeholder: |
+        第一段。
+
+        第二段，可以放链接：<a href="prism.html#get">下载入口</a>
+      render: text
+    validations:
+      required: true
+
+  - type: input
+    id: anchor
+    attributes:
+      label: 锚点 id
+      description: 一般留空，自动生成 notice-日期-本issue编号。只有想让旧链接 notice.html#xxx 继续有效时才填
+      placeholder: notice-prism
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: flags
+    attributes:
+      label: 其他
+      options:
+        - label: 置顶（只在公告页生效，排在所有条目最前面）
+        - label: 隐藏（先存着，网站上不显示）
