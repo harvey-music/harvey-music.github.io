@@ -134,9 +134,16 @@ function parseIssueBody(body) {
   return out;
 }
 
-/* 正文 → 段落数组：空行分段，段内换行合并成空格 */
+/* 正文 → 段落数组：空行分段，段内换行合并成空格。
+   textarea 声明了 render: text，GitHub 回传时会把用户输入整块包进
+   ```text … ``` 围栏里，这里先剥掉最外层，否则正文会带上反引号、
+   并且各段粘成一行。只剥「整串恰好是一个围栏」的情况，用户正文里
+   自己写的代码块不受影响。 */
 function toParagraphs(text) {
-  return String(text || '')
+  const src = String(text || '')
+    .trim()
+    .replace(/^```[A-Za-z0-9_-]*[ \t]*\r?\n([\s\S]*?)\r?\n```$/, '$1');
+  return src
     .split(/\n[ \t]*\n/)
     .map(function (p) {
       return p.replace(/[ \t]*\r?\n[ \t]*/g, ' ').trim();
