@@ -23,7 +23,7 @@ body:
     attributes:
       label: 日期
       description: 格式 YYYY-MM-DD，月日要补零（如 2026-11-08）。留空则自动用今天（北京时间）
-      placeholder: 2026-11-15
+      placeholder: "2026-11-15"
     validations:
       required: false
 
