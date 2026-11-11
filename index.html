@@ -237,6 +237,9 @@
       white-space: nowrap;
     }
 
+    /* 标题由脚本填入：加载前留一个不可见占位，公告条高度不会先塌一下 */
+    .ribbon-text:empty::before { content: "\00a0"; }
+
     .ribbon a {
       flex: 0 0 auto;
       color: var(--accent);
@@ -448,6 +451,9 @@
       border: 1px solid var(--line);
       overflow: hidden;
     }
+
+    /* 两张主推卡叠放时（Silverdaw + Prism）：第二张起留出间距 */
+    .banner + .banner { margin-top: 16px; }
 
     .banner-eyebrow {
       display: inline-flex;
@@ -958,7 +964,7 @@
         <a class="nav-link" href="#ku">软件库</a>
         <a class="nav-link" href="#gonggao">公告</a>
         <a class="nav-link" href="#about">关于</a>
-        <a class="nav-gh" href="https://github.com/harvey-music" target="_blank" rel="noopener" aria-label="GitHub 主页">
+        <a class="nav-gh" href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub 首页">
           <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
           </svg>
@@ -967,11 +973,11 @@
     </div>
   </nav>
 
-  <!-- ============ 公告条：发新公告时改这里的标题和条数 ============ -->
+  <!-- ============ 公告条：标题与条数自动读 data/notices.json，发公告不必改这里 ============ -->
   <div class="ribbon">
     <div class="wrap">
-      <span class="ribbon-text">软件库上线：18 个开源工具按用途分类</span>
-      <a href="notice.html">全部 10 条公告 ›</a>
+      <span class="ribbon-text" data-notice-ribbon></span>
+      <a href="notice.html">全部 <span data-notice-count>10</span> 条公告 ›</a>
     </div>
   </div>
 
@@ -1031,11 +1037,11 @@
         <!-- 已发布项目的主推卡 -->
         <article class="banner">
           <div>
-            <span class="banner-eyebrow">2026 年 11 月</span>
+            <span class="banner-eyebrow">已发布 · 1.9.0</span>
             <h3>Silverdaw 中文汉化</h3>
             <p class="banner-lead">Windows 平台开源数字音频工作站（DAW）的完整中文本地化，官方原版、完整汉化版与汉化补丁三种获取方式均已整理发布。</p>
             <ul class="banner-facts">
-              <li>完整汉化版内置中文资源，无需另行安装补丁</li>
+              <li>完整汉化版基于官方 1.9.0 制作，中文资源已内置，无需另行打补丁</li>
               <li>汉化补丁基于官方原版 1.10.0 制作</li>
               <li>开源免费发布，许可证 AGPL-3.0</li>
             </ul>
@@ -1049,22 +1055,26 @@
                width="1400" height="831" fetchpriority="high" decoding="async">
         </article>
 
-        <!-- 汉化区第二张卡：还没发布，横跨整行（栏目条里的 Prism 框跳到这里） -->
-        <div class="tiles">
-          <article class="tile tile--soon tile--solo" id="prism">
-            <div class="tile-body">
-              <span class="tile-tag">预计 12 月推出</span>
-              <h3>Prism 中文汉化</h3>
-              <p>免费开源的跨平台音频分析与电平表机架，频谱、示波、矢量、响度等八种实时仪表可自由排布，也能作为 VST3 / AU / CLAP 插件使用。目前正在梳理界面文本与术语对照。</p>
-              <div class="ctas">
-                <a class="btn btn-ghost" href="prism.html">进一步了解</a>
-              </div>
+        <!-- 汉化区第二张主推卡：已发布，结构与 Silverdaw 一致（栏目条里的 Prism 框跳到这里） -->
+        <article class="banner" id="prism">
+          <div>
+            <span class="banner-eyebrow">已发布 · 0.4.0-beta</span>
+            <h3>Prism 中文汉化</h3>
+            <p class="banner-lead">免费开源的实时音频分析与电平表机架，频谱仪、瀑布图、声谱图、波形与矢量示波器等八种仪表可自由排布，同一套仪表也能以 VST3 / AU / CLAP 插件形式使用。</p>
+            <ul class="banner-facts">
+              <li>汉化版内置中文界面，安装或解压后打开即为中文</li>
+              <li>提供安装包与便携版两种下载形式，两者内容一致</li>
+              <li>开源免费发布，许可证 GPL-3.0</li>
+            </ul>
+            <div class="ctas">
+              <a class="btn btn-primary" href="prism.html">进一步了解</a>
+              <a class="btn btn-ghost" href="https://astramusic.dev/prism" target="_blank" rel="noopener">前往官网</a>
             </div>
-            <img class="tile-shot" src="images/prism-scopes.jpg"
-                 alt="Prism 原版界面：多种实时音频仪表排布"
-                 width="1800" height="426" loading="lazy" decoding="async">
-          </article>
-        </div>
+          </div>
+          <img class="banner-shot" src="images/prism-scopes.jpg"
+               alt="Prism 原版界面：频谱仪、瀑布图、声谱图、波形与矢量示波器排布在同一块机架"
+               width="1800" height="426" loading="lazy" decoding="async">
+        </article>
       </div>
     </section>
 
@@ -1103,29 +1113,15 @@
             <h2>公告</h2>
             <p>版本发布、界面更新与项目预告。</p>
           </div>
-          <a class="section-more" href="notice.html">全部 10 条 ›</a>
+          <a class="section-more" href="notice.html">全部 <span data-notice-count>10</span> 条 ›</a>
         </div>
 
-        <!-- 首页只放最新三条，完整内容在公告页 -->
-        <div class="notices">
-          <a class="notice-row" href="notice.html#notice-softlib">
-            <time class="notice-date" datetime="2026-11-10">2026 年 11 月 10 日</time>
-            <span class="notice-title">软件库上线：18 个开源工具按用途分类</span>
-            <span class="notice-arrow" aria-hidden="true">→</span>
-          </a>
+        <!-- 首页只放最新几条（data-limit 调条数），内容来自 data/notices.json -->
+        <div class="notices" data-notice-list data-limit="3"></div>
 
-          <a class="notice-row" href="notice.html#notice-silverdaw-ui">
-            <time class="notice-date" datetime="2026-11-10">2026 年 11 月 10 日</time>
-            <span class="notice-title">Silverdaw 项目页改版：新增返回入口、统一内容区宽度、修复弹窗位移</span>
-            <span class="notice-arrow" aria-hidden="true">→</span>
-          </a>
-
-          <a class="notice-row" href="notice.html#notice-mergelist">
-            <time class="notice-date" datetime="2026-11-10">2026 年 11 月 10 日</time>
-            <span class="notice-title">项目列表并入首页，不再分「已完成 / 正在进行 / 正在准备」</span>
-            <span class="notice-arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
+        <noscript>
+          <p>公告内容需要启用 JavaScript 才能显示，完整内容见 <a href="notice.html">公告页</a>。</p>
+        </noscript>
       </div>
     </section>
 
@@ -1146,7 +1142,6 @@
 
         <h3 class="sub-head">联系</h3>
         <ul class="contact-list">
-          <li>GitHub：<a href="https://github.com/harvey-music" target="_blank" rel="noopener">github.com/harvey-music</a></li>
           <li>邮箱：zjh041106@qq.com</li>
         </ul>
       </div>
@@ -1172,14 +1167,14 @@
         </div>
         <div class="footer-col">
           <h4>公告</h4>
-          <a href="notice.html">全部公告 · 10 条</a>
-          <a href="notice.html#notice-prism">Prism 汉化预告</a>
+          <a href="notice.html">全部公告 · <span data-notice-count>10</span> 条</a>
+          <a href="notice.html#notice-prism">Prism 中文汉化</a>
         </div>
         <div class="footer-col">
           <h4>关于</h4>
           <a href="#about">工作室简介</a>
           <a href="#about">联系方式</a>
-          <a href="https://github.com/harvey-music" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
         </div>
       </div>
 
@@ -1266,26 +1261,32 @@
       // 用 scrollIntoView 才能自动吃上元素自己的 scroll-margin-top（给吸顶导航让位）。
       var hasHash = location.hash.length > 1;
 
-      var anchor = null;
-      if (hasHash) {
+      // 公告条目由 notices.js 异步渲染，页面高度会变，所以每次重新「对准」，不记绝对坐标
+      function findAnchor() {
+        if (!hasHash) return null;
         var hashId = location.hash.slice(1);
         try { hashId = decodeURIComponent(hashId); } catch (err) {}
-        anchor = document.getElementById(hashId);
+        return document.getElementById(hashId);
+      }
+
+      var anchor = findAnchor();
+
+      function alignToAnchor() {
+        if (touched) return;
+        if (!anchor) anchor = findAnchor();
+        if (!anchor) return;
+        snap(function () {
+          anchor.scrollIntoView({ block: 'start', inline: 'nearest' });
+        });
       }
 
       if (anchor) {
-        // 图片、字体没到位时页面高度还会变，所以每次都重新「对准」，不记绝对坐标
-        var alignToAnchor = function () {
-          if (touched) return;
-          snap(function () {
-            anchor.scrollIntoView({ block: 'start', inline: 'nearest' });
-          });
-        };
         alignToAnchor();
         document.addEventListener('DOMContentLoaded', alignToAnchor);
         window.addEventListener('load', function () { requestAnimationFrame(alignToAnchor); });
         if (document.fonts && document.fonts.ready) document.fonts.ready.then(alignToAnchor);
       }
+      document.addEventListener('notices:rendered', alignToAnchor);
 
       function read() {
         try {
@@ -1350,8 +1351,15 @@
         requestAnimationFrame(fixLater);
       });
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(fixLater);
+
+      // 公告渲染完成后页面会变长，之前被截断的还原位置再补一次
+      document.addEventListener('notices:rendered', function () {
+        requestAnimationFrame(fixLater);
+      });
     })();
   </script>
+
+  <!-- 公告渲染：内容全部来自 data/notices.json -->
+  <script src="notices.js" defer></script>
 </body>
 </html>
-

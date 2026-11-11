@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prism 中文汉化 - Arthur 工作室</title>
-  <meta name="description" content="Prism 是一款免费开源的实时音频分析与电平表机架，八种仪表可自由排布。本页介绍原版功能与中文汉化进度，汉化版预计 2026 年 12 月发布，暂不提供下载。">
+  <meta name="description" content="Prism 是一款免费开源的实时音频分析与电平表机架，八种仪表可自由排布。本站提供中文汉化版 0.4.0-beta 的安装包与便携版下载，并整理原版功能与规格说明。">
   <meta name="theme-color" content="#0b0b0d">
   <meta property="og:title" content="Prism 中文汉化">
-  <meta property="og:description" content="免费开源的实时音频分析与电平表机架，八种仪表可自由排布，中文汉化制作中。">
+  <meta property="og:description" content="免费开源的实时音频分析与电平表机架，八种仪表可自由排布，中文汉化版已发布。">
   <meta property="og:type" content="article">
   <meta property="og:image" content="images/prism-scopes.jpg">
   <link rel="icon" href="logo-mark.png">
@@ -411,6 +411,7 @@
     /* 锚点跳转要给吸顶导航和章节条让出高度，否则标题正好被盖住 */
     #features,
     #scopes,
+    #get,
     #specs,
     #about {
       scroll-margin-top: calc(var(--nav-h) + var(--chap-h) + 14px);
@@ -532,6 +533,126 @@
       color: var(--text-faint);
       text-wrap: pretty;
     }
+
+    /* ================= 获取方式（与 Silverdaw 页同一套卡片） ================= */
+    .get {
+      width: min(1160px, 92%);
+      margin-inline: auto;
+      padding: clamp(8px, 2vw, 18px) 0 clamp(28px, 5vw, 52px);
+    }
+
+    .get-head { margin-bottom: 24px; }
+
+    .get-head h2 {
+      font-size: clamp(1.4rem, 3vw, 1.88rem);
+      font-weight: 700;
+    }
+
+    .get-head p {
+      margin-top: 6px;
+      color: var(--text-mute);
+      font-size: 0.92rem;
+      text-wrap: pretty;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      padding: 26px 24px 24px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .card:hover {
+      border-color: var(--accent-line);
+      transform: translateY(-2px);
+    }
+
+    .card--featured { border-color: var(--gold-edge); }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .no {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--line-strong);
+      line-height: 1;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 1px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-size: 0.74rem;
+      color: var(--text-mute);
+      line-height: 1.7;
+    }
+
+    .tag--accent {
+      color: var(--accent);
+      border-color: var(--accent-line);
+    }
+
+    .card h3 {
+      font-size: 1.14rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .card .desc {
+      color: var(--text-mute);
+      font-size: 0.9rem;
+      text-wrap: pretty;
+    }
+
+    .spec-list {
+      list-style: none;
+      display: grid;
+      gap: 7px;
+      margin-top: 18px;
+    }
+
+    .spec-list li {
+      position: relative;
+      padding-left: 17px;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      line-height: 1.65;
+    }
+
+    .spec-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.72em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-dot);
+    }
+
+    .card-foot {
+      margin-top: auto;
+      padding-top: 22px;
+    }
+
+    .card-foot .btn { width: 100%; }
+
     /* ================= 规格表 ================= */
     .specs {
       width: min(1160px, 92%);
@@ -870,7 +991,7 @@
         <a class="nav-link" href="softlib.html">软件库</a>
         <a class="nav-link" href="notice.html">公告</a>
         <a class="nav-link" href="index.html#about">关于</a>
-        <a class="nav-gh" href="https://github.com/harvey-music" target="_blank" rel="noopener" aria-label="GitHub 主页">
+        <a class="nav-gh" href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub 首页">
           <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
           </svg>
@@ -887,22 +1008,22 @@
         <div class="hero-top">
           <a class="hero-back" href="index.html"><span class="chev-l" aria-hidden="true">‹</span> 返回首页</a>
         </div>
-        <span class="kicker">中文汉化 · 制作中</span>
+        <span class="kicker">中文汉化 · 已发布</span>
         <h1>Prism</h1>
         <p class="tagline">免费开源的实时音频分析与电平表机架，八种仪表可自由排布。</p>
         <div class="ctas">
-          <a class="btn btn-primary" href="notice.html">阅读汉化预告</a>
+          <a class="btn btn-primary" href="#get">下载汉化版</a>
           <a class="btn btn-ghost" href="https://github.com/Boof2015/prism" target="_blank" rel="noopener">查看官方仓库</a>
         </div>
-        <p class="hero-meta">汉化制作中 · 预计 2026 年 12 月发布 · 本站暂不提供下载</p>
+        <p class="hero-meta">0.4.0-beta · Windows · 安装包与便携版两种形式</p>
       </div>
     </section>
 
     <!-- ============ 发布状态：先说清楚现在没有下载 ============ -->
     <div class="wrap">
       <aside class="tip" aria-label="发布状态">
-        <span class="tip-label">尚未发布</span>
-        <p>本页只整理原版功能与汉化进度，<strong>暂不提供下载入口</strong>。发布后会同时在首页「汉化」区、公告栏与本页顶部给出。原版说明与代码托管在 GitHub，网络受限打不开时可发邮件索取离线说明：<a class="tip-mail" href="mailto:zjh041106@qq.com">zjh041106@qq.com</a></p>
+        <span class="tip-label">已发布</span>
+        <p>汉化版 0.4.0-beta 已发布，<strong>安装包与便携版内容一致</strong>，按习惯选其一即可。首发版本仍在跟进上游，遇到译文错漏或界面显示异常，欢迎发邮件反馈：<a class="tip-mail" href="mailto:zjh041106@qq.com">zjh041106@qq.com</a></p>
       </aside>
     </div>
 
@@ -922,6 +1043,7 @@
         <a class="chap-back" href="index.html"><span class="chev-l" aria-hidden="true">‹</span> 返回首页</a>
         <a href="#features">功能</a>
         <a href="#scopes">八种仪表</a>
+        <a href="#get">下载</a>
         <a href="#specs">规格</a>
         <a href="#about">关于原版</a>
       </div>
@@ -981,6 +1103,72 @@
       <p class="panel-note">截图取自软件原版（英文界面），用于说明各功能的位置与界面结构。汉化以桌面版界面与说明文本为主；插件版与终端界面如何处理，确定后会另行说明。</p>
     </section>
 
+    <!-- ============ 获取方式：原版、汉化安装包、汉化便携版，三路并列 ============ -->
+    <section class="get" id="get">
+      <div class="get-head">
+        <h2>获取方式</h2>
+        <p>同一款软件提供三种获取方式：希望直接使用中文界面，按习惯在安装包与便携版里选一个即可，两者内容一致；需要对照原文或自行配置，则取用官方原版。</p>
+      </div>
+
+      <div class="products">
+
+        <!-- 01 官方原版：跳转官网自行下载（次要动作，描边按钮，金色实心留给本站的两个下载入口） -->
+        <article class="card">
+          <div class="card-head">
+            <span class="no">01</span>
+            <span class="tag">官方原版</span>
+          </div>
+          <h3>软件本体（未汉化）</h3>
+          <p class="desc">上游发布的原始安装包，界面为英文，未作任何改动。需要对照原文、自行配置或自行处理汉化，均以此版本为基础。</p>
+          <ul class="spec-list">
+            <li>官方原始版本，未经修改</li>
+            <li>界面语言：English</li>
+            <li>许可证：GPL-3.0</li>
+          </ul>
+          <div class="card-foot">
+            <a class="btn btn-ghost" href="https://astramusic.dev/prism" target="_blank" rel="noopener">前往官网</a>
+          </div>
+        </article>
+
+        <!-- 02 汉化安装包：腾讯云直链，点按钮即下载 -->
+        <article class="card card--featured">
+          <div class="card-head">
+            <span class="no">02</span>
+            <span class="tag tag--accent">推荐</span>
+          </div>
+          <h3>汉化版 · 安装包</h3>
+          <p class="desc">已内置中文界面，双击安装并自动创建开始菜单项与卸载项，适合固定在一台机器上长期使用。版本对应上游 0.4.0-beta。</p>
+          <ul class="spec-list">
+            <li>.exe 安装程序，双击即可安装</li>
+            <li>自动创建开始菜单项与卸载项</li>
+            <li>含完整中文界面，Windows 版</li>
+          </ul>
+          <div class="card-foot">
+            <a class="btn btn-primary" href="https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/Prism%20Setup%200.4.0-beta.exe" data-dl-gate data-dl-mac="可下载本站「官方原版」，原生支持 macOS / Linux">下载安装包</a>
+          </div>
+        </article>
+
+        <!-- 03 汉化便携版：腾讯云直链，点按钮即下载 -->
+        <article class="card">
+          <div class="card-head">
+            <span class="no">03</span>
+            <span class="tag">免安装</span>
+          </div>
+          <h3>汉化版 · 便携版</h3>
+          <p class="desc">解压后直接运行，不写入系统、不留安装记录，可放入 U 盘随身携带；与安装包内容一致，只是打包方式不同。</p>
+          <ul class="spec-list">
+            <li>.zip 压缩包，解压即用</li>
+            <li>不写入系统，可放入 U 盘</li>
+            <li>与安装包界面、功能一致</li>
+          </ul>
+          <div class="card-foot">
+            <a class="btn btn-primary" href="https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/Prism-0.4.0-beta-win.zip" data-dl-gate data-dl-mac="可下载本站「官方原版」，原生支持 macOS / Linux">下载便携版</a>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
     <!-- ============ 规格 ============ -->
     <section class="specs" id="specs">
       <h2>规格</h2>
@@ -995,7 +1183,7 @@
         </div>
         <div class="spec-row">
           <dt>平台</dt>
-          <dd>Windows · macOS · Linux</dd>
+          <dd>Windows · macOS · Linux（汉化版目前仅提供 Windows）</dd>
         </div>
         <div class="spec-row">
           <dt>输入</dt>
@@ -1003,11 +1191,15 @@
         </div>
         <div class="spec-row">
           <dt>界面语言</dt>
-          <dd>中文（汉化制作中）· English（官方原版）</dd>
+          <dd>中文（汉化版）· English（官方原版）</dd>
+        </div>
+        <div class="spec-row">
+          <dt>汉化版本</dt>
+          <dd>0.4.0-beta（安装包 / 便携版）</dd>
         </div>
         <div class="spec-row">
           <dt>发布状态</dt>
-          <dd>汉化制作中，预计 2026 年 12 月发布，在此之前不提供下载</dd>
+          <dd>已发布 · 2026 年 11 月 11 日，后续跟进上游更新</dd>
         </div>
         <div class="spec-row">
           <dt>许可证</dt>
@@ -1081,13 +1273,13 @@
         <div class="footer-col">
           <h4>公告</h4>
           <a href="notice.html">全部公告 · 10 条</a>
-          <a href="notice.html#notice-prism">Prism 汉化预告</a>
+          <a href="notice.html#notice-prism">Prism 中文汉化</a>
         </div>
         <div class="footer-col">
           <h4>关于</h4>
           <a href="index.html#about">工作室简介</a>
           <a href="index.html#about">联系方式</a>
-          <a href="https://github.com/harvey-music" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
         </div>
       </div>
 
@@ -1235,6 +1427,8 @@
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(fixLater);
     })();
   </script>
+
+  <!-- 下载闸门：安装包 / 压缩包点击后先弹「运行环境核对」，确认后才开始下载 -->
+  <script src="download-gate.js" defer></script>
 </body>
 </html>
-
