@@ -22,18 +22,6 @@
   },
   "items": [
     {
-      "id": "notice-20261111-1",
-      "date": "2026-11-11",
-      "tags": [
-        "站点公告"
-      ],
-      "title": "自动化发布测试",
-      "body": [
-        "```text 测试第一段 测试第二段 ```"
-      ],
-      "_issue": 1
-    },
-    {
       "id": "notice-silverdaw-hanhua",
       "date": "2026-11-08",
       "tags": [
