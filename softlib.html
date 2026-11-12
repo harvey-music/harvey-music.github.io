@@ -294,6 +294,9 @@
     .group-hint a { color: var(--text-mute); text-decoration: none; border-bottom: 1px solid var(--line-strong); }
     .group-hint a:hover { color: var(--accent); border-bottom-color: var(--accent-line); }
 
+    /* 下载方式那段的关键词：提亮一档、加重，别被当成可跳过的说明 */
+    .group-hint b { color: var(--text-dim); font-weight: 600; }
+
     /* ---------- 访问提示：外网站点打不开时走邮箱 ---------- */
     .tip {
       display: flex;
@@ -404,7 +407,7 @@
     .chip:active { transform: scale(0.96); }
 
     .chip:focus-visible,
-    .app:focus-visible {
+    .app-btn:focus-visible {
       outline: 2px solid var(--accent-line-strong);
       outline-offset: 2px;
     }
@@ -420,10 +423,11 @@
       position: relative;
       display: flex;
       flex-direction: column;
-      gap: 7px;
-      /* 正方形：宽度由网格决定，高度跟随宽度 */
-      aspect-ratio: 1 / 1;
-      padding: 16px;
+      gap: 6px;
+      /* 方格：宽度由网格决定，高度跟随宽度。
+         底部多了一行「官网 / 下载」双按钮，比例调高一点才装得下 */
+      aspect-ratio: 1 / 1.1;
+      padding: 14px;
       overflow: hidden;
       border: 1px solid var(--line);
       border-radius: 20px;
@@ -449,8 +453,8 @@
       flex: none;
       display: grid;
       place-items: center;
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
       border: 1px solid var(--line-strong);
       border-radius: 13px;
       background: var(--bg-soft);
@@ -500,19 +504,107 @@
 
     .app-foot .sep { opacity: 0.6; }
 
-    /* 外链提示：右上角一个箭头，悬停变金 */
-    .app-ext {
-      position: absolute;
-      top: 15px;
-      right: 16px;
-      font-size: 0.78rem;
-      color: var(--text-ghost);
-      transition: color 0.22s, transform 0.22s;
+    /* 操作行：官网 / 下载安装包，两列等宽，贴在卡片底部 */
+    .app-acts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-top: 2px;
     }
 
-    .app:hover .app-ext {
+    .app-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 6px 4px;
+      border: 1px solid var(--line-strong);
+      border-radius: 9px;
+      background: var(--bg-soft);
+      color: var(--text-dim);
+      font-size: 0.71rem;
+      font-weight: 600;
+      line-height: 1.25;
+      text-align: center;
+      text-decoration: none;
+      white-space: nowrap;
+      overflow: hidden;
+      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.16s;
+    }
+
+    .app-btn:hover {
+      border-color: var(--accent-line);
+      background: var(--gold-wash-soft);
       color: var(--accent);
-      transform: translate(1px, -1px);
+    }
+
+    .app-btn:active { transform: scale(0.96); }
+
+    /* 下载是主操作：金底深字，和站内其他主按钮同一套 */
+    .app-btn-dl {
+      border-color: var(--accent-line);
+      background: var(--accent-grad);
+      color: var(--on-accent);
+    }
+
+    .app-btn-dl:hover {
+      border-color: var(--accent-line-strong);
+      background: var(--accent-grad-hover);
+      color: var(--on-accent);
+    }
+
+    /* 安装包还没上架：虚线弱化，点一下给“正在加急投放”的提示 */
+    .app-btn-dl.is-pending {
+      border-style: dashed;
+      border-color: var(--line-strong);
+      background: transparent;
+      color: var(--text-mute);
+    }
+
+    .app-btn-dl.is-pending:hover {
+      border-color: var(--warn-line);
+      background: var(--warn-wash);
+      color: var(--warn);
+    }
+
+    /* 外链提示：箭头跟在「官方网站」按钮后面，悬停轻推一下 */
+    .app-ext {
+      font-size: 0.74rem;
+      line-height: 1;
+      transition: transform 0.22s;
+    }
+
+    .app-btn:hover .app-ext { transform: translate(1px, -1px); }
+
+    /* ---------- 轻提示：点还没上架的「下载安装包」时浮出来 ----------
+       出现在视口底部，3 秒后自己淡出，不挡操作、不打断滚动 */
+    .dl-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 26px;
+      z-index: 80;
+      max-width: min(560px, calc(100vw - 32px));
+      padding: 12px 18px;
+      border: 1px solid var(--warn-line);
+      border-radius: 14px;
+      background: rgba(23, 24, 28, 0.96);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
+      color: var(--text);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      text-align: center;
+      opacity: 0;
+      visibility: hidden;
+      transform: translate(-50%, 14px);
+      transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+    }
+
+    .dl-toast.is-on {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, 0);
     }
 
     /* ---------- 窄屏：两列，方格外边距收一点 ---------- */
@@ -523,12 +615,14 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 12px;
       }
-      .app { padding: 13px; border-radius: 17px; gap: 6px; }
-      .app-icon { width: 38px; height: 38px; border-radius: 11px; font-size: 0.74rem; }
+      .app { padding: 12px; border-radius: 17px; gap: 5px; aspect-ratio: 1 / 1.14; }
+      .app-icon { width: 34px; height: 34px; border-radius: 10px; font-size: 0.7rem; }
       .app-name { font-size: 0.86rem; }
       .app-desc { font-size: 0.74rem; -webkit-line-clamp: 2; }
-      .app-foot { font-size: 0.68rem; }
-      .app-ext { top: 12px; right: 13px; }
+      .app-foot { font-size: 0.64rem; }
+      .app-acts { gap: 5px; }
+      .app-btn { padding: 5px 3px; border-radius: 8px; font-size: 0.64rem; gap: 2px; }
+      .app-ext { font-size: 0.64rem; }
       /* 提示块在窄屏改成上下两行，邮箱不挤在标签右边 */
       .tip { flex-direction: column; gap: 4px; font-size: 0.82rem; padding: 12px 14px; margin-bottom: 26px; }
       .tip-label { line-height: 1.6; }
@@ -598,7 +692,7 @@
         <h2>全部条目</h2>
         <span class="count" id="lib-count">共 18 个条目</span>
       </div>
-      <p class="group-hint">点击卡片前往项目官网或仓库，许可与版本以各项目发布页为准；站内汉化与下载整理进度见 <a href="notice.html">公告栏</a>。</p>
+      <p class="group-hint">每个条目给两种取法：怕站内转存的安装包来路不明，点<b>「官方网站」</b>自己核对后下载最稳妥；官网打不开，或嫌注册、跳转、限速麻烦，就直接点<b>「下载安装包」</b>，文件与各项目官方发布一致。</p>
 
       <!-- 分类筛选：点一下只留该类条目，再点「全部」恢复 -->
       <div class="chips" role="group" aria-label="按用途筛选">
@@ -611,149 +705,203 @@
 
       <!-- 应用方格：正方形卡片。加条目照抄一节，data-cat 与筛选按钮的 data-cat 保持一致 -->
       <div class="lib-grid" id="lib-grid">
-        <a class="app" href="https://www.7-zip.org/" target="_blank" rel="noopener" data-cat="系统工具">
+        <div class="app" data-cat="系统工具" data-key="7z">
           <span class="app-icon" aria-hidden="true">7Z</span>
           <span class="app-name">7-Zip</span>
           <span class="app-desc">压缩解压，格式支持最全。</span>
           <span class="app-foot">系统工具 · LGPL</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://www.7-zip.org/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://www.7-zip.org/" data-dl="7z">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://github.com/microsoft/PowerToys" target="_blank" rel="noopener" data-cat="系统工具">
+        <div class="app" data-cat="系统工具" data-key="powertoys">
           <span class="app-icon" aria-hidden="true">PT</span>
           <span class="app-name">PowerToys</span>
           <span class="app-desc">微软官方 Windows 工具集。</span>
           <span class="app-foot">系统工具 · MIT</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://github.com/microsoft/PowerToys" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://github.com/microsoft/PowerToys/releases/latest" data-dl="powertoys">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://rufus.ie/" target="_blank" rel="noopener" data-cat="系统工具">
+        <div class="app" data-cat="系统工具" data-key="rufus">
           <span class="app-icon" aria-hidden="true">RU</span>
           <span class="app-name">Rufus</span>
           <span class="app-desc">把镜像写入 U 盘做启动盘。</span>
           <span class="app-foot">系统工具 · GPL-3.0</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://rufus.ie/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://rufus.ie/" data-dl="rufus">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://www.ventoy.net/" target="_blank" rel="noopener" data-cat="系统工具">
+        <div class="app" data-cat="系统工具" data-key="ventoy">
           <span class="app-icon" aria-hidden="true">VE</span>
           <span class="app-name">Ventoy</span>
           <span class="app-desc">一个 U 盘放多个系统镜像。</span>
           <span class="app-foot">系统工具 · GPL-3.0</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://www.ventoy.net/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://www.ventoy.net/" data-dl="ventoy">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://keepassxc.org/" target="_blank" rel="noopener" data-cat="系统工具">
+        <div class="app" data-cat="系统工具" data-key="keepassxc">
           <span class="app-icon" aria-hidden="true">KX</span>
           <span class="app-name">KeePassXC</span>
           <span class="app-desc">密码存在本地，不上传云端。</span>
           <span class="app-foot">系统工具 · GPL</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://keepassxc.org/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://keepassxc.org/download/" data-dl="keepassxc">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://obsproject.com/" target="_blank" rel="noopener" data-cat="影音与图像">
+        <div class="app" data-cat="影音与图像" data-key="obs">
           <span class="app-icon" aria-hidden="true">OBS</span>
           <span class="app-name">OBS Studio</span>
           <span class="app-desc">录屏与直播推流工具。</span>
           <span class="app-foot">影音与图像 · GPL-2.0</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://obsproject.com/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://obsproject.com/download" data-dl="obs">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://www.videolan.org/vlc/" target="_blank" rel="noopener" data-cat="影音与图像">
+        <div class="app" data-cat="影音与图像" data-key="vlc">
           <span class="app-icon" aria-hidden="true">VLC</span>
           <span class="app-name">VLC</span>
           <span class="app-desc">几乎什么格式都能放。</span>
           <span class="app-foot">影音与图像 · GPL-2.0</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://www.videolan.org/vlc/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://www.videolan.org/vlc/download-windows.html" data-dl="vlc">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://handbrake.fr/" target="_blank" rel="noopener" data-cat="影音与图像">
+        <div class="app" data-cat="影音与图像" data-key="handbrake">
           <span class="app-icon" aria-hidden="true">HB</span>
           <span class="app-name">HandBrake</span>
           <span class="app-desc">视频转码与压缩，预设齐全。</span>
           <span class="app-foot">影音与图像 · GPL-2.0</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://handbrake.fr/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://handbrake.fr/downloads.php" data-dl="handbrake">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://www.audacityteam.org/" target="_blank" rel="noopener" data-cat="影音与图像">
+        <div class="app" data-cat="影音与图像" data-key="audacity">
           <span class="app-icon" aria-hidden="true">AU</span>
           <span class="app-name">Audacity</span>
           <span class="app-desc">音频录制与剪辑，多轨编辑。</span>
           <span class="app-foot">影音与图像 · GPL-2.0</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://www.audacityteam.org/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://www.audacityteam.org/download/" data-dl="audacity">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://krita.org/" target="_blank" rel="noopener" data-cat="影音与图像">
+        <div class="app" data-cat="影音与图像" data-key="krita">
           <span class="app-icon" aria-hidden="true">KR</span>
           <span class="app-name">Krita</span>
           <span class="app-desc">数字绘画与插画创作。</span>
           <span class="app-foot">影音与图像 · GPL-3.0</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://krita.org/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://krita.org/en/download/" data-dl="krita">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://www.qbittorrent.org/" target="_blank" rel="noopener" data-cat="网络与传输">
+        <div class="app" data-cat="网络与传输" data-key="qbittorrent">
           <span class="app-icon" aria-hidden="true">QB</span>
           <span class="app-name">qBittorrent</span>
           <span class="app-desc">无广告的 BT 客户端。</span>
           <span class="app-foot">网络与传输 · GPL-2.0</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://www.qbittorrent.org/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://www.qbittorrent.org/download" data-dl="qbittorrent">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://motrix.app/" target="_blank" rel="noopener" data-cat="网络与传输">
+        <div class="app" data-cat="网络与传输" data-key="motrix">
           <span class="app-icon" aria-hidden="true">MO</span>
           <span class="app-name">Motrix</span>
           <span class="app-desc">界面简洁的多线程下载器。</span>
           <span class="app-foot">网络与传输 · MIT</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://motrix.app/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://motrix.app/" data-dl="motrix">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://syncthing.net/" target="_blank" rel="noopener" data-cat="网络与传输">
+        <div class="app" data-cat="网络与传输" data-key="syncthing">
           <span class="app-icon" aria-hidden="true">SY</span>
           <span class="app-name">Syncthing</span>
           <span class="app-desc">点对点同步，不经服务器。</span>
           <span class="app-foot">网络与传输 · MPL-2.0</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://syncthing.net/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://syncthing.net/downloads/" data-dl="syncthing">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://www.wireshark.org/" target="_blank" rel="noopener" data-cat="网络与传输">
+        <div class="app" data-cat="网络与传输" data-key="wireshark">
           <span class="app-icon" aria-hidden="true">WS</span>
           <span class="app-name">Wireshark</span>
           <span class="app-desc">抓包与网络协议分析。</span>
           <span class="app-foot">网络与传输 · GPL-2.0</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://www.wireshark.org/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://www.wireshark.org/download.html" data-dl="wireshark">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://notepad-plus-plus.org/" target="_blank" rel="noopener" data-cat="文档与效率">
+        <div class="app" data-cat="文档与效率" data-key="notepadpp">
           <span class="app-icon" aria-hidden="true">N+</span>
           <span class="app-name">Notepad++</span>
           <span class="app-desc">轻量文本与代码编辑器。</span>
           <span class="app-foot">文档与效率 · GPL-3.0</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://notepad-plus-plus.org/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://notepad-plus-plus.org/downloads/" data-dl="notepadpp">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://www.sumatrapdfreader.org/free-pdf-reader" target="_blank" rel="noopener" data-cat="文档与效率">
+        <div class="app" data-cat="文档与效率" data-key="sumatrapdf">
           <span class="app-icon" aria-hidden="true">SP</span>
           <span class="app-name">SumatraPDF</span>
           <span class="app-desc">启动快的 PDF 阅读器。</span>
           <span class="app-foot">文档与效率 · AGPL-3.0</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://www.sumatrapdfreader.org/free-pdf-reader" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://www.sumatrapdfreader.org/download-free-pdf-viewer" data-dl="sumatrapdf">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://getsharex.com/" target="_blank" rel="noopener" data-cat="文档与效率">
+        <div class="app" data-cat="文档与效率" data-key="sharex">
           <span class="app-icon" aria-hidden="true">SX</span>
           <span class="app-name">ShareX</span>
           <span class="app-desc">截图、录屏与上传。</span>
           <span class="app-foot">文档与效率 · GPL-3.0</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://getsharex.com/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://getsharex.com/" data-dl="sharex">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
-        <a class="app" href="https://github.com/microsoft/terminal" target="_blank" rel="noopener" data-cat="文档与效率">
+        <div class="app" data-cat="文档与效率" data-key="terminal">
           <span class="app-icon" aria-hidden="true">WT</span>
           <span class="app-name">Windows Terminal</span>
           <span class="app-desc">标签式命令行窗口。</span>
           <span class="app-foot">文档与效率 · MIT</span>
-          <span class="app-ext" aria-hidden="true">↗</span>
-        </a>
+          <span class="app-acts">
+            <a class="app-btn" href="https://github.com/microsoft/terminal" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://github.com/microsoft/terminal/releases/latest" data-dl="terminal">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
 
 
 
@@ -930,6 +1078,102 @@
           });
           apply(chip.getAttribute('data-cat'));
         });
+      });
+    })();
+  </script>
+
+  <!-- ============ 软件库下载按钮 ============
+       两个按钮是 HTML 里静态写好的：
+         · 官方网站 → 普通外链，不依赖 JS
+         · 下载安装包 → 默认 pending（虚线弱化），配合下方提示
+       直链统一放在 data/downloads.json：填了 url 才变成真下载，
+       没填的点了只给一句「正在加急投放」。
+       好处是以后往站内传安装包只改 JSON，这个页面一个字都不用动。 -->
+  <script>
+    (function () {
+      var LIST_URL = 'data/downloads.json';
+      var cards = [].slice.call(document.querySelectorAll('#lib-grid .app'));
+      if (!cards.length) return;
+
+      function cardName(card) {
+        var el = card.querySelector('.app-name');
+        return el ? el.textContent.trim() : '';
+      }
+
+      /* ---------- 底部轻提示：复用同一个节点，连点也只显示一条 ---------- */
+      var toastEl = null;
+      var toastTimer = 0;
+
+      function toast(msg) {
+        if (!toastEl) {
+          toastEl = document.createElement('div');
+          toastEl.className = 'dl-toast';
+          // role=status + aria-live：读屏软件会把这句话念出来
+          toastEl.setAttribute('role', 'status');
+          toastEl.setAttribute('aria-live', 'polite');
+          document.body.appendChild(toastEl);
+        }
+        toastEl.textContent = msg;
+        toastEl.classList.remove('is-on');
+        void toastEl.offsetWidth; // 强制重排，连续点击时淡入动画能重放
+        toastEl.classList.add('is-on');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+          toastEl.classList.remove('is-on');
+        }, 3400);
+      }
+
+      /* ---------- 先补无障碍文案，两个按钮才分得清 ---------- */
+      cards.forEach(function (card) {
+        var name = cardName(card);
+        if (!name) return;
+        var site = card.querySelector('.app-btn:not(.app-btn-dl)');
+        var dl = card.querySelector('.app-btn-dl');
+        if (site) site.title = '前往 ' + name + ' 官方网站';
+        if (dl) {
+          dl.title = '下载 ' + name + ' 安装包';
+          dl.setAttribute('aria-label', '下载 ' + name + ' 安装包');
+        }
+      });
+
+      /* ---------- 读直链清单：读不到就全保持 pending，页面照常可用 ---------- */
+      fetch(LIST_URL, { cache: 'no-cache' })
+        .then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          var items = (data && data.items) || {};
+          cards.forEach(function (card) {
+            var dl = card.querySelector('.app-btn-dl');
+            if (!dl) return;
+            var item = items[dl.getAttribute('data-dl')];
+            if (!item || !item.url) return;
+
+            var name = cardName(card);
+            var meta = [];
+            if (item.ver) meta.push('v' + item.ver);
+            if (item.size) meta.push(item.size);
+
+            dl.href = item.url;
+            dl.classList.remove('is-pending');
+            dl.title = '下载 ' + name + ' 安装包' + (meta.length ? '（' + meta.join(' · ') + '）' : '');
+          });
+        })
+        .catch(function () {
+          /* 清单缺失或被拦截：保持 pending，点按钮照样有提示，不影响其它功能 */
+        });
+
+      /* ---------- 还没上架的点一下：拦下跳转，给一句正在加急投放 ---------- */
+      document.addEventListener('click', function (ev) {
+        var node = ev.target;
+        if (!node || !node.closest) return;
+        var btn = node.closest('.app-btn-dl.is-pending');
+        if (!btn) return;
+        ev.preventDefault();
+        var card = btn.closest('.app');
+        var name = card ? cardName(card) : '这个软件';
+        toast('「' + name + '」的安装包正在加急投放，稍后就能从站内直接下载。现在可以先点左边的「官方网站」取。');
       });
     })();
   </script>

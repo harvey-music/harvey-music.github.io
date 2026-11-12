@@ -1,0 +1,24 @@
+{
+  "_hint": "软件库「下载安装包」按钮的直链。url 留空的条目，页面上点「下载」会提示「正在加急投放中」。将来把 exe 传到腾讯云后，只改这里的 url / file / size / ver 即可，不用动 HTML。",
+  "updated": "2026-11-12",
+  "items": {
+    "7z": { "name": "7-Zip", "ver": "", "file": "", "size": "", "url": "" },
+    "powertoys": { "name": "PowerToys", "ver": "", "file": "", "size": "", "url": "" },
+    "rufus": { "name": "Rufus", "ver": "", "file": "", "size": "", "url": "" },
+    "ventoy": { "name": "Ventoy", "ver": "", "file": "", "size": "", "url": "" },
+    "keepassxc": { "name": "KeePassXC", "ver": "", "file": "", "size": "", "url": "" },
+    "obs": { "name": "OBS Studio", "ver": "", "file": "", "size": "", "url": "" },
+    "vlc": { "name": "VLC", "ver": "", "file": "", "size": "", "url": "" },
+    "handbrake": { "name": "HandBrake", "ver": "", "file": "", "size": "", "url": "" },
+    "audacity": { "name": "Audacity", "ver": "", "file": "", "size": "", "url": "" },
+    "krita": { "name": "Krita", "ver": "", "file": "", "size": "", "url": "" },
+    "qbittorrent": { "name": "qBittorrent", "ver": "", "file": "", "size": "", "url": "" },
+    "motrix": { "name": "Motrix", "ver": "", "file": "", "size": "", "url": "" },
+    "syncthing": { "name": "Syncthing", "ver": "", "file": "", "size": "", "url": "" },
+    "wireshark": { "name": "Wireshark", "ver": "", "file": "", "size": "", "url": "" },
+    "notepadpp": { "name": "Notepad++", "ver": "", "file": "", "size": "", "url": "" },
+    "sumatrapdf": { "name": "SumatraPDF", "ver": "", "file": "", "size": "", "url": "" },
+    "sharex": { "name": "ShareX", "ver": "", "file": "", "size": "", "url": "" },
+    "terminal": { "name": "Windows Terminal", "ver": "", "file": "", "size": "", "url": "" }
+  }
+}
