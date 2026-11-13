@@ -678,7 +678,7 @@
     <!-- 欢迎区 -->
     <header class="hero">
       <h1>软件库</h1>
-      <p>常用开源工具按用途分类整理，列明许可协议与官方来源。</p>
+      <p>常用工具按用途分类整理，列明许可协议与官方来源。</p>
     </header>
 
     <!-- 访问提示：GitHub / 境外站点打不开时改走邮箱 -->
@@ -690,16 +690,16 @@
     <section class="group">
       <div class="group-head">
         <h2>全部条目</h2>
-        <span class="count" id="lib-count">共 18 个条目</span>
+        <span class="count" id="lib-count">共 24 个条目</span>
       </div>
       <p class="group-hint">每个条目给两种取法：怕站内转存的安装包来路不明，点<b>「官方网站」</b>自己核对后下载最稳妥；官网打不开，或嫌注册、跳转、限速麻烦，就直接点<b>「下载安装包」</b>，文件与各项目官方发布一致。</p>
 
       <!-- 分类筛选：点一下只留该类条目，再点「全部」恢复 -->
       <div class="chips" role="group" aria-label="按用途筛选">
-        <button class="chip" type="button" data-cat="all" aria-pressed="true">全部 18</button>
-        <button class="chip" type="button" data-cat="系统工具" aria-pressed="false">系统工具 5</button>
+        <button class="chip" type="button" data-cat="all" aria-pressed="true">全部 24</button>
+        <button class="chip" type="button" data-cat="系统工具" aria-pressed="false">系统工具 10</button>
         <button class="chip" type="button" data-cat="影音与图像" aria-pressed="false">影音与图像 5</button>
-        <button class="chip" type="button" data-cat="网络与传输" aria-pressed="false">网络与传输 4</button>
+        <button class="chip" type="button" data-cat="网络与传输" aria-pressed="false">网络与传输 5</button>
         <button class="chip" type="button" data-cat="文档与效率" aria-pressed="false">文档与效率 4</button>
       </div>
 
@@ -757,6 +757,61 @@
           <span class="app-acts">
             <a class="app-btn" href="https://keepassxc.org/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
             <a class="app-btn app-btn-dl is-pending" href="https://keepassxc.org/download/" data-dl="keepassxc">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
+
+        <div class="app" data-cat="系统工具" data-key="bcuninstaller">
+          <span class="app-icon" aria-hidden="true">BCU</span>
+          <span class="app-name">BCUninstaller</span>
+          <span class="app-desc">批量卸载软件，顺手清残留。</span>
+          <span class="app-foot">系统工具 · Apache-2.0</span>
+          <span class="app-acts">
+            <a class="app-btn" href="https://github.com/BCUninstaller/Bulk-Crap-Uninstaller" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://github.com/BCUninstaller/Bulk-Crap-Uninstaller/releases/latest" data-dl="bcuninstaller">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
+
+        <div class="app" data-cat="系统工具" data-key="coretemp">
+          <span class="app-icon" aria-hidden="true">CT</span>
+          <span class="app-name">Core Temp</span>
+          <span class="app-desc">盯着 CPU 每颗核心的温度。</span>
+          <span class="app-foot">系统工具 · 免费软件</span>
+          <span class="app-acts">
+            <a class="app-btn" href="https://www.alcpu.com/CoreTemp/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://www.alcpu.com/CoreTemp/" data-dl="coretemp">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
+
+        <div class="app" data-cat="系统工具" data-key="ddu">
+          <span class="app-icon" aria-hidden="true">DDU</span>
+          <span class="app-name">DDU</span>
+          <span class="app-desc">安全模式下彻底清显卡驱动。</span>
+          <span class="app-foot">系统工具 · 免费软件</span>
+          <span class="app-acts">
+            <a class="app-btn" href="https://www.wagnardsoft.com/display-driver-uninstaller-ddu" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://www.wagnardsoft.com/display-driver-uninstaller-ddu" data-dl="ddu">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
+
+        <div class="app" data-cat="系统工具" data-key="freemove">
+          <span class="app-icon" aria-hidden="true">FM</span>
+          <span class="app-name">FreeMove</span>
+          <span class="app-desc">文件夹搬去别的盘，路径不变。</span>
+          <span class="app-foot">系统工具 · MIT</span>
+          <span class="app-acts">
+            <a class="app-btn" href="https://github.com/imDema/FreeMove" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://github.com/imDema/FreeMove/releases/latest" data-dl="freemove">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
+
+        <div class="app" data-cat="系统工具" data-key="wiztree">
+          <span class="app-icon" aria-hidden="true">WZ</span>
+          <span class="app-name">WizTree</span>
+          <span class="app-desc">直读 MFT，几秒扫完整块盘。</span>
+          <span class="app-foot">系统工具 · 个人免费</span>
+          <span class="app-acts">
+            <a class="app-btn" href="https://diskanalyzer.com/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://diskanalyzer.com/download" data-dl="wiztree">下载安装包<span aria-hidden="true">↓</span></a>
           </span>
         </div>
 
@@ -834,6 +889,17 @@
           <span class="app-acts">
             <a class="app-btn" href="https://motrix.app/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
             <a class="app-btn app-btn-dl is-pending" href="https://motrix.app/" data-dl="motrix">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
+
+        <div class="app" data-cat="网络与传输" data-key="idm">
+          <span class="app-icon" aria-hidden="true">IDM</span>
+          <span class="app-name">IDM</span>
+          <span class="app-desc">多线程下载，接管浏览器点击。</span>
+          <span class="app-foot">网络与传输 · 付费软件</span>
+          <span class="app-acts">
+            <a class="app-btn" href="https://www.internetdownloadmanager.com/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
+            <a class="app-btn app-btn-dl is-pending" href="https://www.internetdownloadmanager.com/download.html" data-dl="idm">下载安装包<span aria-hidden="true">↓</span></a>
           </span>
         </div>
 

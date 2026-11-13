@@ -53,7 +53,7 @@ Arthur Studio 亚瑟工作室
 - `url` 一填上，按钮就自动从虚线变金色实心，点击直接开始下载
 - `ver` / `size` 会拼进鼠标悬停提示，例如「下载 7-Zip 安装包（v26.06 · 1.6 MB）」
 - `name` 只是给维护者看的，可以不填
-- **key（`7z`、`powertoys` …）必须和 `softlib.html` 里卡片的 `data-key` 对得上**，共 18 个
+- **key（`7z`、`powertoys` …）必须和 `softlib.html` 里卡片的 `data-key` 对得上**，共 24 个
 - 改了 JSON 但页面还显示「待上架」时，多半是浏览器缓存：页面对这份 JSON 用了 `no-cache`，强制刷新（Ctrl+F5）即可
 
 ## 本地预览
