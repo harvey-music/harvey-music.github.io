@@ -27,7 +27,8 @@ Supabase：Auth（账号） + Postgres（profiles / messages / user_roles）
 | 5 | `05_fix_ip_leak.sql` | 把 `messages` 的 select 收窄成列级，并建站长专用 `gb_admin_posts()`。**修补 `author_ip` / `author_ua` 被任何访客读走的漏洞，必做** |
 | 6 | `06_admin_mfa.sql` | 站长两步验证的数据库侧强制：没过 TOTP（JWT 里没有 `aal2`）时 `private.is_admin()` 返回 false。**建议做**，见 2.7 |
 | 7 | `07_hide_profile_flags.sql` | 把 `profiles` 的 select 收窄成列级（只剩 id / username / bio / created_at）。自己的信任状态走 `gb_my_profile()`，后台用户列表走 `gb_admin_users()`。**建议做**，见 3 的 13–15 条 |
-| 8 | `99_verify.sql` | 只读自查，逐项对照注释里的"应该是" |
+| 8 | `08_admin_reset_password.sql` | 后台一键重置密码：`gb_admin_users()` 补邮箱列 + 新增 `gb_admin_reset_password()`（改 `auth.users.encrypted_password` 并清掉该用户的 `auth.sessions`）。**可选但很省事**，见第 4 节「重置密码」 |
+| 9 | `99_verify.sql` | 只读自查，逐项对照注释里的"应该是" |
 
 `02` 结尾有一句 `notify pgrst, 'reload schema'`，让接口立刻读到新表结构，不用等缓存过期。
 
@@ -125,6 +126,7 @@ curl -s "$URL/auth/v1/token?grant_type=password" \
 | 13 | 匿名读信任 / 限制标记 | GET `/rest/v1/profiles?select=id,username,trust_level,is_banned` | 401/403：`permission denied for table profiles`（07 之后列级授权；只读 `username` 仍是 200） |
 | 14 | 匿名调「我的资料」接口 | POST `/rest/v1/rpc/gb_my_profile` | 401/403，`anon` 没有执行权；就算登录了也只能拿到自己那一行 |
 | 15 | 普通用户调站长用户列表 | POST `/rest/v1/rpc/gb_admin_users`（普通用户的 `$TOKEN`） | 400：仅站长可以执行该操作 |
+| 16 | 匿名调重置密码接口 | POST `/rest/v1/rpc/gb_admin_reset_password`，body `{"p_user_id":"<任意 uid>","p_new_password":"12345678"}` | 401/403（`anon` 没有执行权，08 之后；同一条用普通用户的 `$TOKEN` 则是 400：仅站长可以执行该操作） |
 
 第 4、6、7、8 条是整套设计的核心：**状态由触发器改写、正文发布后锁死、
 提权只能走 security definer 函数、函数内部再判一次站长**。
@@ -146,17 +148,32 @@ insert into public.banned_words (word, severity) values
 on conflict do nothing;
 ```
 
-### 手动重置密码（本站不发邮件，只能站长来）
+### 重置密码（本站不发邮件，站长来）
+
+**推荐：后台一键**（执行过 `08_admin_reset_password.sql` 之后）
+
+1. 对方把注册邮箱发过来（`account.html` 登录框下面写着联系方式）；
+2. 打开 `admin.html` → 「用户」→ 找到那一行（列表现在带邮箱）→ 点「重置密码」；
+3. 弹窗里已经预填了一个 12 位随机临时密码，点确认后复制发给对方（也可以自己改）；
+4. 对方的旧登录态同一瞬间被清掉（`delete from auth.sessions`），必须用临时密码重新登录再自行修改。
+
+每次重置都写 `moderation_log`（`action = 'admin_reset_password'`），事后可查。
+
+**兜底：直接写 SQL**（08 还没执行、或者后台进不去时）
 
 ```sql
 -- 1) 确认邮箱（顺便解决"未验证"状态）
 update auth.users set email_confirmed_at = coalesce(email_confirmed_at, now())
 where lower(email) = lower('对方邮箱');
 
--- 2) 直接改密码（pgcrypto 装在 extensions schema 里）
+-- 2) 直接改密码（pgcrypto 装在 extensions schema 里；cost 10 与 GoTrue 一致）
 update auth.users
-set encrypted_password = extensions.crypt('新的临时密码', extensions.gen_salt('bf'))
+set encrypted_password = extensions.crypt('新的临时密码', extensions.gen_salt('bf', 10))
 where lower(email) = lower('对方邮箱');
+
+-- 3) 顺手清掉旧登录态，否则对方手上的 refresh token 还能用
+delete from auth.sessions
+where user_id = (select id from auth.users where lower(email) = lower('对方邮箱'));
 ```
 
 改完让对方用临时密码登录，并提醒他自行更改。
@@ -214,13 +231,15 @@ left join auth.users u on u.id = r.user_id;
 | 页面样式错乱 | 忘了引 `guestbook.css` / `subpage.css` | 首页只要 `guestbook.css`，三个新页两样都要 |
 | 后台卡在"两步验证没有准备好" | 控制台没启用 TOTP，或 `06` 没执行 | 见 2.7；启用 TOTP 后刷新 `admin.html` |
 | 站长自己被"仅站长可以执行该操作"挡住 | 已启用强制，但这次登录没输验证器（aal1） | 刷新 `admin.html` 输一次 6 位码；验证器丢了见 4.4 |
+| 后台「重置密码」报 `function extensions.crypt(text, text) does not exist` | pgcrypto 没启用，或不在 `extensions` schema | Database → Extensions 打开 pgcrypto，重跑 `08_admin_reset_password.sql` |
+| 重置完对方还"像登录着" | 他那边还开着旧页面 | 旧 `auth.sessions` 已删，刷新任意页面就会回到未登录；让他用临时密码重登 |
 
 ---
 
 ## 6. 这一期没做的
 
 - 头像上传（现在是昵称首字 + 哈希色块，不占存储也不涉黄图审核）
-- 邮件通知、密码自助找回（全程不发信，靠站长手动重置）
+- 邮件通知、密码自助找回（全程不发信；改密码靠后台一键重置，见第 4 节）
 - 楼中楼 / 点赞 / 举报按钮
 - Turnstile 人机验证（见 2.5）
 - 用户之间的互相关注、公开个人主页路由（目前是"我的主页"）

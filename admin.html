@@ -119,6 +119,29 @@
         <div data-user-list style="margin-top:14px"></div>
       </section>
 
+      <!-- ============ 重置密码弹窗（站长专属） ============
+           为什么要在这里做：本站全程不发邮件，Supabase 控制台的
+           "Reset password" 是发信，发不出去。这个弹窗直接调 RPC 改密码。 -->
+      <dialog class="adm-dialog" data-reset-dialog>
+        <form class="adm-dialog-inner" data-reset-form>
+          <h2 class="panel-title">重置密码</h2>
+          <p class="form-hint" data-reset-target></p>
+          <label class="field">
+            <span>临时密码（至少 8 位，把这一串发给对方）</span>
+            <input type="text" name="password" minlength="8" maxlength="64" required
+                   autocomplete="off" spellcheck="false">
+          </label>
+          <p class="form-hint">
+            确认后对方所有设备会被强制退出登录，需要立刻用这个临时密码重新登录并自行修改。
+          </p>
+          <div class="adm-dialog-actions">
+            <button class="btn btn-ghost" type="button" data-reset-cancel>取消</button>
+            <button class="btn btn-primary" type="submit" data-reset-submit>确认重置</button>
+          </div>
+          <p class="form-msg" data-reset-msg role="status"></p>
+        </form>
+      </dialog>
+
       <p class="form-msg" data-admin-msg role="status"></p>
 
       <p class="form-hint" style="margin-top:18px">

@@ -101,3 +101,8 @@ select has_column_privilege('anon',          'public.profiles', 'trust_level', '
        has_function_privilege('authenticated', 'public.gb_my_profile()',  'execute')      as user_call_my_profile,   -- t
        has_function_privilege('anon',          'public.gb_admin_users()', 'execute')      as anon_call_admin_users;  -- f
 
+-- L. 站长一键重置密码（08_admin_reset_password.sql 之后）
+-- anon 应为 f、authenticated 应为 t。报 function does not exist 就是 08 还没执行。
+select has_function_privilege('anon',          'public.gb_admin_reset_password(uuid, text)', 'execute') as anon_call_reset,  -- f
+       has_function_privilege('authenticated', 'public.gb_admin_reset_password(uuid, text)', 'execute') as user_call_reset;  -- t
+

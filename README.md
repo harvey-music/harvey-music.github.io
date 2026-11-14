@@ -80,12 +80,13 @@ python -m http.server 8000
 | `db/05_fix_ip_leak.sql` | 把 `messages` 的 select 收窄成列级 + 站长专用 IP 列表 RPC（堵 `author_ip` 泄露） |
 | `db/06_admin_mfa.sql` | 站长两步验证（TOTP）的数据库侧强制：没过验证器时 `is_admin()` 返回 false |
 | `db/07_hide_profile_flags.sql` | 把 `profiles` 的 select 收窄成列级（堵 `trust_level` / `is_banned` 被匿名读走）+ `gb_my_profile()` / `gb_admin_users()` |
+| `db/08_admin_reset_password.sql` | 后台一键重置用户密码（本站不发邮件，控制台的 Reset password 用不了）+ `gb_admin_users()` 补邮箱列 |
 | `db/99_verify.sql` | 只读验收自查 |
 | `vendor/supabase.js` | supabase-js 本地副本（不走 CDN，国内加载稳定） |
 | `supabase-client.js` | 连接、登录态、格式化等公共小工具 |
 | `guestbook.js` | 首页留言板 + 可复用的留言条渲染器 |
-| `account.html` / `account.js` | 登录、注册、个人主页 |
-| `admin.html` / `admin.js` | 站长审核后台 |
+| `account.html` / `account.js` | 登录、注册、个人主页（忘记密码的指引也在登录框下面） |
+| `admin.html` / `admin.js` | 站长审核后台（审核、信任 / 限制、一键重置密码） |
 | `privacy.html` | 隐私说明 |
 | `guestbook.css` / `subpage.css` | 新增样式（首页只多引一个 guestbook.css） |
 

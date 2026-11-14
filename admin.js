@@ -241,21 +241,22 @@
 
     rows.forEach(function (u) {
       var row = el('div', 'adm-user');
+      var isSelf = u.id === (currentUser && currentUser.id);
 
       var av = el('span', 'gb-avatar', core.firstChar(u.username));
       av.style.setProperty('--gb-hue', core.hueOf(u.username));
 
       var main = el('div', 'adm-user-main');
       main.appendChild(el('div', 'adm-user-name', u.username));
-      main.appendChild(el('div', 'adm-user-sub',
-        '注册于 ' + core.fmtTime(u.created_at).slice(0, 10) +
-        (u.id === (currentUser && currentUser.id) ? ' · 这是你自己' : '')));
+
+      var sub = '注册于 ' + core.fmtTime(u.created_at).slice(0, 10);
+      if (u.email) sub += ' · ' + u.email;
+      if (isSelf) sub += ' · 这是你自己';
+      main.appendChild(el('div', 'adm-user-sub', sub));
 
       var actions = el('div', 'adm-actions');
       if (u.trust_level >= 1) actions.appendChild(el('span', 'adm-tag adm-tag--ok', '信任'));
       if (u.is_banned) actions.appendChild(el('span', 'adm-tag adm-tag--warn', '已限制'));
-
-      var isSelf = u.id === (currentUser && currentUser.id);
 
       var trustBtn = el('button', 'btn btn-ghost btn--sm', u.trust_level >= 1 ? '取消信任' : '信任此人');
       trustBtn.type = 'button';
@@ -271,13 +272,119 @@
         setBan(u.id, !u.is_banned, banBtn);
       });
 
+      var resetBtn = el('button', 'btn btn-ghost btn--sm', '重置密码');
+      resetBtn.type = 'button';
+      resetBtn.addEventListener('click', function () {
+        openResetDialog(u, isSelf);
+      });
+
       actions.appendChild(trustBtn);
       actions.appendChild(banBtn);
+      actions.appendChild(resetBtn);
 
       row.appendChild(av);
       row.appendChild(main);
       row.appendChild(actions);
       userList.appendChild(row);
+    });
+  }
+
+  /* ---------- 重置用户密码 ----------
+     本站不发邮件，Supabase 控制台的 Reset password（那一步是发信）用不了。
+     改成站长在后台直接设一个临时密码（RPC: gb_admin_reset_password），
+     函数内部会清掉对方所有 auth.sessions —— 旧登录态立刻失效。 */
+  var resetDialog = document.querySelector('[data-reset-dialog]');
+  var resetForm = document.querySelector('[data-reset-form]');
+  var resetTargetEl = document.querySelector('[data-reset-target]');
+  var resetMsgEl = document.querySelector('[data-reset-msg]');
+  var resetCancelBtn = document.querySelector('[data-reset-cancel]');
+  var resetUser = null;
+  var resetIsSelf = false;
+
+  function resetSay(text, kind) {
+    if (!resetMsgEl) return;
+    resetMsgEl.textContent = text || '';
+    resetMsgEl.className = 'form-msg' + (kind ? ' is-' + kind : '');
+  }
+
+  // 12 位随机临时密码：去掉 0/O/1/l/I 这类容易看错的字符
+  function genPassword(n) {
+    var chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var out = '';
+    var i;
+    if (window.crypto && window.crypto.getRandomValues) {
+      var buf = new Uint32Array(n);
+      window.crypto.getRandomValues(buf);
+      for (i = 0; i < n; i++) out += chars.charAt(buf[i] % chars.length);
+      return out;
+    }
+    for (i = 0; i < n; i++) out += chars.charAt(Math.floor(Math.random() * chars.length));
+    return out;
+  }
+
+  function closeResetDialog() {
+    if (!resetDialog) return;
+    if (typeof resetDialog.close === 'function') resetDialog.close();
+    else resetDialog.removeAttribute('open');
+  }
+
+  function openResetDialog(u, isSelf) {
+    if (!resetDialog || !resetForm) return;
+    resetUser = u;
+    resetIsSelf = !!isSelf;
+
+    var input = resetForm.querySelector('input[name="password"]');
+    if (input) input.value = genPassword(12);
+
+    if (resetTargetEl) {
+      resetTargetEl.textContent = '正在为「' + u.username + '」' +
+        (u.email ? '（' + u.email + '）' : '') + '设置临时密码。';
+    }
+    resetSay('');
+
+    if (typeof resetDialog.showModal === 'function') resetDialog.showModal();
+    else resetDialog.setAttribute('open', '');
+
+    if (input) { input.focus(); input.select(); }
+  }
+
+  if (resetCancelBtn) {
+    resetCancelBtn.addEventListener('click', closeResetDialog);
+  }
+
+  if (resetForm) {
+    resetForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!resetUser) return;
+
+      var input = resetForm.querySelector('input[name="password"]');
+      var pwd = input ? input.value.trim() : '';
+      if (pwd.length < 8) {
+        resetSay('临时密码至少 8 位。', 'error');
+        return;
+      }
+
+      var btn = resetForm.querySelector('[data-reset-submit]');
+      if (btn) { btn.disabled = true; btn.textContent = '正在重置…'; }
+      resetSay('正在重置…');
+
+      sb.rpc('gb_admin_reset_password', { p_user_id: resetUser.id, p_new_password: pwd })
+        .then(function (res) {
+          if (res.error) throw res.error;
+
+          var tip = '已重置。把这一串发给对方：' + pwd;
+          if (resetIsSelf) tip += '（这是你自己，当前登录会被踢下线，用新密码重新登录即可）';
+          resetSay(tip, 'ok');
+          setMsg('已重置「' + resetUser.username + '」的密码。', 'ok');
+
+          if (!resetIsSelf) loadUsers();
+        })
+        .catch(function (err) {
+          resetSay('重置失败：' + errText(err), 'error');
+        })
+        .then(function () {
+          if (btn) { btn.disabled = false; btn.textContent = '确认重置'; }
+        });
     });
   }
 
