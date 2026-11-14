@@ -21,6 +21,14 @@
           onCancel:  function () { … }       // 关闭后回到上一步（可选）
         });
 
+   用法三（换一套文案，框的结构不变）：
+        window.DOWNLOAD_GATE_COPY = {         // 页面级默认，放在调用本文件之前即可
+          intro: '…', can: ['…'], cannot: ['…'], note: '…'
+        };
+        // 或单次调用时临时覆盖：DownloadGate.confirm({ copy: { … } })
+        内置默认文案是按「汉化版 Windows 程序」写的；别的页面（如软件库）
+        收录的软件各不相同，用这一层把「汉化版 / 便携版」之类说法换掉。
+
    可访问性：role="alertdialog" + aria-modal，焦点陷阱，Esc 等同放弃，
             「继续」在锁定期间用 aria-disabled 而非 disabled（保持可聚焦、
             屏幕阅读器可读），倒计时结束用 aria-live 播报一次。
@@ -266,16 +274,19 @@
 
   function fillCopy(o) {
     var n = o.fileCount || 1;
-    var intro = COPY.intro;
+    // 页面级文案：o.copy 优先，其次 window.DOWNLOAD_GATE_COPY，最后用上面这份内置默认
+    var src = o.copy || window.DOWNLOAD_GATE_COPY || {};
+    var intro = src.intro || COPY.intro;
     if (n > 1) intro += '本次将开始 ' + n + ' 个下载。';
     refs.intro.textContent = intro;
 
-    var cannot = COPY.cannot.slice();
+    var can = (src.can || COPY.can).slice();
+    var cannot = (src.cannot || COPY.cannot).slice();
     if (o.macText) cannot[1] = 'macOS / Linux：' + o.macText;
 
-    fillList(refs.can, COPY.can);
+    fillList(refs.can, can);
     fillList(refs.cannot, cannot);
-    refs.note.textContent = COPY.note;
+    refs.note.textContent = src.note || COPY.note;
   }
 
   /* ---------------- 焦点陷阱 ---------------- */

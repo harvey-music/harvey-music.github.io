@@ -1188,6 +1188,24 @@
        没填的点了只给一句「正在加急投放」。
        好处是以后往站内传安装包只改 JSON，这个页面一个字都不用动。 -->
   <script>
+    /* ---------- 下载闸门文案 ----------
+       框的结构、尺寸、倒计时与两个汉化软件页完全一样（同一份 download-gate.js），
+       只把内置那套「汉化版 / 便携版」的说法换成软件库的实情：
+       这里收录的 24 个安装包全部是 Windows 版。 */
+    window.DOWNLOAD_GATE_COPY = {
+      intro: '请先核对当前系统能否运行本软件，确认后再开始下载。软件库里收录的全部是 Windows 版。',
+      can: [
+        'Windows 10 / 11（64 位）可直接运行',
+        '安装包与便携包均取自各项目官方发布，未做二次修改',
+        '被 SmartScreen 拦下时，点「更多信息 → 仍要运行」即可'
+      ],
+      cannot: [
+        'Windows 7 / 8 / 8.1：多数新版本已不再支持，需要时到官网翻历史版本',
+        'macOS / Linux：本站只收 Windows 版，其他平台请到「官方网站」下载',
+        '手机 / 平板：无法运行，请在 Windows 电脑上打开本页'
+      ]
+    };
+
     (function () {
       var LIST_URL = 'data/downloads.json';
       var cards = [].slice.call(document.querySelectorAll('#lib-grid .app'));
@@ -1255,6 +1273,12 @@
 
             dl.href = item.url;
             dl.classList.remove('is-pending');
+            /* 有直链的按钮才挂「运行环境核对」闸门：点一下先弹框，
+               用户看完确认后才真正开始下载（与 prism / silverdaw 两页同一套）。
+               没 url 的按钮不挂，点下去仍是「正在加急投放」的轻提示。 */
+            dl.setAttribute('data-dl-gate', '');
+            dl.setAttribute('data-dl-mac', '本站只提供 Windows 版，其他平台请到「官方网站」下载');
+            if (window.DownloadGate) window.DownloadGate.attach(dl);
             dl.title = '下载 ' + name + ' 安装包' + (meta.length ? '（' + meta.join(' · ') + '）' : '');
           });
         })
@@ -1275,5 +1299,8 @@
       });
     })();
   </script>
+
+  <!-- 下载闸门：与 prism / silverdaw 两页同一份脚本，样式与交互完全一致 -->
+  <script src="download-gate.js" defer></script>
 </body>
 </html>
