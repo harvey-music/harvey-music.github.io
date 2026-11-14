@@ -35,17 +35,24 @@
     node.className = 'form-msg' + (kind ? ' is-' + kind : '');
   }
 
-  function busy(form, on) {
+  /* ---------- 提交中：按钮转圈 + 表单 aria-busy ----------
+     label 可以指定阶段文案（正在登录… / 正在进入…），
+     第一次调用时把原始文案存进 data-label，恢复时还原。 */
+  function busy(form, on, label) {
     if (!form) return;
     var btn = form.querySelector('button[type="submit"]');
     if (!btn) return;
     if (on) {
-      btn.dataset.label = btn.textContent;
+      if (!btn.dataset.label) btn.dataset.label = btn.textContent;
       btn.disabled = true;
-      btn.textContent = '处理中…';
+      btn.classList.add('is-loading');
+      btn.textContent = label || '处理中…';
+      form.setAttribute('aria-busy', 'true');
     } else {
       btn.disabled = false;
+      btn.classList.remove('is-loading');
       btn.textContent = btn.dataset.label || '提交';
+      form.removeAttribute('aria-busy');
     }
   }
 
@@ -69,18 +76,22 @@
       var email = loginForm.elements.email.value.trim();
       var password = loginForm.elements.password.value;
 
-      setMsg(guestMsg, '');
-      busy(loginForm, true);
+      setMsg(guestMsg, '正在验证账号，请稍候…');
+      busy(loginForm, true, '正在登录…');
 
       sb.auth.signInWithPassword({ email: email, password: password }).then(function (res) {
-        busy(loginForm, false);
         if (res.error) {
+          busy(loginForm, false);
           setMsg(guestMsg, core.errorText(res.error), 'error');
           return;
         }
-        setMsg(guestMsg, '登录成功，正在返回…', 'ok');
+        // 成功后不急着跳：先把按钮换成"正在进入…"，让反馈看得见
         var next = new URLSearchParams(window.location.search).get('next');
-        window.location.href = core.safeNext(next, 'account.html');
+        busy(loginForm, true, '正在进入…');
+        setMsg(guestMsg, '登录成功，正在进入…', 'ok');
+        window.setTimeout(function () {
+          window.location.href = core.safeNext(next, 'account.html');
+        }, 600);
       });
     });
   }
@@ -102,29 +113,32 @@
         return;
       }
 
-      setMsg(guestMsg, '');
-      busy(signupForm, true);
+      setMsg(guestMsg, '正在创建账号，请稍候…');
+      busy(signupForm, true, '正在注册…');
 
       sb.auth.signUp({
         email: email,
         password: password,
         options: { data: { username: username } }
       }).then(function (res) {
-        busy(signupForm, false);
-
         if (res.error) {
+          busy(signupForm, false);
           setMsg(guestMsg, core.errorText(res.error), 'error');
           return;
         }
 
         // 站点配置成"不发确认邮件"时，这里会直接带回 session
         if (res.data && res.data.session) {
-          setMsg(guestMsg, '注册成功，正在进入你的主页…', 'ok');
           var next = new URLSearchParams(window.location.search).get('next');
-          window.location.href = core.safeNext(next, 'account.html');
+          busy(signupForm, true, '正在进入…');
+          setMsg(guestMsg, '注册成功，正在进入你的主页…', 'ok');
+          window.setTimeout(function () {
+            window.location.href = core.safeNext(next, 'account.html');
+          }, 700);
           return;
         }
 
+        busy(signupForm, false);
         setMsg(guestMsg,
           '账号已创建，但项目的"确认邮件"还开着，而本站不发送邮件。请到 Supabase 控制台关闭 Confirm email 后再登录，或联系站长手动确认。',
           'error');
@@ -135,6 +149,11 @@
   /* ---------- 退出登录 ---------- */
   if (logoutBtn) {
     logoutBtn.addEventListener('click', function () {
+      if (logoutBtn.disabled) return;
+      logoutBtn.disabled = true;
+      logoutBtn.classList.add('is-loading');
+      logoutBtn.textContent = '正在退出…';
+      setMsg(userMsg, '正在退出登录，请稍候…');
       sb.auth.signOut().then(function () {
         window.location.href = 'index.html';
       });
@@ -176,10 +195,12 @@
 
   function withdrawMine(id, btnEl) {
     btnEl.disabled = true;
+    btnEl.classList.add('is-loading');
     btnEl.textContent = '撤回中…';
     sb.from('messages').update({ status: 'withdrawn' }).eq('id', id).then(function (res) {
       if (res.error) {
         btnEl.disabled = false;
+        btnEl.classList.remove('is-loading');
         btnEl.textContent = '撤回这条留言';
         setMsg(userMsg, '撤回失败：' + core.errorText(res.error), 'error');
         return;
@@ -252,8 +273,8 @@
         return;
       }
 
-      setMsg(userMsg, '');
-      busy(profileForm, true);
+      setMsg(userMsg, '正在保存…');
+      busy(profileForm, true, '正在保存…');
 
       sb.from('profiles')
         .update({ username: username, bio: bio })

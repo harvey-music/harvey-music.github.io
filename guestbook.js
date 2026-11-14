@@ -173,10 +173,12 @@
   /* ---------- 撤回自己的留言 ---------- */
   function withdraw(id, btnEl) {
     btnEl.disabled = true;
+    btnEl.classList.add('is-loading');
     btnEl.textContent = '撤回中…';
     sb.from('messages').update({ status: 'withdrawn' }).eq('id', id).then(function (res) {
       if (res.error) {
         btnEl.disabled = false;
+        btnEl.classList.remove('is-loading');
         btnEl.textContent = '撤回这条留言';
         setStatus('撤回失败：' + core.errorText(res.error), 'error');
         return;
@@ -235,6 +237,7 @@
       }
 
       btn.disabled = true;
+      btn.classList.add('is-loading');
       btn.textContent = '发布中…';
 
       sb.from('messages')
@@ -243,6 +246,7 @@
         .single()
         .then(function (res) {
           btn.disabled = false;
+          btn.classList.remove('is-loading');
           btn.textContent = '发布留言';
 
           if (res.error) {

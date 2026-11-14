@@ -303,6 +303,38 @@ body {
 .btn:active { transform: scale(0.97); }
 .btn:disabled { opacity: 0.55; cursor: default; transform: none; box-shadow: none; }
 
+/* ---------- 等待态：按钮里转圈 + 文案，避免"点了没反应" ---------- */
+.btn.is-loading,
+.gb-act.is-loading { pointer-events: none; }
+
+.btn.is-loading::before,
+.gb-act.is-loading::before {
+  content: "";
+  display: inline-block;
+  width: 0.78em;
+  height: 0.78em;
+  margin-right: 0.4em;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  vertical-align: -0.08em;
+  animation: btn-spin 0.7s linear infinite;
+}
+
+/* 转圈时别被 :disabled 的 0.55 透明度糊掉 */
+.btn.is-loading:disabled { opacity: 0.85; }
+
+/* 提交中，表单里的输入框变淡，暗示"先别改" */
+.form[aria-busy="true"] .field input,
+.form[aria-busy="true"] .field textarea { opacity: 0.55; }
+
+@keyframes btn-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn.is-loading::before,
+  .gb-act.is-loading::before { animation-duration: 2.4s; }
+}
+
 /* ---------- 后台：列表操作区 ---------- */
 .adm-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 .adm-meta { color: var(--text-faint); font-size: 0.8rem; margin-top: 8px; }
