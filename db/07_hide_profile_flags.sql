@@ -90,3 +90,6 @@ notify pgrst, 'reload schema';
 --   1) 匿名读 trust_level / is_banned 应变成 401 permission denied；
 --   2) 硬刷新 account.html，自己的「信任用户 / 已限制发言」仍正常显示（走 RPC）；
 --   3) 后台用户列表照旧（走 gb_admin_users），信任 / 限制按钮不受影响。
+--
+-- ⚠ 02_policies.sql 里给的是「表级」select。以后只要重跑了 02，
+--    就会把这里的收窄覆盖回表级授权，必须紧接着再跑一次本文件。
