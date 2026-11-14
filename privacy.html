@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arthur 工作室 - 隐私说明</title>
+  <meta name="description" content="Arthur 工作室留言板与账号体系收集哪些信息、存在哪里、如何删除。">
+  <meta name="theme-color" content="#0b0b0d">
+  <link rel="icon" href="logo-mark.png">
+  <link rel="stylesheet" href="subpage.css">
+  <link rel="stylesheet" href="guestbook.css">
+</head>
+
+<body>
+
+  <nav class="globalnav" id="globalnav" aria-label="主导航">
+    <div class="nav-inner">
+      <a class="nav-brand" href="index.html">
+        <img src="logo-mark.png" alt="" width="26" height="26">
+        Arthur 工作室
+      </a>
+
+      <div class="nav-links">
+        <a class="nav-link" href="index.html#hanhua">汉化</a>
+        <a class="nav-link" href="softlib.html">软件库</a>
+        <a class="nav-link" href="index.html#gonggao">公告</a>
+        <a class="nav-link" href="account.html">账号</a>
+        <a class="nav-link" href="index.html#about">关于</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <a class="page-back" href="index.html"><span class="chev-l" aria-hidden="true">‹</span> 返回首页</a>
+
+    <header class="hero">
+      <h1>隐私说明</h1>
+      <p>这个站点没有广告、没有统计脚本、没有用户画像。下面写清楚留言板与账号体系具体会碰到哪些数据。</p>
+    </header>
+
+    <section class="panel doc">
+      <h2>1. 收集哪些信息</h2>
+      <ul>
+        <li>注册时：邮箱、密码、昵称。密码由认证服务以哈希形式保存，本站任何人（包括站长）都看不到明文。</li>
+        <li>使用中：你填写的简介、发布的留言正文与时间。</li>
+        <li>风控：发表留言时的 IP 地址与浏览器标识（User-Agent），仅站长可见，用于识别刷屏和追责。</li>
+      </ul>
+      <p>不收集手机号、真实姓名、身份证件、位置、通讯录，也不接入任何第三方统计或广告 SDK。</p>
+
+      <h2>2. 存在哪里</h2>
+      <ul>
+        <li>页面本身是静态文件，托管在 GitHub Pages 上，不写 Cookie。</li>
+        <li>账号和留言存在 Supabase（数据库与认证服务），浏览器与服务器之间走 HTTPS。</li>
+        <li>登录状态保存在你自己浏览器的 localStorage 里；点「退出登录」即清除。</li>
+      </ul>
+
+      <h2>3. 谁看得到</h2>
+      <ul>
+        <li>公开：你的昵称、简介、已通过审核的留言。</li>
+        <li>仅你本人和站长：待审核、被拒绝的留言。</li>
+        <li>仅站长：邮箱、IP、User-Agent、审核与封禁记录。</li>
+      </ul>
+      <p>其他访客无法通过页面接口拿到你的邮箱、IP 或未公开的留言，这一点由数据库的行级权限策略保证，而不是靠前端隐藏。</p>
+
+      <h2>4. 用来做什么</h2>
+      <p>只用于展示留言、审核内容、防止刷屏与追责。不出售、不共享、不用于广告投放，也不做任何跨站跟踪。</p>
+
+      <h2>5. 保留与删除</h2>
+      <ul>
+        <li>留言可以随时自行撤回，撤回后不再公开展示。</li>
+        <li>想彻底删除账号与全部留言，请发邮件到 <a href="mailto:zjh041106@qq.com">zjh041106@qq.com</a>，注明注册邮箱，一般 7 个工作日内处理完。</li>
+        <li>被删除的留言在数据库中保留正文与操作记录，仅用于处理纠纷与滥用追溯，不再对外展示。</li>
+      </ul>
+
+      <h2>6. 第三方服务</h2>
+      <ul>
+        <li>Supabase：账号认证与数据存储。</li>
+        <li>GitHub Pages：静态页面托管。</li>
+        <li>如果注册页启用了人机验证，会加载 Cloudflare Turnstile 的脚本，它只用于判断"是不是真人"，不参与内容分析。</li>
+      </ul>
+
+      <h2>7. 未成年人</h2>
+      <p>未满 14 周岁的用户请在监护人陪同下使用，不要填写真实姓名、学校、住址等个人信息。</p>
+
+      <h2>8. 变更与联系</h2>
+      <p>本说明如有修改，会同步更新本页并在公告栏说明。任何疑问或数据相关请求，请联系 <a href="mailto:zjh041106@qq.com">zjh041106@qq.com</a>。</p>
+
+      <p style="margin-top:26px;color:var(--text-faint);font-size:0.82rem">最近更新：2026 年 11 月</p>
+    </section>
+
+  </div>
+
+  <script>
+    (function () {
+      var nav = document.getElementById('globalnav');
+      if (!nav) return;
+      function onScroll() { nav.classList.toggle('is-stuck', window.scrollY > 4); }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+  </script>
+</body>
+</html>

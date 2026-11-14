@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arthur 工作室 - 账号与主页</title>
+  <meta name="description" content="注册 Arthur 工作室账号，在留言板发言并维护自己的昵称与简介。">
+  <meta name="theme-color" content="#0b0b0d">
+  <link rel="icon" href="logo-mark.png">
+  <link rel="stylesheet" href="subpage.css">
+  <link rel="stylesheet" href="guestbook.css">
+</head>
+
+<body>
+
+  <!-- ============ 常驻顶部导航：与公告页同一套，「账号」为当前栏目 ============ -->
+  <nav class="globalnav" id="globalnav" aria-label="主导航">
+    <div class="nav-inner">
+      <a class="nav-brand" href="index.html">
+        <img src="logo-mark.png" alt="" width="26" height="26">
+        Arthur 工作室
+      </a>
+
+      <div class="nav-links">
+        <a class="nav-link" href="index.html#hanhua">汉化</a>
+        <a class="nav-link" href="softlib.html">软件库</a>
+        <a class="nav-link" href="index.html#gonggao">公告</a>
+        <a class="nav-link is-active" href="account.html" aria-current="page">账号</a>
+        <a class="nav-link" href="index.html#about">关于</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <a class="page-back" href="index.html"><span class="chev-l" aria-hidden="true">‹</span> 返回首页</a>
+
+    <header class="hero">
+      <h1>账号与主页</h1>
+      <p>用邮箱注册一个账号，就能在留言板发言，并维护自己的昵称与简介。</p>
+    </header>
+
+    <!-- ============ 未登录：登录 / 注册 ============ -->
+    <section class="panel" data-auth-guest>
+      <div class="tabs" role="tablist" aria-label="登录或注册">
+        <button class="tab is-active" type="button" data-tab="login">登录</button>
+        <button class="tab" type="button" data-tab="signup">注册</button>
+      </div>
+
+      <form class="form" data-form-login>
+        <label class="field">
+          <span>邮箱</span>
+          <input type="email" name="email" required autocomplete="username" placeholder="you@example.com">
+        </label>
+        <label class="field">
+          <span>密码</span>
+          <input type="password" name="password" required autocomplete="current-password" placeholder="至少 8 位">
+        </label>
+        <button class="btn btn-primary" type="submit">登录</button>
+      </form>
+
+      <form class="form" data-form-signup hidden>
+        <label class="field">
+          <span>昵称</span>
+          <input type="text" name="username" required minlength="3" maxlength="20"
+                 autocomplete="nickname" placeholder="3–20 个字符，会公开显示">
+        </label>
+        <label class="field">
+          <span>邮箱</span>
+          <input type="email" name="email" required autocomplete="username" placeholder="you@example.com">
+        </label>
+        <label class="field">
+          <span>密码</span>
+          <input type="password" name="password" required minlength="8"
+                 autocomplete="new-password" placeholder="至少 8 位">
+        </label>
+        <button class="btn btn-primary" type="submit">注册并登录</button>
+        <p class="form-hint">
+          本站不发送任何邮件，注册后直接就能用。密码只用于这里，请不要复用其他网站的密码。
+          注册即表示同意 <a href="privacy.html">隐私说明</a>。
+        </p>
+      </form>
+
+      <p class="form-msg" data-guest-msg role="status"></p>
+    </section>
+
+    <!-- ============ 已登录：个人主页 ============ -->
+    <section class="panel" data-auth-user hidden>
+      <div class="profile-head">
+        <span class="gb-avatar gb-avatar--lg" data-profile-avatar aria-hidden="true">?</span>
+        <div>
+          <h2 data-profile-name>加载中…</h2>
+          <p class="profile-meta" data-profile-meta></p>
+        </div>
+        <button class="btn btn-ghost" type="button" data-action-logout>退出登录</button>
+      </div>
+
+      <h3 class="panel-sub">资料</h3>
+      <form class="form" data-form-profile>
+        <label class="field">
+          <span>昵称</span>
+          <input type="text" name="username" required minlength="3" maxlength="20">
+        </label>
+        <label class="field">
+          <span>简介</span>
+          <textarea name="bio" rows="3" maxlength="200" placeholder="一句话介绍自己（可选，最多 200 字）"></textarea>
+        </label>
+        <button class="btn btn-primary" type="submit">保存</button>
+      </form>
+
+      <h3 class="panel-sub">我的留言</h3>
+      <ul class="gb-list" data-my-list></ul>
+    </section>
+
+    <p class="form-msg" data-user-msg role="status"></p>
+
+    <p class="form-hint" style="margin-top:22px">
+      忘记密码或登不进来？本站不发送邮件，请直接联系站长
+      <a href="mailto:zjh041106@qq.com">zjh041106@qq.com</a> 重置。
+    </p>
+
+    <noscript>
+      <p class="form-hint">账号功能需要启用 JavaScript 才能使用。</p>
+    </noscript>
+
+  </div>
+
+  <!-- ============ 导航滚动态：一滚动就补一条细线 ============ -->
+  <script>
+    (function () {
+      var nav = document.getElementById('globalnav');
+      if (!nav) return;
+      function onScroll() { nav.classList.toggle('is-stuck', window.scrollY > 4); }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+  </script>
+
+  <!-- supabase-js 放在仓库里，不用 CDN：国内加载稳、断网也能开 -->
+  <script src="vendor/supabase.js" defer></script>
+  <script src="supabase-client.js" defer></script>
+  <script src="guestbook.js" defer></script>
+  <script src="account.js" defer></script>
+</body>
+</html>

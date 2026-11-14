@@ -1,0 +1,161 @@
+/* ============================================================
+   留言板 / 账号 / 站长后台：新增组件样式
+   —— 只新增 .gb-* 等类名，不改动任何页面原有外观；
+   —— 颜色全部取全站变量（index.html 的 :root），换配色仍只改那一处。
+   ============================================================ */
+
+/* ---------- 容器 ---------- */
+.gb { display: grid; gap: 16px; }
+
+/* 输入区 / 未登录提示：与主推卡同色系，但更轻 */
+.gb-composer {
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(160deg, #17181c 0%, #101116 100%);
+}
+
+.gb-tip { color: var(--text-mute); font-size: 0.9rem; }
+.gb-tip a { color: var(--accent); text-decoration: none; }
+.gb-tip a:hover { text-decoration: underline; }
+
+/* ---------- 输入框 ---------- */
+.gb-textarea {
+  width: 100%;
+  min-height: 104px;
+  padding: 13px 15px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--bg-soft);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.94rem;
+  line-height: 1.75;
+  resize: vertical;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.gb-textarea::placeholder { color: var(--text-ghost); }
+
+.gb-textarea:focus {
+  outline: none;
+  border-color: var(--accent-line-strong);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.gb-submit-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.gb-submit-row .btn { margin-left: auto; }
+
+.gb-count { color: var(--text-faint); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+.gb-count.is-over { color: var(--danger); }
+
+.gb-hint { color: var(--text-faint); font-size: 0.8rem; }
+
+/* ---------- 状态行 ---------- */
+.gb-status {
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line-strong);
+  border-radius: 10px;
+  color: var(--text-mute);
+  font-size: 0.86rem;
+}
+
+.gb-status[hidden] { display: none; }
+.gb-status.is-ok { border-left-color: var(--accent); color: var(--text-dim); background: var(--gold-wash); }
+.gb-status.is-error { border-left-color: var(--danger); color: var(--danger); background: rgba(255, 156, 138, 0.07); }
+
+/* ---------- 列表 ---------- */
+.gb-list { list-style: none; display: grid; gap: 12px; margin: 0; padding: 0; }
+
+.gb-item {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 14px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+}
+
+/* 自己的留言（含待审）单独描金边，一眼能认出来 */
+.gb-item.is-own {
+  border-color: var(--accent-line);
+  background: linear-gradient(160deg, #1b1a15 0%, #14151a 100%);
+}
+
+/* 头像占位：首字 + 昵称哈希出来的色相，不存图、不占带宽 */
+.gb-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: hsl(var(--gb-hue, 42) 26% 23%);
+  color: hsl(var(--gb-hue, 42) 60% 76%);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  user-select: none;
+  flex: none;
+}
+
+.gb-avatar--lg { width: 56px; height: 56px; font-size: 1.35rem; }
+
+.gb-item-body { min-width: 0; }
+
+.gb-item-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.gb-name { font-weight: 600; font-size: 0.92rem; color: var(--text); }
+.gb-time { color: var(--text-ghost); font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+
+.gb-badge {
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--warn-line);
+  background: var(--warn-wash);
+  color: var(--warn);
+  font-size: 0.72rem;
+  line-height: 1.7;
+}
+
+.gb-badge--mine { border-color: var(--accent-line); background: var(--gold-wash); color: var(--accent); }
+.gb-badge--gone { border-color: var(--line-strong); background: transparent; color: var(--text-faint); }
+
+.gb-text {
+  margin-top: 8px;
+  color: var(--text-dim);
+  font-size: 0.92rem;
+  white-space: pre-wrap;    /* 保留用户自己敲的换行 */
+  overflow-wrap: anywhere;  /* 超长串不撑破卡片 */
+}
+
+.gb-act {
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-faint);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.gb-act:hover { color: var(--danger); }
+
+/* ---------- 加载更多 / 空状态 ---------- */
+.gb-more-wrap { display: flex; justify-content: center; }
+.gb-empty { padding: 28px 0; text-align: center; color: var(--text-faint); font-size: 0.88rem; }
+
+@media (max-width: 560px) {
+  .gb-item { grid-template-columns: 34px minmax(0, 1fr); gap: 11px; padding: 14px; }
+  .gb-avatar { width: 34px; height: 34px; font-size: 0.9rem; }
+}

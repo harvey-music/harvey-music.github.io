@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arthur 工作室 - 站长后台</title>
+  <!-- 后台不该被搜索引擎收录 -->
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0b0b0d">
+  <link rel="icon" href="logo-mark.png">
+  <link rel="stylesheet" href="subpage.css">
+  <link rel="stylesheet" href="guestbook.css">
+</head>
+
+<body>
+
+  <nav class="globalnav" id="globalnav" aria-label="主导航">
+    <div class="nav-inner">
+      <a class="nav-brand" href="index.html">
+        <img src="logo-mark.png" alt="" width="26" height="26">
+        Arthur 工作室
+      </a>
+
+      <div class="nav-links">
+        <a class="nav-link" href="index.html#hanhua">汉化</a>
+        <a class="nav-link" href="softlib.html">软件库</a>
+        <a class="nav-link" href="index.html#gonggao">公告</a>
+        <a class="nav-link" href="account.html">账号</a>
+        <a class="nav-link is-active" href="admin.html" aria-current="page">后台</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page page--wide">
+
+    <a class="page-back" href="index.html"><span class="chev-l" aria-hidden="true">‹</span> 返回首页</a>
+
+    <header class="hero">
+      <h1>站长后台</h1>
+      <p>新留言先在这里过一眼：放行后立刻出现在首页，拒绝与删除都不会公开展示。</p>
+    </header>
+
+    <!-- ============ 没权限时的门 ============ -->
+    <section class="panel" data-admin-gate hidden>
+      <h2 class="panel-title">需要站长权限</h2>
+      <p class="form-hint" data-gate-text>这个页面只有站长能看。</p>
+      <p style="margin-top:16px">
+        <a class="btn btn-ghost" href="account.html?next=admin.html">去登录</a>
+      </p>
+    </section>
+
+    <!-- ============ 审核区 ============ -->
+    <div data-admin-body hidden>
+
+      <section class="panel">
+        <h2 class="panel-title">待审核</h2>
+        <ul class="gb-list" data-pending-list></ul>
+      </section>
+
+      <section class="panel">
+        <h2 class="panel-title">最近的留言（含已发布 / 已拒绝 / 已删除）</h2>
+        <ul class="gb-list" data-all-list></ul>
+      </section>
+
+      <section class="panel">
+        <h2 class="panel-title">用户</h2>
+        <p class="form-hint">
+          「信任此人」之后，他发的留言不再需要审核，直接公开；「限制发言」会拦住新的留言，已有的不动。
+        </p>
+        <div data-user-list style="margin-top:14px"></div>
+      </section>
+
+      <p class="form-msg" data-admin-msg role="status"></p>
+
+      <p class="form-hint" style="margin-top:18px">
+        敏感词、角色变更这类低频操作为了稳妥仍走 SQL：
+        往 <code>public.banned_words</code> 插一行即可（severity 用 block 直接拒发，flag 只降级为待审）。
+        全部操作都会记进 <code>public.moderation_log</code>。
+      </p>
+    </div>
+
+    <noscript>
+      <p class="form-hint">后台需要启用 JavaScript 才能使用。</p>
+    </noscript>
+
+  </div>
+
+  <script>
+    (function () {
+      var nav = document.getElementById('globalnav');
+      if (!nav) return;
+      function onScroll() { nav.classList.toggle('is-stuck', window.scrollY > 4); }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+  </script>
+
+  <script src="vendor/supabase.js" defer></script>
+  <script src="supabase-client.js" defer></script>
+  <script src="guestbook.js" defer></script>
+  <script src="admin.js" defer></script>
+</body>
+</html>

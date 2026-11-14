@@ -62,3 +62,29 @@ Arthur Studio 亚瑟工作室
 python -m http.server 8000
 ```
 然后打开 http://localhost:8000
+
+## 留言板与账号（Supabase）
+
+第一期动态功能：邮箱 + 密码登录、个人主页、需要站长审核的公开留言板。
+零构建、零服务器成本；公开与否由数据库的行级权限（RLS）决定，不靠前端隐藏。
+
+留言规则：新用户（`trust_level = 0`）发的留言进入待审，只有作者本人和站长看得见，
+站长放行后才对所有人公开；站长本人和信任用户（`trust_level >= 1`）发的留言**直接公开**。
+命中 `banned_words` 里 `flag` 级敏感词时，哪怕站长也会被降回待审。
+
+| 文件 | 作用 |
+| --- | --- |
+| `db/01_schema.sql` | 表结构、索引、触发器、站长 RPC |
+| `db/02_policies.sql` | REVOKE / 列级 GRANT / RLS 策略 |
+| `db/03_grant_admin.sql` | 把某个邮箱设为站长 |
+| `db/99_verify.sql` | 只读验收自查 |
+| `vendor/supabase.js` | supabase-js 本地副本（不走 CDN，国内加载稳定） |
+| `supabase-client.js` | 连接、登录态、格式化等公共小工具 |
+| `guestbook.js` | 首页留言板 + 可复用的留言条渲染器 |
+| `account.html` / `account.js` | 登录、注册、个人主页 |
+| `admin.html` / `admin.js` | 站长审核后台 |
+| `privacy.html` | 隐私说明 |
+| `guestbook.css` / `subpage.css` | 新增样式（首页只多引一个 guestbook.css） |
+
+部署顺序、控制台必改项与越权测试清单见 [`db/README.md`](db/README.md)。
+
