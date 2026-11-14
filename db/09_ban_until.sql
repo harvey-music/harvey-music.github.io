@@ -266,7 +266,9 @@ as $fn$
          p.trust_level::smallint,
          -- 这里返回的是「有效封禁」：永久封或临时封未到期都算 true，
          -- 前端只判这一个字段就够了，不用自己算时间。
-         (p.is_banned or p.banned_until > now()) as is_banned,
+         -- coalesce 不能省：banned_until 是 null 时 (null > now()) 也是 null，
+         -- 直接用 or 会漏出 null，前端拿到的就不是真正的 boolean 了。
+         coalesce(p.is_banned or p.banned_until > now(), false) as is_banned,
          p.banned_until,
          p.ban_reason,
          p.created_at
@@ -306,7 +308,7 @@ begin
            p.username,
            u.email::text,
            p.trust_level::smallint,
-           (p.is_banned or p.banned_until > now()) as is_banned,
+           coalesce(p.is_banned or p.banned_until > now(), false) as is_banned,
            p.banned_until,
            p.ban_reason,
            p.created_at
