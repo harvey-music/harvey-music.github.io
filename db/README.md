@@ -24,7 +24,8 @@ Supabase：Auth（账号） + Postgres（profiles / messages / user_roles）
 | 2 | `02_policies.sql` | 收回默认权限 → 列级授权 → 开 RLS → 建策略。可重复执行 |
 | 3 | 先去 `account.html` 注册一个账号 | 注册成功后 `profiles` 里会自动出现你的昵称 |
 | 4 | `03_grant_admin.sql` | 把里面那行邮箱改成你注册用的，单独执行那一段 |
-| 5 | `99_verify.sql` | 只读自查，逐项对照注释里的"应该是" |
+| 5 | `05_fix_ip_leak.sql` | 把 `messages` 的 select 收窄成列级，并建站长专用 `gb_admin_posts()`。**修补 `author_ip` / `author_ua` 被任何访客读走的漏洞，必做** |
+| 6 | `99_verify.sql` | 只读自查，逐项对照注释里的"应该是" |
 
 `02` 结尾有一句 `notify pgrst, 'reload schema'`，让接口立刻读到新表结构，不用等缓存过期。
 
@@ -96,9 +97,15 @@ curl -s "$URL/auth/v1/token?grant_type=password" \
 | 6 | 改自己已发布留言的正文 | PATCH `{"body":"新内容"}` | 400：留言发布后不能修改正文 |
 | 7 | 自己给自己发信任 | PATCH `/rest/v1/profiles?id=eq.<自己>`，body 带 `"trust_level":1` | 400（列权限里没有 trust_level） |
 | 8 | 普通用户调审核接口 | POST `/rest/v1/rpc/gb_review` | 400：仅站长可以执行该操作 |
+| 9 | 匿名读作者 IP | GET `/rest/v1/messages?select=id,author_ip` | 401/403：`permission denied for table messages`（select 已收窄成列级） |
+| 10 | 登录用户读作者 IP | 同上但带 `$TOKEN` | 401/403，同样读不到（IP 只经 `gb_admin_posts()` 给站长） |
 
 第 4、6、7、8 条是整套设计的核心：**状态由触发器改写、正文发布后锁死、
 提权只能走 security definer 函数、函数内部再判一次站长**。
+
+第 9、10 条防的是另一类问题：**RLS 只过滤行、不过滤列**。所以"能读这一行"
+不等于"能读这一行的所有字段" —— 敏感列必须靠**列级 GRANT** 单独授权，
+否则任何一个拿到公开 key 的人都能 `?select=author_ip` 把所有人的 IP 读走。
 
 ---
 

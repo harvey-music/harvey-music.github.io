@@ -131,9 +131,43 @@
   }
 
   /* ---------- 数据加载 ---------- */
-  var FIELDS = 'id,body,status,created_at,author_id,author_ip,profiles!messages_author_fkey(username)';
+  // author_ip 已经不对客户端开放（列级授权，见 db/05_fix_ip_leak.sql），
+  // 所以站长列表改走 gb_admin_posts()：security definer 函数内部判权，
+  // 只有站长能拿到带 IP 的结果。
+  // 万一 05 还没执行（函数不存在），自动降级为直接读表 —— 功能照旧，只是没有 IP。
+  var FIELDS = 'id,body,status,created_at,author_id,profiles!messages_author_fkey(username)';
 
   function loadPosts() {
+    sb.rpc('gb_admin_posts').then(function (res) {
+      if (res.error) {
+        loadPostsFallback();
+        return;
+      }
+
+      // RPC 返回的是扁平行（username 在顶层），而渲染器要 profiles.username
+      var rows = (res.data || []).map(function (r) {
+        return {
+          id: r.id,
+          body: r.body,
+          status: r.status,
+          created_at: r.created_at,
+          published_at: r.published_at,
+          author_id: r.author_id,
+          author_ip: r.author_ip,
+          profiles: { username: r.username }
+        };
+      });
+
+      var pending = rows.filter(function (r) { return r.status === 'pending'; });
+      // 待审队列按「先来先审」排，全部列表按最新在前
+      pending.sort(function (a, b) { return new Date(a.created_at) - new Date(b.created_at); });
+
+      fillList(pendingList, pending, '没有待审留言。');
+      fillList(allList, rows, '还没有留言。');
+    });
+  }
+
+  function loadPostsFallback() {
     sb.from('messages')
       .select(FIELDS)
       .eq('status', 'pending')

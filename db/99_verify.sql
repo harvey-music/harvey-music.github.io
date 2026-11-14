@@ -14,7 +14,10 @@ where n.nspname = 'public'
 order by c.relname;
 
 -- B. 匿名与登录用户的动作权限
-select has_table_privilege('anon', 'public.messages', 'select')            as anon_read_messages,      -- t
+-- 注意：messages 的 select 现在是「列级」授权（05_fix_ip_leak.sql），
+--       所以这里的 has_table_privilege 返回 f 才是对的；
+--       "哪些列能读"看最后的 I 段。
+select has_table_privilege('anon', 'public.messages', 'select')            as anon_select_messages_tbl, -- f（列级授权，正常）
        has_table_privilege('anon', 'public.messages', 'insert')            as anon_insert_messages,    -- f
        has_table_privilege('anon', 'public.user_roles', 'select')          as anon_read_roles,         -- f
        has_table_privilege('anon', 'public.banned_words', 'select')        as anon_read_words,         -- f
@@ -60,3 +63,14 @@ select status, count(*) as n
 from public.messages
 group by status
 order by n desc;
+
+-- I. 敏感列是否还在对客户端开放（05_fix_ip_leak.sql 之后应全为 f）
+-- 这一段是那条 IP 泄露漏洞的回归检查：只要有一列是 t，就说明补丁没生效。
+select has_column_privilege('anon',          'public.messages', 'author_ip', 'select') as anon_read_ip,     -- f
+       has_column_privilege('anon',          'public.messages', 'author_ua', 'select') as anon_read_ua,     -- f
+       has_column_privilege('authenticated', 'public.messages', 'author_ip', 'select') as user_read_ip,     -- f
+       has_column_privilege('authenticated', 'public.messages', 'author_ua', 'select') as user_read_ua,     -- f
+       has_column_privilege('anon',          'public.messages', 'body',      'select') as anon_read_body,    -- t
+       has_column_privilege('authenticated', 'public.messages', 'body',      'select') as user_read_body,    -- t
+       has_function_privilege('anon', 'public.gb_admin_posts(text)', 'execute')        as anon_call_rpc;     -- f
+-- 最后一条要求 05 已执行（函数存在），否则会报 function does not exist。

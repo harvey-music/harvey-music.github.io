@@ -22,8 +22,13 @@ grant select on table public.profiles to anon, authenticated;
 grant update (username, bio) on table public.profiles to authenticated;
 
 -- 留言：匿名只读；登录用户可读、可发，但只能改 status 这一列。
-grant select on table public.messages to anon;
-grant select, insert on table public.messages to authenticated;
+-- 注意：select 必须是「列级」授权。RLS 只过滤行、不过滤列 ——
+-- 一旦给表级 select，author_ip / author_ua 就会连同正文一起暴露给
+-- 任何拿到 publishable key 的人（实测确认过，返回 200 带真实 IP）。
+-- 站长要看 IP 走 05_fix_ip_leak.sql 里的 gb_admin_posts()。
+grant select (id, body, status, created_at, published_at, author_id)
+  on table public.messages to anon, authenticated;
+grant insert on table public.messages to authenticated;
 grant update (status) on table public.messages to authenticated;
 
 -- 角色：登录用户可读，策略限制成只能读到自己的那一行
