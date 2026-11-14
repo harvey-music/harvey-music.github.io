@@ -486,6 +486,25 @@
       white-space: nowrap;
     }
 
+    /* 「我也在用」小标签：绝对定位钉在右上角，不进文档流，
+       长名字（BCUninstaller）就不会被挤成省略号 */
+    .app-tag {
+      position: absolute;
+      top: 11px;
+      right: 11px;
+      padding: 1px 8px;
+      border: 1px solid var(--accent-line);
+      border-radius: 999px;
+      background: var(--gold-wash);
+      color: var(--accent);
+      font-size: 0.62rem;
+      font-weight: 600;
+      line-height: 1.65;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
     .app-desc {
       font-size: 0.79rem;
       line-height: 1.55;
@@ -623,6 +642,7 @@
       .app { padding: 12px; border-radius: 17px; gap: 5px; aspect-ratio: 1 / 1.14; }
       .app-icon { width: 34px; height: 34px; padding: 3px; border-radius: 10px; }
       .app-name { font-size: 0.86rem; }
+      .app-tag { top: 8px; right: 8px; padding: 0 6px; font-size: 0.58rem; }
       .app-desc { font-size: 0.74rem; -webkit-line-clamp: 2; }
       .app-foot { font-size: 0.64rem; }
       .app-acts { gap: 5px; }
@@ -713,6 +733,7 @@
         <div class="app" data-cat="系统工具" data-key="7z">
           <img class="app-icon" src="images/soft/7z.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">7-Zip</span>
+          <span class="app-tag">我也在用</span>
           <span class="app-desc">压缩包打不开时交给它，rar、7z、zip 基本都能解。</span>
           <span class="app-foot">系统工具 · LGPL</span>
           <span class="app-acts">
@@ -768,6 +789,7 @@
         <div class="app" data-cat="系统工具" data-key="bcuninstaller">
           <img class="app-icon" src="images/soft/bcuninstaller.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">BCUninstaller</span>
+          <span class="app-tag">我也在用</span>
           <span class="app-desc">勾一批软件一次卸完，顺带清掉没删干净的残留。</span>
           <span class="app-foot">系统工具 · Apache-2.0</span>
           <span class="app-acts">
@@ -779,6 +801,7 @@
         <div class="app" data-cat="系统工具" data-key="coretemp">
           <img class="app-icon" src="images/soft/coretemp.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">Core Temp</span>
+          <span class="app-tag">我也在用</span>
           <span class="app-desc">实时看 CPU 每个核心多少度，散热正常与否一眼就知道。</span>
           <span class="app-foot">系统工具 · 免费软件</span>
           <span class="app-acts">
@@ -790,6 +813,7 @@
         <div class="app" data-cat="系统工具" data-key="ddu">
           <img class="app-icon" src="images/soft/ddu.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">DDU</span>
+          <span class="app-tag">我也在用</span>
           <span class="app-desc">换显卡、驱动装崩了，进安全模式把旧驱动彻底铲干净。</span>
           <span class="app-foot">系统工具 · 免费软件</span>
           <span class="app-acts">
@@ -801,6 +825,7 @@
         <div class="app" data-cat="系统工具" data-key="freemove">
           <img class="app-icon" src="images/soft/freemove.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">FreeMove</span>
+          <span class="app-tag">我也在用</span>
           <span class="app-desc">大文件夹挪到别的盘，软件照样认原来那个路径。</span>
           <span class="app-foot">系统工具 · MIT</span>
           <span class="app-acts">
@@ -834,6 +859,7 @@
         <div class="app" data-cat="影音与图像" data-key="vlc">
           <img class="app-icon" src="images/soft/vlc.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">VLC</span>
+          <span class="app-tag">我也在用</span>
           <span class="app-desc">视频音乐基本什么格式都能播，不用另装解码器。</span>
           <span class="app-foot">影音与图像 · GPL-2.0</span>
           <span class="app-acts">
@@ -900,6 +926,7 @@
         <div class="app" data-cat="网络与传输" data-key="idm">
           <img class="app-icon" src="images/soft/idm.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">IDM</span>
+          <span class="app-tag">我也在用</span>
           <span class="app-desc">下载能跑满速，浏览器里点一下就由它接手。</span>
           <span class="app-foot">网络与传输 · 付费软件</span>
           <span class="app-acts">
