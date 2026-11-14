@@ -86,3 +86,18 @@ select has_table_privilege('anon', 'private.admin_mfa_required', 'select')      
 select r.user_id, u.email, r.activated_at
 from private.admin_mfa_required r
 left join auth.users u on u.id = r.user_id;
+
+-- K. 资料表的信任 / 限制标记是否还对客户端开放（07_hide_profile_flags.sql 之后）
+-- 前四列要全为 f；username / bio 必须是 t，否则留言板和个人主页会白屏。
+-- 报 function does not exist 就是 07 还没执行。
+select has_column_privilege('anon',          'public.profiles', 'trust_level', 'select') as anon_read_trust,      -- f
+       has_column_privilege('anon',          'public.profiles', 'is_banned',   'select') as anon_read_ban,        -- f
+       has_column_privilege('authenticated', 'public.profiles', 'trust_level', 'select') as user_read_trust,      -- f
+       has_column_privilege('authenticated', 'public.profiles', 'is_banned',   'select') as user_read_ban,        -- f
+       has_column_privilege('anon',          'public.profiles', 'username',    'select') as anon_read_name,       -- t
+       has_column_privilege('authenticated', 'public.profiles', 'username',    'select') as user_read_name,       -- t
+       has_column_privilege('authenticated', 'public.profiles', 'bio',         'select') as user_read_bio,        -- t
+       has_function_privilege('anon',          'public.gb_my_profile()',  'execute')      as anon_call_my_profile,   -- f
+       has_function_privilege('authenticated', 'public.gb_my_profile()',  'execute')      as user_call_my_profile,   -- t
+       has_function_privilege('anon',          'public.gb_admin_users()', 'execute')      as anon_call_admin_users;  -- f
+

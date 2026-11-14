@@ -26,7 +26,8 @@ Supabase：Auth（账号） + Postgres（profiles / messages / user_roles）
 | 4 | `03_grant_admin.sql` | 把里面那行邮箱改成你注册用的，单独执行那一段 |
 | 5 | `05_fix_ip_leak.sql` | 把 `messages` 的 select 收窄成列级，并建站长专用 `gb_admin_posts()`。**修补 `author_ip` / `author_ua` 被任何访客读走的漏洞，必做** |
 | 6 | `06_admin_mfa.sql` | 站长两步验证的数据库侧强制：没过 TOTP（JWT 里没有 `aal2`）时 `private.is_admin()` 返回 false。**建议做**，见 2.7 |
-| 7 | `99_verify.sql` | 只读自查，逐项对照注释里的"应该是" |
+| 7 | `07_hide_profile_flags.sql` | 把 `profiles` 的 select 收窄成列级（只剩 id / username / bio / created_at）。自己的信任状态走 `gb_my_profile()`，后台用户列表走 `gb_admin_users()`。**建议做**，见 3 的 13–15 条 |
+| 8 | `99_verify.sql` | 只读自查，逐项对照注释里的"应该是" |
 
 `02` 结尾有一句 `notify pgrst, 'reload schema'`，让接口立刻读到新表结构，不用等缓存过期。
 
@@ -121,6 +122,9 @@ curl -s "$URL/auth/v1/token?grant_type=password" \
 | 10 | 登录用户读作者 IP | 同上但带 `$TOKEN` | 401/403，同样读不到（IP 只经 `gb_admin_posts()` 给站长） |
 | 11 | 站长只登录、没输验证器（aal1）就调审核 | POST `/rest/v1/rpc/gb_review`（站长账号的 `$TOKEN`） | 400：仅站长可以执行该操作 —— `is_admin()` 在 aal1 下是 false（06 之后） |
 | 12 | 匿名打开两步验证开关 | POST `/rest/v1/rpc/gb_admin_mfa_activate` | 401/403（`anon` 没有执行权） |
+| 13 | 匿名读信任 / 限制标记 | GET `/rest/v1/profiles?select=id,username,trust_level,is_banned` | 401/403：`permission denied for table profiles`（07 之后列级授权；只读 `username` 仍是 200） |
+| 14 | 匿名调「我的资料」接口 | POST `/rest/v1/rpc/gb_my_profile` | 401/403，`anon` 没有执行权；就算登录了也只能拿到自己那一行 |
+| 15 | 普通用户调站长用户列表 | POST `/rest/v1/rpc/gb_admin_users`（普通用户的 `$TOKEN`） | 400：仅站长可以执行该操作 |
 
 第 4、6、7、8 条是整套设计的核心：**状态由触发器改写、正文发布后锁死、
 提权只能走 security definer 函数、函数内部再判一次站长**。

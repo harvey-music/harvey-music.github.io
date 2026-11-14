@@ -79,6 +79,7 @@ python -m http.server 8000
 | `db/03_grant_admin.sql` | 把某个邮箱设为站长 |
 | `db/05_fix_ip_leak.sql` | 把 `messages` 的 select 收窄成列级 + 站长专用 IP 列表 RPC（堵 `author_ip` 泄露） |
 | `db/06_admin_mfa.sql` | 站长两步验证（TOTP）的数据库侧强制：没过验证器时 `is_admin()` 返回 false |
+| `db/07_hide_profile_flags.sql` | 把 `profiles` 的 select 收窄成列级（堵 `trust_level` / `is_banned` 被匿名读走）+ `gb_my_profile()` / `gb_admin_users()` |
 | `db/99_verify.sql` | 只读验收自查 |
 | `vendor/supabase.js` | supabase-js 本地副本（不走 CDN，国内加载稳定） |
 | `supabase-client.js` | 连接、登录态、格式化等公共小工具 |

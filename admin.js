@@ -197,65 +197,88 @@
   function loadUsers() {
     if (!userList) return;
 
+    // 07 之后 trust_level / is_banned 不再对表开放，站长列表走 RPC
+    Promise.resolve(sb.rpc('gb_admin_users')).then(function (res) {
+      if (res.error) {
+        var code = res.error.code || '';
+        var text = String(res.error.message || '');
+        // 只有「函数不存在」（07 还没执行）才降级；其他错误如实显示
+        if (code === 'PGRST202' || /could not find the function|does not exist/i.test(text)) {
+          loadUsersFallback();
+          return;
+        }
+        userList.innerHTML = '';
+        userList.appendChild(el('p', 'gb-empty', '用户列表读取失败：' + core.errorText(res.error)));
+        return;
+      }
+      renderUsers(res.data || []);
+    });
+  }
+
+  /* 07 没执行时（函数不存在）退回直读表：功能照旧，只是那两列还没收窄 */
+  function loadUsersFallback() {
     sb.from('profiles')
       .select('id,username,trust_level,is_banned,created_at')
       .order('created_at', { ascending: false })
       .limit(100)
       .then(function (res) {
-        userList.innerHTML = '';
-
         if (res.error) {
+          userList.innerHTML = '';
           userList.appendChild(el('p', 'gb-empty', '用户列表读取失败：' + core.errorText(res.error)));
           return;
         }
-
-        var rows = res.data || [];
-        if (!rows.length) {
-          userList.appendChild(el('p', 'gb-empty', '还没有用户。'));
-          return;
-        }
-
-        rows.forEach(function (u) {
-          var row = el('div', 'adm-user');
-
-          var av = el('span', 'gb-avatar', core.firstChar(u.username));
-          av.style.setProperty('--gb-hue', core.hueOf(u.username));
-
-          var main = el('div', 'adm-user-main');
-          main.appendChild(el('div', 'adm-user-name', u.username));
-          main.appendChild(el('div', 'adm-user-sub',
-            '注册于 ' + core.fmtTime(u.created_at).slice(0, 10) +
-            (u.id === (currentUser && currentUser.id) ? ' · 这是你自己' : '')));
-
-          var actions = el('div', 'adm-actions');
-          if (u.trust_level >= 1) actions.appendChild(el('span', 'adm-tag adm-tag--ok', '信任'));
-          if (u.is_banned) actions.appendChild(el('span', 'adm-tag adm-tag--warn', '已限制'));
-
-          var isSelf = u.id === (currentUser && currentUser.id);
-
-          var trustBtn = el('button', 'btn btn-ghost btn--sm', u.trust_level >= 1 ? '取消信任' : '信任此人');
-          trustBtn.type = 'button';
-          trustBtn.disabled = isSelf;
-          trustBtn.addEventListener('click', function () {
-            setTrust(u.id, u.trust_level >= 1 ? 0 : 1, trustBtn);
-          });
-
-          var banBtn = el('button', 'btn btn--danger btn--sm', u.is_banned ? '解除限制' : '限制发言');
-          banBtn.type = 'button';
-          banBtn.disabled = isSelf;
-          banBtn.addEventListener('click', function () {
-            setBan(u.id, !u.is_banned, banBtn);
-          });
-
-          actions.appendChild(trustBtn);
-          actions.appendChild(banBtn);
-
-          row.appendChild(av);
-          row.appendChild(main);
-          row.appendChild(actions);
-          userList.appendChild(row);
-        });
+        renderUsers(res.data || []);
       });
+  }
+
+  function renderUsers(rows) {
+    userList.innerHTML = '';
+
+    if (!rows.length) {
+      userList.appendChild(el('p', 'gb-empty', '还没有用户。'));
+      return;
+    }
+
+    rows.forEach(function (u) {
+      var row = el('div', 'adm-user');
+
+      var av = el('span', 'gb-avatar', core.firstChar(u.username));
+      av.style.setProperty('--gb-hue', core.hueOf(u.username));
+
+      var main = el('div', 'adm-user-main');
+      main.appendChild(el('div', 'adm-user-name', u.username));
+      main.appendChild(el('div', 'adm-user-sub',
+        '注册于 ' + core.fmtTime(u.created_at).slice(0, 10) +
+        (u.id === (currentUser && currentUser.id) ? ' · 这是你自己' : '')));
+
+      var actions = el('div', 'adm-actions');
+      if (u.trust_level >= 1) actions.appendChild(el('span', 'adm-tag adm-tag--ok', '信任'));
+      if (u.is_banned) actions.appendChild(el('span', 'adm-tag adm-tag--warn', '已限制'));
+
+      var isSelf = u.id === (currentUser && currentUser.id);
+
+      var trustBtn = el('button', 'btn btn-ghost btn--sm', u.trust_level >= 1 ? '取消信任' : '信任此人');
+      trustBtn.type = 'button';
+      trustBtn.disabled = isSelf;
+      trustBtn.addEventListener('click', function () {
+        setTrust(u.id, u.trust_level >= 1 ? 0 : 1, trustBtn);
+      });
+
+      var banBtn = el('button', 'btn btn--danger btn--sm', u.is_banned ? '解除限制' : '限制发言');
+      banBtn.type = 'button';
+      banBtn.disabled = isSelf;
+      banBtn.addEventListener('click', function () {
+        setBan(u.id, !u.is_banned, banBtn);
+      });
+
+      actions.appendChild(trustBtn);
+      actions.appendChild(banBtn);
+
+      row.appendChild(av);
+      row.appendChild(main);
+      row.appendChild(actions);
+      userList.appendChild(row);
+    });
   }
 
   function refresh() {

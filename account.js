@@ -243,20 +243,36 @@
     if (userPanel) userPanel.hidden = false;
     if (guestPanel) guestPanel.hidden = true;
 
-    sb.from('profiles')
-      .select('username,bio,trust_level,is_banned,created_at')
-      .eq('id', user.id)
-      .single()
-      .then(function (res) {
-        if (res.error) {
-          fillProfile(user, null);
-          setMsg(userMsg, '资料读取失败：' + core.errorText(res.error) +
-            '（多半是注册时的建资料触发器没生效，重新执行一次 01_schema.sql 即可）', 'error');
-          return;
-        }
-        fillProfile(user, res.data);
-        loadMine(user);
+    loadProfileRow(user).then(function (res) {
+      if (res.error || !res.data) {
+        fillProfile(user, null);
+        setMsg(userMsg, res.error
+          ? '资料读取失败：' + core.errorText(res.error)
+          : '你的资料行不存在（多半是注册时的建资料触发器没生效），重新执行一次 01_schema.sql 即可', 'error');
+        return;
+      }
+      fillProfile(user, res.data);
+      loadMine(user);
+    });
+  }
+
+  /* 读自己的资料。
+     07_hide_profile_flags.sql 之后 trust_level / is_banned 不再对表开放，
+     要走 gb_my_profile()；函数不存在（07 还没执行）时退回直读。 */
+  function loadProfileRow(user) {
+    return Promise.resolve(sb.rpc('gb_my_profile')).then(function (res) {
+      if (!res.error) {
+        return { data: (res.data || [])[0] || null, error: null };
+      }
+      return Promise.resolve(
+        sb.from('profiles')
+          .select('username,bio,trust_level,is_banned,created_at')
+          .eq('id', user.id)
+          .single()
+      ).then(function (r2) {
+        return { data: r2.data || null, error: r2.error || null };
       });
+    });
   }
 
   /* ---------- 保存昵称 / 简介 ---------- */
@@ -279,16 +295,17 @@
       sb.from('profiles')
         .update({ username: username, bio: bio })
         .eq('id', currentUser.id)
-        .select('username,bio,trust_level,is_banned,created_at')
-        .single()
         .then(function (res) {
           busy(profileForm, false);
           if (res.error) {
             setMsg(userMsg, '保存失败：' + core.errorText(res.error), 'error');
             return;
           }
-          fillProfile(currentUser, res.data);
-          setMsg(userMsg, '已保存。', 'ok');
+          // trust_level / is_banned 已经不对表开放，update 之后重新读一次（走 RPC）
+          loadProfileRow(currentUser).then(function (r2) {
+            fillProfile(currentUser, r2.data || null);
+            setMsg(userMsg, '已保存。', 'ok');
+          });
         });
     });
   }
