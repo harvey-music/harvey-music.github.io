@@ -118,7 +118,17 @@ body {
 
 .nav-brand img { width: 26px; height: 26px; object-fit: contain; }
 
-.nav-links { display: flex; align-items: center; gap: 2px; margin-left: auto; }
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+  min-width: 0;
+  overflow-x: auto;          /* 窄屏放不下时可横向滑动，不会把整页撑宽 */
+  scrollbar-width: none;
+}
+
+.nav-links::-webkit-scrollbar { display: none; }
 
 .nav-link {
   padding: 7px 14px;

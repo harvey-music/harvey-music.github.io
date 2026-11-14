@@ -170,7 +170,12 @@
       align-items: center;
       gap: 2px;
       margin-left: auto;
+      min-width: 0;
+      overflow-x: auto;          /* 窄屏放不下时可横向滑动，不会把整页撑宽 */
+      scrollbar-width: none;
     }
+
+    .nav-links::-webkit-scrollbar { display: none; }
 
     .nav-link {
       position: relative;
@@ -966,6 +971,7 @@
         <a class="nav-link" href="#ku">软件库</a>
         <a class="nav-link" href="#gonggao">公告</a>
         <a class="nav-link" href="#liuyan">留言板</a>
+        <a class="nav-link" href="account.html">我的</a>
         <a class="nav-link" href="#about">关于</a>
         <a class="nav-gh" href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub 首页">
           <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
