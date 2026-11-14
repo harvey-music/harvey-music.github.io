@@ -194,12 +194,15 @@
 
     @media (max-width: 640px) {
       :root { --nav-h: 50px; }
-      .nav-inner { gap: 10px; }
-      .nav-brand { font-size: 0.86rem; gap: 7px; }
-      .nav-brand img { width: 22px; height: 22px; }
-      .nav-link { padding: 6px 8px; font-size: 0.82rem; }
-      .nav-gh { width: 28px; height: 28px; margin-left: 2px; }
+      /* 导航项在 390px 窄屏上原本正好卡满容器宽度，字体一宽就溢出；
+         这里留出余量，避免页面被撑出横向滚动 */
+      .nav-inner { gap: 8px; }
+      .nav-brand { font-size: 0.84rem; gap: 6px; }
+      .nav-brand img { width: 20px; height: 20px; }
+      .nav-link { padding: 6px 7px; font-size: 0.8rem; }
+      .nav-gh { width: 26px; height: 26px; margin-left: 0; }
     }
+
 
     /* 页内锚点落地时，给吸顶导航让出高度 */
     [id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
@@ -449,22 +452,24 @@
     /* 被筛选掉的条目直接不占位 */
     .app[hidden] { display: none; }
 
+    /* 图标用各软件官方 logo（images/soft/<data-key>.png）；
+       圆角、底板、内边距在这一层统一处理。
+       底板走浅色：深色 logo（终端、Rufus）压深底看不清，
+       白底 logo（7-Zip、DDU）又要与卡片背景分得开 */
     .app-icon {
       flex: none;
-      display: grid;
-      place-items: center;
-      width: 40px;
-      height: 40px;
-      border: 1px solid var(--line-strong);
+      display: block;
+      box-sizing: border-box;
+      width: 44px;
+      height: 44px;
+      padding: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 13px;
-      background: var(--bg-soft);
-      color: var(--accent);
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      line-height: 1;
-      transition: border-color 0.22s, color 0.22s, background 0.22s;
+      background: #f4f5f7;
+      object-fit: contain;
+      transition: border-color 0.22s, background 0.22s;
     }
+
 
     .app:hover .app-icon {
       border-color: var(--accent-line);
@@ -616,7 +621,7 @@
         gap: 12px;
       }
       .app { padding: 12px; border-radius: 17px; gap: 5px; aspect-ratio: 1 / 1.14; }
-      .app-icon { width: 34px; height: 34px; border-radius: 10px; font-size: 0.7rem; }
+      .app-icon { width: 34px; height: 34px; padding: 3px; border-radius: 10px; }
       .app-name { font-size: 0.86rem; }
       .app-desc { font-size: 0.74rem; -webkit-line-clamp: 2; }
       .app-foot { font-size: 0.64rem; }
@@ -706,9 +711,9 @@
       <!-- 应用方格：正方形卡片。加条目照抄一节，data-cat 与筛选按钮的 data-cat 保持一致 -->
       <div class="lib-grid" id="lib-grid">
         <div class="app" data-cat="系统工具" data-key="7z">
-          <span class="app-icon" aria-hidden="true">7Z</span>
+          <img class="app-icon" src="images/soft/7z.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">7-Zip</span>
-          <span class="app-desc">压缩解压，格式支持最全。</span>
+          <span class="app-desc">压缩包打不开时交给它，rar、7z、zip 基本都能解。</span>
           <span class="app-foot">系统工具 · LGPL</span>
           <span class="app-acts">
             <a class="app-btn" href="https://www.7-zip.org/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -717,9 +722,9 @@
         </div>
 
         <div class="app" data-cat="系统工具" data-key="powertoys">
-          <span class="app-icon" aria-hidden="true">PT</span>
+          <img class="app-icon" src="images/soft/powertoys.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">PowerToys</span>
-          <span class="app-desc">微软官方 Windows 工具集。</span>
+          <span class="app-desc">微软自家的小工具箱，窗口分屏、批量改名、屏幕取色都有。</span>
           <span class="app-foot">系统工具 · MIT</span>
           <span class="app-acts">
             <a class="app-btn" href="https://github.com/microsoft/PowerToys" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -728,9 +733,9 @@
         </div>
 
         <div class="app" data-cat="系统工具" data-key="rufus">
-          <span class="app-icon" aria-hidden="true">RU</span>
+          <img class="app-icon" src="images/soft/rufus.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">Rufus</span>
-          <span class="app-desc">把镜像写入 U 盘做启动盘。</span>
+          <span class="app-desc">把系统镜像写进 U 盘，做出能开机装系统的启动盘。</span>
           <span class="app-foot">系统工具 · GPL-3.0</span>
           <span class="app-acts">
             <a class="app-btn" href="https://rufus.ie/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -739,9 +744,9 @@
         </div>
 
         <div class="app" data-cat="系统工具" data-key="ventoy">
-          <span class="app-icon" aria-hidden="true">VE</span>
+          <img class="app-icon" src="images/soft/ventoy.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">Ventoy</span>
-          <span class="app-desc">一个 U 盘放多个系统镜像。</span>
+          <span class="app-desc">U 盘里塞几个系统镜像，开机时自己挑，不用反复重写。</span>
           <span class="app-foot">系统工具 · GPL-3.0</span>
           <span class="app-acts">
             <a class="app-btn" href="https://www.ventoy.net/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -750,9 +755,9 @@
         </div>
 
         <div class="app" data-cat="系统工具" data-key="keepassxc">
-          <span class="app-icon" aria-hidden="true">KX</span>
+          <img class="app-icon" src="images/soft/keepassxc.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">KeePassXC</span>
-          <span class="app-desc">密码存在本地，不上传云端。</span>
+          <span class="app-desc">账号密码全存在自己电脑里，不往云上传。</span>
           <span class="app-foot">系统工具 · GPL</span>
           <span class="app-acts">
             <a class="app-btn" href="https://keepassxc.org/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -761,9 +766,9 @@
         </div>
 
         <div class="app" data-cat="系统工具" data-key="bcuninstaller">
-          <span class="app-icon" aria-hidden="true">BCU</span>
+          <img class="app-icon" src="images/soft/bcuninstaller.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">BCUninstaller</span>
-          <span class="app-desc">批量卸载软件，顺手清残留。</span>
+          <span class="app-desc">勾一批软件一次卸完，顺带清掉没删干净的残留。</span>
           <span class="app-foot">系统工具 · Apache-2.0</span>
           <span class="app-acts">
             <a class="app-btn" href="https://github.com/BCUninstaller/Bulk-Crap-Uninstaller" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -772,9 +777,9 @@
         </div>
 
         <div class="app" data-cat="系统工具" data-key="coretemp">
-          <span class="app-icon" aria-hidden="true">CT</span>
+          <img class="app-icon" src="images/soft/coretemp.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">Core Temp</span>
-          <span class="app-desc">盯着 CPU 每颗核心的温度。</span>
+          <span class="app-desc">实时看 CPU 每个核心多少度，散热正常与否一眼就知道。</span>
           <span class="app-foot">系统工具 · 免费软件</span>
           <span class="app-acts">
             <a class="app-btn" href="https://www.alcpu.com/CoreTemp/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -783,9 +788,9 @@
         </div>
 
         <div class="app" data-cat="系统工具" data-key="ddu">
-          <span class="app-icon" aria-hidden="true">DDU</span>
+          <img class="app-icon" src="images/soft/ddu.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">DDU</span>
-          <span class="app-desc">安全模式下彻底清显卡驱动。</span>
+          <span class="app-desc">换显卡、驱动装崩了，进安全模式把旧驱动彻底铲干净。</span>
           <span class="app-foot">系统工具 · 免费软件</span>
           <span class="app-acts">
             <a class="app-btn" href="https://www.wagnardsoft.com/display-driver-uninstaller-ddu" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -794,9 +799,9 @@
         </div>
 
         <div class="app" data-cat="系统工具" data-key="freemove">
-          <span class="app-icon" aria-hidden="true">FM</span>
+          <img class="app-icon" src="images/soft/freemove.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">FreeMove</span>
-          <span class="app-desc">文件夹搬去别的盘，路径不变。</span>
+          <span class="app-desc">大文件夹挪到别的盘，软件照样认原来那个路径。</span>
           <span class="app-foot">系统工具 · MIT</span>
           <span class="app-acts">
             <a class="app-btn" href="https://github.com/imDema/FreeMove" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -805,9 +810,9 @@
         </div>
 
         <div class="app" data-cat="系统工具" data-key="wiztree">
-          <span class="app-icon" aria-hidden="true">WZ</span>
+          <img class="app-icon" src="images/soft/wiztree.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">WizTree</span>
-          <span class="app-desc">直读 MFT，几秒扫完整块盘。</span>
+          <span class="app-desc">几秒扫完整块硬盘，哪个文件夹最占地方一目了然。</span>
           <span class="app-foot">系统工具 · 个人免费</span>
           <span class="app-acts">
             <a class="app-btn" href="https://diskanalyzer.com/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -816,9 +821,9 @@
         </div>
 
         <div class="app" data-cat="影音与图像" data-key="obs">
-          <span class="app-icon" aria-hidden="true">OBS</span>
+          <img class="app-icon" src="images/soft/obs.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">OBS Studio</span>
-          <span class="app-desc">录屏与直播推流工具。</span>
+          <span class="app-desc">录屏幕、录游戏、开直播都用它，免费且不加水印。</span>
           <span class="app-foot">影音与图像 · GPL-2.0</span>
           <span class="app-acts">
             <a class="app-btn" href="https://obsproject.com/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -827,9 +832,9 @@
         </div>
 
         <div class="app" data-cat="影音与图像" data-key="vlc">
-          <span class="app-icon" aria-hidden="true">VLC</span>
+          <img class="app-icon" src="images/soft/vlc.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">VLC</span>
-          <span class="app-desc">几乎什么格式都能放。</span>
+          <span class="app-desc">视频音乐基本什么格式都能播，不用另装解码器。</span>
           <span class="app-foot">影音与图像 · GPL-2.0</span>
           <span class="app-acts">
             <a class="app-btn" href="https://www.videolan.org/vlc/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -838,9 +843,9 @@
         </div>
 
         <div class="app" data-cat="影音与图像" data-key="handbrake">
-          <span class="app-icon" aria-hidden="true">HB</span>
+          <img class="app-icon" src="images/soft/handbrake.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">HandBrake</span>
-          <span class="app-desc">视频转码与压缩，预设齐全。</span>
+          <span class="app-desc">视频太大就压一压，或转成手机电视能直接播的格式。</span>
           <span class="app-foot">影音与图像 · GPL-2.0</span>
           <span class="app-acts">
             <a class="app-btn" href="https://handbrake.fr/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -849,9 +854,9 @@
         </div>
 
         <div class="app" data-cat="影音与图像" data-key="audacity">
-          <span class="app-icon" aria-hidden="true">AU</span>
+          <img class="app-icon" src="images/soft/audacity.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">Audacity</span>
-          <span class="app-desc">音频录制与剪辑，多轨编辑。</span>
+          <span class="app-desc">录音、剪音频、去底噪，不用买专业软件。</span>
           <span class="app-foot">影音与图像 · GPL-2.0</span>
           <span class="app-acts">
             <a class="app-btn" href="https://www.audacityteam.org/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -860,9 +865,9 @@
         </div>
 
         <div class="app" data-cat="影音与图像" data-key="krita">
-          <span class="app-icon" aria-hidden="true">KR</span>
+          <img class="app-icon" src="images/soft/krita.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">Krita</span>
-          <span class="app-desc">数字绘画与插画创作。</span>
+          <span class="app-desc">画画上色做插图的免费软件，接数位板就能用。</span>
           <span class="app-foot">影音与图像 · GPL-3.0</span>
           <span class="app-acts">
             <a class="app-btn" href="https://krita.org/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -871,9 +876,9 @@
         </div>
 
         <div class="app" data-cat="网络与传输" data-key="qbittorrent">
-          <span class="app-icon" aria-hidden="true">QB</span>
+          <img class="app-icon" src="images/soft/qbittorrent.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">qBittorrent</span>
-          <span class="app-desc">无广告的 BT 客户端。</span>
+          <span class="app-desc">下 BT 种子用的，界面干净、不弹广告、不在后台乱跑。</span>
           <span class="app-foot">网络与传输 · GPL-2.0</span>
           <span class="app-acts">
             <a class="app-btn" href="https://www.qbittorrent.org/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -882,9 +887,9 @@
         </div>
 
         <div class="app" data-cat="网络与传输" data-key="motrix">
-          <span class="app-icon" aria-hidden="true">MO</span>
+          <img class="app-icon" src="images/soft/motrix.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">Motrix</span>
-          <span class="app-desc">界面简洁的多线程下载器。</span>
+          <span class="app-desc">链接丢进去就能下，支持 BT 和网盘，界面清清爽爽。</span>
           <span class="app-foot">网络与传输 · MIT</span>
           <span class="app-acts">
             <a class="app-btn" href="https://motrix.app/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -893,9 +898,9 @@
         </div>
 
         <div class="app" data-cat="网络与传输" data-key="idm">
-          <span class="app-icon" aria-hidden="true">IDM</span>
+          <img class="app-icon" src="images/soft/idm.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">IDM</span>
-          <span class="app-desc">多线程下载，接管浏览器点击。</span>
+          <span class="app-desc">下载能跑满速，浏览器里点一下就由它接手。</span>
           <span class="app-foot">网络与传输 · 付费软件</span>
           <span class="app-acts">
             <a class="app-btn" href="https://www.internetdownloadmanager.com/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -904,9 +909,9 @@
         </div>
 
         <div class="app" data-cat="网络与传输" data-key="syncthing">
-          <span class="app-icon" aria-hidden="true">SY</span>
+          <img class="app-icon" src="images/soft/syncthing.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">Syncthing</span>
-          <span class="app-desc">点对点同步，不经服务器。</span>
+          <span class="app-desc">两台电脑之间直接同步文件，中途不经过别人的服务器。</span>
           <span class="app-foot">网络与传输 · MPL-2.0</span>
           <span class="app-acts">
             <a class="app-btn" href="https://syncthing.net/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -915,9 +920,9 @@
         </div>
 
         <div class="app" data-cat="网络与传输" data-key="wireshark">
-          <span class="app-icon" aria-hidden="true">WS</span>
+          <img class="app-icon" src="images/soft/wireshark.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">Wireshark</span>
-          <span class="app-desc">抓包与网络协议分析。</span>
+          <span class="app-desc">看清楚电脑到底在发什么数据，排查网络问题用得上。</span>
           <span class="app-foot">网络与传输 · GPL-2.0</span>
           <span class="app-acts">
             <a class="app-btn" href="https://www.wireshark.org/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -926,9 +931,9 @@
         </div>
 
         <div class="app" data-cat="文档与效率" data-key="notepadpp">
-          <span class="app-icon" aria-hidden="true">N+</span>
+          <img class="app-icon" src="images/soft/notepadpp.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">Notepad++</span>
-          <span class="app-desc">轻量文本与代码编辑器。</span>
+          <span class="app-desc">开大文本、改代码、批量替换，比记事本顺手太多。</span>
           <span class="app-foot">文档与效率 · GPL-3.0</span>
           <span class="app-acts">
             <a class="app-btn" href="https://notepad-plus-plus.org/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -937,9 +942,9 @@
         </div>
 
         <div class="app" data-cat="文档与效率" data-key="sumatrapdf">
-          <span class="app-icon" aria-hidden="true">SP</span>
+          <img class="app-icon" src="images/soft/sumatrapdf.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">SumatraPDF</span>
-          <span class="app-desc">启动快的 PDF 阅读器。</span>
+          <span class="app-desc">PDF 秒开不吃内存，光看文档完全够用。</span>
           <span class="app-foot">文档与效率 · AGPL-3.0</span>
           <span class="app-acts">
             <a class="app-btn" href="https://www.sumatrapdfreader.org/free-pdf-reader" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -948,9 +953,9 @@
         </div>
 
         <div class="app" data-cat="文档与效率" data-key="sharex">
-          <span class="app-icon" aria-hidden="true">SX</span>
+          <img class="app-icon" src="images/soft/sharex.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">ShareX</span>
-          <span class="app-desc">截图、录屏与上传。</span>
+          <span class="app-desc">截个图、录段屏，完事能直接生成链接发出去。</span>
           <span class="app-foot">文档与效率 · GPL-3.0</span>
           <span class="app-acts">
             <a class="app-btn" href="https://getsharex.com/" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
@@ -959,9 +964,9 @@
         </div>
 
         <div class="app" data-cat="文档与效率" data-key="terminal">
-          <span class="app-icon" aria-hidden="true">WT</span>
+          <img class="app-icon" src="images/soft/terminal.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">Windows Terminal</span>
-          <span class="app-desc">标签式命令行窗口。</span>
+          <span class="app-desc">命令行窗口支持多标签，比系统自带的好看也好用。</span>
           <span class="app-foot">文档与效率 · MIT</span>
           <span class="app-acts">
             <a class="app-btn" href="https://github.com/microsoft/terminal" target="_blank" rel="noopener">官方网站<span class="app-ext" aria-hidden="true">↗</span></a>
