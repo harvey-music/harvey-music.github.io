@@ -29,6 +29,15 @@
         内置默认文案是按「汉化版 Windows 程序」写的；别的页面（如软件库）
         收录的软件各不相同，用这一层把「汉化版 / 便携版」之类说法换掉。
 
+   用法四（跳转确认，离开本站去官网之前问一句）：
+        自动：脚本会自己找按钮文字就是「官方网站 / 前往官网 / 访问官网 / 官方主页」
+              的外链，点下去先弹「即将前往官方网站」，确认后才在新标签页打开。
+              想额外指定名字就加 data-ext-name="7-Zip"；想让任意外链也走这个框，
+              加 data-ext-gate 即可。新加的外链不用改 JS。
+        手动：DownloadGate.leave({ name:'7-Zip', url:'https://www.7-zip.org/' })
+        文案可用 window.DOWNLOAD_GATE_LEAVE = { eyebrow, title, cancel, confirm,
+               introNamed, introPlain, note } 覆盖。
+
    可访问性：role="alertdialog" + aria-modal，焦点陷阱，Esc 等同放弃，
             「继续」在锁定期间用 aria-disabled 而非 disabled（保持可聚焦、
             屏幕阅读器可读），倒计时结束用 aria-live 播报一次。
@@ -61,6 +70,16 @@
     '.dlg-intro{margin-top:10px;font-size:.9rem;line-height:1.7;color:var(--text-mute,#9a9da4)}',
 
     '.dlg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}',
+    '.dlg-grid[hidden]{display:none}',
+    /* 跳转确认用的小块：顶替两栏清单的位置，写清楚要去哪个站 */
+    '.dlg-target{margin-top:16px;padding:13px 15px;border-radius:12px;border:1px solid var(--line,#26272c);',
+    'background:var(--bg-soft,#111216);display:grid;gap:4px}',
+    '.dlg-target[hidden]{display:none}',
+    '.dlg-target-label{font-size:.72rem;letter-spacing:.1em;color:var(--text-faint,#6c6f76)}',
+    '.dlg-target-host{font-size:.94rem;font-weight:600;line-height:1.4;word-break:break-all;',
+    'color:var(--text,#eaeaec)}',
+    '.dlg-target-url{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.76rem;',
+    'line-height:1.5;word-break:break-all;color:var(--text-faint,#6c6f76)}',
     '.dlg-col{padding:14px 16px;border-radius:12px;border:1px solid var(--line,#26272c);',
     'background:var(--bg-soft,#111216)}',
     '.dlg-col--ok{border-color:rgba(227,194,116,.26);background:var(--gold-wash,rgba(201,162,39,.08))}',
@@ -130,6 +149,9 @@
   var refs = {};
 
   var COPY = {
+    eyebrow: '下载前确认',
+    title: '运行环境核对',
+    cancel: '放弃',
     intro: '请先核对当前系统能否运行本软件，确认后再开始下载。汉化版为 Windows 桌面程序，仅在 Windows 10 / 11（64 位）上可正常使用。',
     can: [
       'Windows 10 / 11（64 位）',
@@ -142,6 +164,17 @@
       '手机 / 平板：无法运行，请在 Windows 电脑上打开本页'
     ],
     note: '文件由腾讯云直链提供。浏览器若提示「此类文件可能有害」，属常规安全提示，选择保留即可。'
+  };
+
+  // 跳转确认：点「官方网站 / 前往官网」这类外链时先问一句，别让人莫名其妙离开本站
+  var LEAVE = {
+    eyebrow: '跳转提醒',
+    title: '即将前往官方网站',
+    cancel: '退出',
+    confirm: '确认前往',
+    introNamed: '这个按钮会把你交给「{name}」的官方网站，页面内容、下载和更新都在对方站点，本站只做一个入口。',
+    introPlain: '这个按钮会离开本站，前往对方的官方网站。页面内容、下载和更新都在对方站点，本站只做一个入口。',
+    note: '点「确认前往」会在新标签页打开，本站页面不会关掉；对方站点打不开时，直接用本站提供的安装包即可。'
   };
 
   /* ---------------- 样式与 DOM：首次打开时才创建 ---------------- */
@@ -167,10 +200,10 @@
     root.setAttribute('aria-describedby', 'dlg-intro');
     root.innerHTML =
       '<div class="dlg-card">' +
-        '<span class="dlg-eyebrow">下载前确认</span>' +
-        '<h2 id="dlg-title">运行环境核对</h2>' +
+        '<span class="dlg-eyebrow" data-dlg-eyebrow>下载前确认</span>' +
+        '<h2 id="dlg-title" data-dlg-title>运行环境核对</h2>' +
         '<p class="dlg-intro" id="dlg-intro" data-dlg-intro></p>' +
-        '<div class="dlg-grid">' +
+        '<div class="dlg-grid" data-dlg-grid>' +
           '<div class="dlg-col dlg-col--ok">' +
             '<h3>可以正常使用</h3>' +
             '<ul data-dlg-can></ul>' +
@@ -179,6 +212,11 @@
             '<h3>当前版本无法使用</h3>' +
             '<ul data-dlg-cannot></ul>' +
           '</div>' +
+        '</div>' +
+        '<div class="dlg-target" data-dlg-target hidden>' +
+          '<span class="dlg-target-label">对方地址</span>' +
+          '<span class="dlg-target-host" data-dlg-host></span>' +
+          '<span class="dlg-target-url" data-dlg-url></span>' +
         '</div>' +
         '<p class="dlg-note" data-dlg-note></p>' +
         '<div class="dlg-actions">' +
@@ -192,7 +230,13 @@
     document.body.appendChild(root);
 
     refs.root = root;
+    refs.eyebrow = root.querySelector('[data-dlg-eyebrow]');
+    refs.title = root.querySelector('[data-dlg-title]');
     refs.intro = root.querySelector('[data-dlg-intro]');
+    refs.grid = root.querySelector('[data-dlg-grid]');
+    refs.target = root.querySelector('[data-dlg-target]');
+    refs.host = root.querySelector('[data-dlg-host]');
+    refs.url = root.querySelector('[data-dlg-url]');
     refs.can = root.querySelector('[data-dlg-can]');
     refs.cannot = root.querySelector('[data-dlg-cannot]');
     refs.note = root.querySelector('[data-dlg-note]');
@@ -261,6 +305,19 @@
     state.timer = window.setInterval(tick, 200);
   }
 
+  // 跳转确认没有要读的说明，按钮一出来就能点
+  function unlockNow() {
+    if (state.timer) {
+      window.clearInterval(state.timer);
+      state.timer = 0;
+    }
+    state.locked = false;
+    state.unlockAt = 0;
+    refs.confirm.classList.remove('is-locked');
+    refs.confirm.removeAttribute('aria-disabled');
+    refs.confirm.textContent = (window.DOWNLOAD_GATE_LEAVE || {}).confirm || LEAVE.confirm;
+  }
+
   /* ---------------- 文案填充 ---------------- */
 
   function fillList(host, items) {
@@ -272,10 +329,17 @@
     }
   }
 
-  function fillCopy(o) {
+  function fillDownload(o) {
     var n = o.fileCount || 1;
     // 页面级文案：o.copy 优先，其次 window.DOWNLOAD_GATE_COPY，最后用上面这份内置默认
     var src = o.copy || window.DOWNLOAD_GATE_COPY || {};
+
+    refs.eyebrow.textContent = src.eyebrow || COPY.eyebrow;
+    refs.title.textContent = src.title || COPY.title;
+    refs.cancel.textContent = src.cancel || COPY.cancel;
+    refs.grid.hidden = false;
+    refs.target.hidden = true;
+
     var intro = src.intro || COPY.intro;
     if (n > 1) intro += '本次将开始 ' + n + ' 个下载。';
     refs.intro.textContent = intro;
@@ -287,6 +351,32 @@
     fillList(refs.can, can);
     fillList(refs.cannot, cannot);
     refs.note.textContent = src.note || COPY.note;
+  }
+
+  function fillLeave(o) {
+    var src = window.DOWNLOAD_GATE_LEAVE || {};
+
+    refs.eyebrow.textContent = src.eyebrow || LEAVE.eyebrow;
+    refs.title.textContent = src.title || LEAVE.title;
+    refs.cancel.textContent = src.cancel || LEAVE.cancel;
+
+    // 跳转确认里没有「能不能用」这回事，把两栏清单换成「对方地址」一块
+    refs.grid.hidden = true;
+    refs.target.hidden = false;
+    refs.host.textContent = o.host || '';
+    refs.url.textContent = o.url || '';
+
+    var name = (o.name || '').replace(/^\s+|\s+$/g, '');
+    var intro = name
+      ? (src.introNamed || LEAVE.introNamed)
+      : (src.introPlain || LEAVE.introPlain);
+    refs.intro.textContent = intro.replace('{name}', name);
+
+    refs.note.textContent = src.note || LEAVE.note;
+  }
+
+  function applyCopy(o) {
+    if (o.mode === 'leave') fillLeave(o); else fillDownload(o);
   }
 
   /* ---------------- 焦点陷阱 ---------------- */
@@ -311,15 +401,17 @@
     ensureBuilt();
     if (state.root.classList.contains('is-open')) return;
 
-    state.opts = options || {};
-    fillCopy(state.opts);
+    var o = options || {};
+    state.opts = o;
+    applyCopy(o);
     refs.hint.textContent = '';
     refs.live.textContent = '';
     state.lastFocus = document.activeElement;
 
     state.root.classList.add('is-open');
     lockScroll();
-    startCountdown();
+    // 下载要读说明、等倒计时；跳转确认只需一句「去不去」
+    if (o.mode === 'leave') unlockNow(); else startCountdown();
 
     state.onKeydown = function (e) {
       if (e.key === 'Escape') {
@@ -408,9 +500,72 @@
     });
   }
 
+  /* ---------------- 跳转确认：离开本站去官网之前先问一句 ---------------- */
+
+  // 只有当按钮文字「就是」官网字样时才算——正文里提到「官网」的句子不会被误伤
+  var EXT_LABEL = /^(官方网站|前往官网|访问官网|官方主页|官网)(↗|→|↗️)?$/;
+
+  function extHost(href) {
+    try {
+      return new URL(href, window.location.href).hostname.replace(/^www\./, '');
+    } catch (err) {
+      return '';
+    }
+  }
+
+  function extName(node) {
+    var explicit = node.getAttribute('data-ext-name');
+    if (explicit) return explicit;
+    // 软件库的卡片里拿得到软件名，就能写「前往「7-Zip」的官方网站」
+    var card = node.closest ? node.closest('.app') : null;
+    var nameEl = card ? card.querySelector('.app-name') : null;
+    return nameEl ? (nameEl.textContent || '').replace(/^\s+|\s+$/g, '') : '';
+  }
+
+  function attachExternal(node) {
+    if (!node || node.__extBound) return;
+    node.__extBound = true;
+
+    node.addEventListener('click', function (e) {
+      // 按住修饰键 / 中键时交给浏览器：用户自己就是要开新窗口
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button > 0) return;
+      var href = node.getAttribute('href') || '';
+      if (!/^https?:\/\//i.test(href)) return;
+      e.preventDefault();
+      open({
+        mode: 'leave',
+        name: extName(node),
+        host: extHost(href),
+        url: href,
+        onConfirm: function () {
+          // 同步发起，仍在这次点击的调用栈里，不会被当成弹窗拦截
+          if ((node.getAttribute('target') || '') === '_blank') {
+            window.open(href, '_blank', 'noopener');
+          } else {
+            window.location.href = href;
+          }
+        }
+      });
+    });
+  }
+
+  function scanExternal() {
+    var nodes = document.querySelectorAll('a[href]');
+    for (var i = 0; i < nodes.length; i++) {
+      var a = nodes[i];
+      if (a.__extBound) continue;
+      var href = a.getAttribute('href') || '';
+      if (!/^https?:\/\//i.test(href)) continue;
+      if (a.hasAttribute('data-ext-gate')) { attachExternal(a); continue; }
+      var text = (a.textContent || '').replace(/[\s\u200b]+/g, '');
+      if (EXT_LABEL.test(text)) attachExternal(a);
+    }
+  }
+
   function autoInit() {
     var nodes = document.querySelectorAll('[data-dl-gate]');
     for (var i = 0; i < nodes.length; i++) attach(nodes[i]);
+    scanExternal();
   }
 
   if (document.readyState === 'loading') {
@@ -422,9 +577,16 @@
   window.DownloadGate = {
     open: open,
     confirm: function (options) { open(options); },
+    leave: function (options) {
+      var o = options || {};
+      o.mode = 'leave';
+      open(o);
+    },
     close: function () { close('cancel'); },
     attach: attach,
+    attachExternal: attachExternal,
     scan: autoInit,
+    scanExternal: scanExternal,
     download: download
   };
 })(window, document);
