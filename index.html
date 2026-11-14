@@ -400,8 +400,9 @@
 
     .section + .section { border-top: 1px solid var(--line-soft); }
 
-    /* 栏目条里的 Prism 直接跳到汉化区那张卡，落地同样要给两层吸顶导航让位 */
-    #prism {
+    /* 栏目条里的 Prism / Chatbox 直接跳到汉化区对应的卡，落地同样要给两层吸顶导航让位 */
+    #prism,
+    #chatbox {
       scroll-margin-top: calc(var(--nav-h) + var(--chapter-h) + 12px);
     }
 
@@ -477,6 +478,14 @@
       border-radius: 50%;
       background: var(--accent);
       box-shadow: 0 0 10px var(--accent-dot);
+    }
+
+    /* 制作中的项目：状态点改警示黄，和「已发布」的金色区分开 */
+    .banner-eyebrow--pending { color: var(--warn); }
+
+    .banner-eyebrow--pending::before {
+      background: var(--warn);
+      box-shadow: 0 0 10px rgba(240, 180, 41, 0.5);
     }
 
     .banner h3 {
@@ -1018,6 +1027,13 @@
           <span class="chapter-name">Prism</span>
         </a>
 
+        <a class="chapter" href="#chatbox">
+          <span class="chapter-thumb chapter-thumb--contain">
+            <img src="images/chatbox/icon.png" alt="" width="44" height="44" loading="lazy" decoding="async">
+          </span>
+          <span class="chapter-name">Chatbox</span>
+        </a>
+
         <a class="chapter" href="#ku">
           <span class="chapter-thumb">工具</span>
           <span class="chapter-name">软件库</span>
@@ -1083,6 +1099,27 @@
           <img class="banner-shot" src="images/prism-scopes.jpg"
                alt="Prism 原版界面：频谱仪、瀑布图、声谱图、波形与矢量示波器排布在同一块机架"
                width="1800" height="426" loading="lazy" decoding="async">
+        </article>
+
+        <!-- 汉化区第三张主推卡：制作中，只给官网入口，不放下载 -->
+        <article class="banner" id="chatbox">
+          <div>
+            <span class="banner-eyebrow banner-eyebrow--pending">制作中 · 尚未发布</span>
+            <h3>Chatbox 中文汉化</h3>
+            <p class="banner-lead">免费、无遥测的桌面 AI 客户端，多家模型、本地知识库与工具调用集中在一个窗口。中文界面正在制作，完成后在项目页公布版本与下载入口。</p>
+            <ul class="banner-facts">
+              <li>汉化基于 metaory 维护的 Unbundled 分支制作，原版已移除遥测与付费账户体系</li>
+              <li>尚未发布，暂不提供安装包；现在可使用官方原版（英文界面）</li>
+              <li>开源免费，许可证 GPL-3.0</li>
+            </ul>
+            <div class="ctas">
+              <a class="btn btn-primary" href="chatbox.html">进一步了解</a>
+              <a class="btn btn-ghost" href="https://chatbox-unbundled.pages.dev/" target="_blank" rel="noopener" data-ext-name="Chatbox Unbundled">前往官网</a>
+            </div>
+          </div>
+          <img class="banner-shot" src="images/chatbox/snapshot-dark.jpg"
+               alt="Chatbox 原版深色界面：左侧为会话与 Copilot 列表，右侧是带代码高亮的对话"
+               width="1000" height="874" loading="lazy" decoding="async">
         </article>
       </div>
     </section>
@@ -1195,6 +1232,7 @@
           <h4>汉化</h4>
           <a href="silverdaw.html">Silverdaw 中文汉化</a>
           <a href="prism.html">Prism 中文汉化</a>
+          <a href="chatbox.html">Chatbox 中文汉化（制作中）</a>
           <a href="softlib.html">开源软件汉化索引</a>
         </div>
         <div class="footer-col">
