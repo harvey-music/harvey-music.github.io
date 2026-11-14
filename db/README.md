@@ -25,7 +25,8 @@ Supabase：Auth（账号） + Postgres（profiles / messages / user_roles）
 | 3 | 先去 `account.html` 注册一个账号 | 注册成功后 `profiles` 里会自动出现你的昵称 |
 | 4 | `03_grant_admin.sql` | 把里面那行邮箱改成你注册用的，单独执行那一段 |
 | 5 | `05_fix_ip_leak.sql` | 把 `messages` 的 select 收窄成列级，并建站长专用 `gb_admin_posts()`。**修补 `author_ip` / `author_ua` 被任何访客读走的漏洞，必做** |
-| 6 | `99_verify.sql` | 只读自查，逐项对照注释里的"应该是" |
+| 6 | `06_admin_mfa.sql` | 站长两步验证的数据库侧强制：没过 TOTP（JWT 里没有 `aal2`）时 `private.is_admin()` 返回 false。**建议做**，见 2.7 |
+| 7 | `99_verify.sql` | 只读自查，逐项对照注释里的"应该是" |
 
 `02` 结尾有一句 `notify pgrst, 'reload schema'`，让接口立刻读到新表结构，不用等缓存过期。
 
@@ -68,6 +69,25 @@ Supabase：Auth（账号） + Postgres（profiles / messages / user_roles）
 免费项目 **一周没有活动会被暂停**，恢复要手动点一下。留言板有人用就不会停；
 长期没人访问时，记得每月打开一次控制台看看。
 
+### 2.7 站长两步验证（建议开）
+
+1. 控制台 `Authentication → Sign In / Providers → Multi-Factor Authentication`
+   → **TOTP (Authenticator app)** 设为 **Enabled**；
+2. 执行 `db/06_admin_mfa.sql`（可重复执行）；
+3. 打开 `admin.html`：第一次会显示二维码，用验证器 App（Google Authenticator /
+   Microsoft Authenticator / 1Password 等）扫一下，把 6 位数字填进去；
+4. 验证通过的同时会往 `private.admin_mfa_required` 写一条记录，之后**每次进后台
+   都要输一次**验证码。
+
+为什么非要动数据库：只在前端弹框是没用的。攻击者拿到密码后直接
+`POST /rest/v1/rpc/gb_review`，根本不经过 `admin.html`。现在的做法是
+`private.is_admin()` 自己检查 JWT 里的 `aal` —— 没过 TOTP 就是 `aal1`，
+函数返回 false，**审核 / 封人 / 看 IP 的 RPC 连同 RLS 里的站长分支一起失效**。
+
+不会把自己锁死：记录为空时行为完全不变；只有「已经通过验证器」（`aal2`）
+那一刻才写得进记录，所以只有密码的人关不掉这个开关。
+验证器丢了怎么恢复见 4.4。
+
 ---
 
 ## 3. 越权验收
@@ -99,6 +119,8 @@ curl -s "$URL/auth/v1/token?grant_type=password" \
 | 8 | 普通用户调审核接口 | POST `/rest/v1/rpc/gb_review` | 400：仅站长可以执行该操作 |
 | 9 | 匿名读作者 IP | GET `/rest/v1/messages?select=id,author_ip` | 401/403：`permission denied for table messages`（select 已收窄成列级） |
 | 10 | 登录用户读作者 IP | 同上但带 `$TOKEN` | 401/403，同样读不到（IP 只经 `gb_admin_posts()` 给站长） |
+| 11 | 站长只登录、没输验证器（aal1）就调审核 | POST `/rest/v1/rpc/gb_review`（站长账号的 `$TOKEN`） | 400：仅站长可以执行该操作 —— `is_admin()` 在 aal1 下是 false（06 之后） |
+| 12 | 匿名打开两步验证开关 | POST `/rest/v1/rpc/gb_admin_mfa_activate` | 401/403（`anon` 没有执行权） |
 
 第 4、6、7、8 条是整套设计的核心：**状态由触发器改写、正文发布后锁死、
 提权只能走 security definer 函数、函数内部再判一次站长**。
@@ -145,6 +167,29 @@ order by l.created_at desc
 limit 100;
 ```
 
+### 两步验证：重绑 / 关掉（4.4）
+
+验证器丢了、手机也换了 —— **先把密码改掉**（确认账号不是被别人拿走），再：
+
+```sql
+-- 1) 删掉旧 factor，回 admin.html 重新扫码绑定
+delete from auth.mfa_factors where user_id = '<站长 uid>';
+
+-- 2) 万不得已要彻底关掉强制（回到"只要密码就能审核"的旧行为）
+delete from private.admin_mfa_required where user_id = '<站长 uid>';
+```
+
+谁开了强制：
+
+```sql
+select r.user_id, u.email, r.activated_at
+from private.admin_mfa_required r
+left join auth.users u on u.id = r.user_id;
+```
+
+> 只有密码、没有验证器的人在 `aal1`，**调不动** `gb_admin_mfa_activate()`，
+> 所以上面第 2 条只能由你本人（或控制台里的 SQL）执行。
+
 ### 备份
 
 `Database → Backups` 免费档只保留较短周期。留言是唯一有价值的动态数据，
@@ -163,6 +208,8 @@ limit 100;
 | 全是 `permission denied for table` | 02 里的 GRANT 段没执行完整 | 重跑 02 |
 | 后台页一直显示"需要站长权限" | 03 没执行，或邮箱写错 | 重跑 03，注意邮箱大小写不敏感但别拼错 |
 | 页面样式错乱 | 忘了引 `guestbook.css` / `subpage.css` | 首页只要 `guestbook.css`，三个新页两样都要 |
+| 后台卡在"两步验证没有准备好" | 控制台没启用 TOTP，或 `06` 没执行 | 见 2.7；启用 TOTP 后刷新 `admin.html` |
+| 站长自己被"仅站长可以执行该操作"挡住 | 已启用强制，但这次登录没输验证器（aal1） | 刷新 `admin.html` 输一次 6 位码；验证器丢了见 4.4 |
 
 ---
 

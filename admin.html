@@ -50,6 +50,54 @@
       </p>
     </section>
 
+    <!-- ============ 两步验证门（站长专属） ============
+         这道门只是体验。真正的拦截在数据库：开启强制之后，JWT 里没有
+         aal2 时 private.is_admin() 直接返回 false，审核 / 封人 / 看 IP
+         的 RPC 全部会被拒绝 —— 绕过本页手搓请求也一样。 -->
+    <section class="panel" data-mfa hidden>
+      <h2 class="panel-title">两步验证</h2>
+      <p class="form-hint" data-mfa-text>正在检查验证状态…</p>
+
+      <!-- 已经绑过验证器：只差输入 6 位数字 -->
+      <form class="form" data-mfa-verify hidden>
+        <label class="field">
+          <span>验证器 App 上的 6 位数字</span>
+          <input type="text" name="code" inputmode="numeric" autocomplete="one-time-code"
+                 maxlength="6" pattern="[0-9]{6}" placeholder="123456" required>
+        </label>
+        <button class="btn btn-primary" type="submit">验证并进入后台</button>
+      </form>
+
+      <!-- 还没绑过：扫码绑定 -->
+      <div data-mfa-enroll hidden>
+        <p class="form-hint">
+          用手机上的验证器 App（Google Authenticator / Microsoft Authenticator / 1Password 等）
+          扫下面的二维码，再把 App 里显示的 6 位数字填进来完成绑定。绑定一次，以后每次进后台都要输。
+        </p>
+        <p class="mfa-qr"><img data-mfa-qr alt="两步验证二维码" width="180" height="180"></p>
+        <p class="form-hint">扫不了码就手动输入这串密钥：<code data-mfa-secret></code></p>
+        <form class="form" data-mfa-enroll-form>
+          <label class="field">
+            <span>验证器 App 上的 6 位数字</span>
+            <input type="text" name="code" inputmode="numeric" autocomplete="one-time-code"
+                   maxlength="6" pattern="[0-9]{6}" placeholder="123456" required>
+          </label>
+          <button class="btn btn-primary" type="submit">完成绑定并进入后台</button>
+        </form>
+        <p class="form-hint">
+          验证失败时先看控制台有没有开 TOTP：Authentication → Sign In / Providers →
+          Multi-Factor Authentication。
+        </p>
+      </div>
+
+      <p class="form-msg" data-mfa-msg role="status"></p>
+
+      <p class="form-hint" data-mfa-help hidden>
+        验证器丢了：去 Supabase 控制台 → Authentication → Users → 选中该账号 →
+        删掉对应的 TOTP factor，再回本页重新扫码绑定。删之前先把密码换掉。
+      </p>
+    </section>
+
     <!-- ============ 审核区 ============ -->
     <div data-admin-body hidden>
 

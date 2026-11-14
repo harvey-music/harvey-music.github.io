@@ -263,6 +263,224 @@
     loadUsers();
   }
 
+  /* ---------- 两步验证 ----------
+     前端这道门只是体验：开启强制之后，数据库里的 private.is_admin()
+     在 JWT 没有 aal2 时会直接返回 false，审核 / 封人 / 看 IP 的 RPC
+     全部会被拒绝 —— 绕开本页手搓请求也一样。
+
+     aal2 ＝ 本次登录真的过了一遍验证器。三种组合：
+       aal2 / 任意   → 已验证，直接进后台
+       aal1 / aal2   → 绑过验证器，只差输入 6 位数字
+       aal1 / null   → 还没绑过，走扫码绑定
+  ------------------------------------ */
+  var mfaEl = document.querySelector('[data-mfa]');
+  var mfaTextEl = document.querySelector('[data-mfa-text]');
+  var mfaMsgEl = document.querySelector('[data-mfa-msg]');
+  var mfaHelpEl = document.querySelector('[data-mfa-help]');
+  var mfaVerifyEl = document.querySelector('[data-mfa-verify]');
+  var mfaEnrollEl = document.querySelector('[data-mfa-enroll]');
+  var mfaEnrollForm = document.querySelector('[data-mfa-enroll-form]');
+  var mfaFactorId = null;
+
+  function mfaSay(text, kind) {
+    if (!mfaMsgEl) return;
+    mfaMsgEl.textContent = text || '';
+    mfaMsgEl.className = 'form-msg' + (kind ? ' is-' + kind : '');
+  }
+
+  function mfaHintText(text) {
+    if (mfaTextEl && text) mfaTextEl.textContent = text;
+  }
+
+  // view: 'verify' | 'enroll' | 'broken'
+  function mfaPanel(view) {
+    if (gateEl) gateEl.hidden = true;
+    if (bodyEl) bodyEl.hidden = true;
+    if (mfaEl) mfaEl.hidden = false;
+    if (mfaVerifyEl) mfaVerifyEl.hidden = view !== 'verify';
+    if (mfaEnrollEl) mfaEnrollEl.hidden = view !== 'enroll';
+    if (mfaHelpEl) mfaHelpEl.hidden = view !== 'verify';
+    if (view !== 'broken') mfaSay('');
+  }
+
+  function mfaCall(method, arg) {
+    var api = sb && sb.auth && sb.auth.mfa;
+    if (!api || typeof api[method] !== 'function') {
+      return Promise.reject(new Error('当前 supabase-js 版本不支持两步验证，请更新 vendor/supabase.js'));
+    }
+    return Promise.resolve(api[method](arg));
+  }
+
+  // qr_code 是一段 <svg>…</svg>：转成 data URI 塞进 <img>，
+  // 不把接口返回的字符串当 HTML 插进页面。
+  function svgDataUri(svg) {
+    if (!svg) return '';
+    if (svg.indexOf('data:') === 0) return svg; // 有的版本直接给 data URI
+    try {
+      return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+    } catch (err) {
+      return '';
+    }
+  }
+
+  function errText(err) {
+    return core.errorText ? core.errorText(err) : String((err && err.message) || err || '未知错误');
+  }
+
+  /* 绑定成功后写下「该账号已启用强制」。函数内部要求 aal2，
+     所以只有密码的人写不进去，也就关不掉这个开关。
+     06 还没执行时这里会 404，忽略即可，不影响进后台。 */
+  function activateMfa() {
+    return Promise.resolve(sb.rpc('gb_admin_mfa_activate'))
+      .then(function () {}, function () {});
+  }
+
+  function showMfaBroken(err) {
+    mfaPanel('broken');
+    var text = errText(err);
+    var extra = /disabled|not enabled|unsupported|mfa/i.test(text)
+      ? ' 先去 Supabase 控制台 Authentication → Sign In / Providers → Multi-Factor Authentication 启用 TOTP，再刷新本页。'
+      : '';
+    mfaHintText('两步验证没有准备好，暂时进不去后台。');
+    mfaSay('原因：' + text + extra, 'error');
+  }
+
+  function showMfaVerify() {
+    mfaPanel('verify');
+    mfaHintText('这个账号已经绑过验证器。输入 App 上的 6 位数字继续。');
+    var input = mfaVerifyEl && mfaVerifyEl.querySelector('input[name="code"]');
+    if (input) input.focus();
+  }
+
+  function startEnroll() {
+    mfaPanel('enroll');
+    mfaHintText('第一次使用，先绑定一个验证器。');
+    mfaSay('正在生成二维码…');
+
+    // 先把上次没验证完的 factor 清掉，免得二维码越攒越多。
+    // unenroll 失败（比如 aal1 下不让删）也不影响继续绑定。
+    return mfaCall('listFactors')
+      .then(function (list) {
+        var all = (list && list.data && list.data.all) || [];
+        var stale = all.filter(function (f) { return f.status !== 'verified'; });
+        if (!stale.length) return null;
+        return Promise.all(stale.map(function (f) {
+          return mfaCall('unenroll', { factorId: f.id }).catch(function () {});
+        }));
+      })
+      .then(function () {
+        return mfaCall('enroll', { factorType: 'totp', friendlyName: 'Arthur 站长后台' });
+      })
+      .then(function (res) {
+        if (res.error) throw res.error;
+
+        var d = res.data || {};
+        var totp = d.totp || {};
+        mfaFactorId = d.id || null;
+
+        var img = mfaEl && mfaEl.querySelector('[data-mfa-qr]');
+        if (img && totp.qr_code) img.src = svgDataUri(totp.qr_code);
+
+        var secret = mfaEl && mfaEl.querySelector('[data-mfa-secret]');
+        if (secret) secret.textContent = totp.secret || '（接口没返回，改用二维码）';
+
+        mfaSay('扫完码，把 App 里显示的 6 位数字填进下面。');
+      });
+  }
+
+  function gateByMfa() {
+    // 老 client 没有 MFA API：交回数据库兜底，别把人挡在门外
+    if (!sb.auth || !sb.auth.mfa || typeof sb.auth.mfa.getAuthenticatorAssuranceLevel !== 'function') {
+      showApp();
+      return;
+    }
+
+    mfaCall('getAuthenticatorAssuranceLevel')
+      .then(function (res) {
+        if (res.error) throw res.error;
+
+        var d = res.data || {};
+
+        if (d.currentLevel === 'aal2') {
+          return activateMfa().then(function () { showApp(); });
+        }
+
+        if (d.nextLevel === 'aal2') {
+          return mfaCall('listFactors').then(function (list) {
+            var all = (list && list.data && list.data.all) || [];
+            var verified = all.filter(function (f) { return f.status === 'verified'; })[0];
+            mfaFactorId = verified ? verified.id : null;
+            showMfaVerify();
+          });
+        }
+
+        return startEnroll();
+      })
+      .catch(showMfaBroken);
+  }
+
+  /* 提交 6 位数字：绑定与日常验证共用一条路 */
+  function submitMfaCode(code) {
+    if (!mfaFactorId) {
+      return Promise.reject(new Error('没有找到验证器，请刷新页面重试'));
+    }
+
+    // 新版 supabase-js 一步到位，老版本退回 challenge + verify
+    if (typeof sb.auth.mfa.challengeAndVerify === 'function') {
+      return mfaCall('challengeAndVerify', { factorId: mfaFactorId, code: code });
+    }
+    return mfaCall('challenge', { factorId: mfaFactorId }).then(function (res) {
+      if (res.error) throw res.error;
+      return mfaCall('verify', {
+        factorId: mfaFactorId,
+        challengeId: res.data && res.data.id,
+        code: code
+      });
+    });
+  }
+
+  function bindMfaForm(formEl) {
+    if (!formEl) return;
+
+    formEl.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (formEl.getAttribute('aria-busy') === 'true') return;
+
+      var input = formEl.querySelector('input[name="code"]');
+      var code = String((input && input.value) || '').replace(/\D/g, '');
+      if (code.length !== 6) {
+        mfaSay('请输入验证器上的 6 位数字。', 'error');
+        if (input) input.focus();
+        return;
+      }
+
+      var btn = formEl.querySelector('button[type="submit"]');
+      var label = btn ? btn.textContent : '';
+
+      formEl.setAttribute('aria-busy', 'true');
+      if (btn) { btn.disabled = true; btn.textContent = '验证中…'; }
+      mfaSay('正在验证…');
+
+      submitMfaCode(code)
+        .then(function (res) {
+          if (res && res.error) throw res.error;
+          mfaSay('验证通过，正在进入后台…', 'ok');
+          return activateMfa().then(function () { showApp(); });
+        })
+        .catch(function (err) {
+          mfaSay('验证失败：' + errText(err) + '（验证码 30 秒换一次，注意别输错）', 'error');
+          if (input) { input.value = ''; input.focus(); }
+        })
+        .then(function () {
+          formEl.removeAttribute('aria-busy');
+          if (btn) { btn.disabled = false; btn.textContent = label; }
+        });
+    });
+  }
+
+  bindMfaForm(mfaVerifyEl);
+  bindMfaForm(mfaEnrollForm);
+
   /* ---------- 权限门 ---------- */
   function showGate(text) {
     isAdmin = false;
@@ -277,6 +495,7 @@
   function showApp() {
     isAdmin = true;
     if (gateEl) gateEl.hidden = true;
+    if (mfaEl) mfaEl.hidden = true;
     if (bodyEl) bodyEl.hidden = false;
     refresh();
   }
@@ -318,7 +537,8 @@
             return;
           }
 
-          showApp();
+          // 是站长，再过一道两步验证（数据库那边也会独立校验一次）
+          gateByMfa();
         });
     }).catch(function () {
       booting = false;

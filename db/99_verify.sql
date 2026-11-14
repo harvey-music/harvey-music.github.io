@@ -74,3 +74,15 @@ select has_column_privilege('anon',          'public.messages', 'author_ip', 'se
        has_column_privilege('authenticated', 'public.messages', 'body',      'select') as user_read_body,    -- t
        has_function_privilege('anon', 'public.gb_admin_posts(text)', 'execute')        as anon_call_rpc;     -- f
 -- 最后一条要求 05 已执行（函数存在），否则会报 function does not exist。
+
+-- J. 站长两步验证（06_admin_mfa.sql 之后）
+-- 第一列要表存在才算过；如果报 relation "private.admin_mfa_required" does not exist，
+-- 就是 06 还没执行。
+select has_table_privilege('anon', 'private.admin_mfa_required', 'select')            as anon_read_mfa_table,  -- f
+       has_function_privilege('anon', 'public.gb_admin_mfa_activate()', 'execute')     as anon_activate_mfa,    -- f
+       (select count(*) from private.admin_mfa_required)                              as mfa_enforced_admins;  -- 站长开了就是 1
+
+-- 附：强制名单是谁
+select r.user_id, u.email, r.activated_at
+from private.admin_mfa_required r
+left join auth.users u on u.id = r.user_id;

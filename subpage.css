@@ -275,6 +275,20 @@ body {
 .form-msg.is-ok { color: var(--accent); }
 .form-msg.is-error { color: var(--danger); }
 
+/* ---------- 站长两步验证：二维码 ---------- */
+/* Supabase 返回的 qr_code 是一段 SVG，前端转成 data URI 塞进 <img>，
+   所以这里只需要一块白底把二维码衬出来。 */
+.mfa-qr { margin: 16px 0 10px; }
+.mfa-qr img {
+  display: block;
+  width: 180px;
+  height: 180px;
+  padding: 10px;
+  border-radius: 12px;
+  background: #fff;
+}
+.mfa-qr img:not([src]) { visibility: hidden; }
+
 /* ---------- 资料头 ---------- */
 .profile-head { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .profile-head h2 { font-size: 1.25rem; letter-spacing: 0.01em; }
