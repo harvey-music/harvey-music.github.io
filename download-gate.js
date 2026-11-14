@@ -492,11 +492,25 @@
       var url = node.getAttribute('data-dl-url') || node.getAttribute('href') || '';
       if (!url || url === '#') return;
       e.preventDefault();
-      open({
-        fileCount: 1,
-        macText: node.getAttribute('data-dl-mac') || '',
-        onConfirm: function () { download(url); }
-      });
+
+      function proceed() {
+        open({
+          fileCount: 1,
+          macText: node.getAttribute('data-dl-mac') || '',
+          onConfirm: function () { download(url); }
+        });
+      }
+
+      // 下载必须先持「游客通行证 / 正式账号」，封禁期内直接拦下。
+      // guest-gate.js 没引入时退化成原来的行为（老页面不受影响）。
+      if (window.GuestGate && typeof window.GuestGate.requireDownload === 'function') {
+        window.GuestGate.requireDownload().then(function (ok) {
+          if (ok) proceed();
+        });
+        return;
+      }
+
+      proceed();
     });
   }
 
@@ -576,7 +590,17 @@
 
   window.DownloadGate = {
     open: open,
-    confirm: function (options) { open(options); },
+    confirm: function (options) {
+      var o = options || {};
+      // 命令式调用同样要先过「通行证 / 封禁」这一关
+      if (window.GuestGate && typeof window.GuestGate.requireDownload === 'function') {
+        window.GuestGate.requireDownload().then(function (ok) {
+          if (ok) open(o);
+        });
+        return;
+      }
+      open(o);
+    },
     leave: function (options) {
       var o = options || {};
       o.mode = 'leave';

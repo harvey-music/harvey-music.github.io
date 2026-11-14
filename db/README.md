@@ -28,7 +28,9 @@ Supabase：Auth（账号） + Postgres（profiles / messages / user_roles）
 | 6 | `06_admin_mfa.sql` | 站长两步验证的数据库侧强制：没过 TOTP（JWT 里没有 `aal2`）时 `private.is_admin()` 返回 false。**建议做**，见 2.7 |
 | 7 | `07_hide_profile_flags.sql` | 把 `profiles` 的 select 收窄成列级（只剩 id / username / bio / created_at）。自己的信任状态走 `gb_my_profile()`，后台用户列表走 `gb_admin_users()`。**建议做**，见 3 的 13–15 条 |
 | 8 | `08_admin_reset_password.sql` | 后台一键重置密码：`gb_admin_users()` 补邮箱列 + 新增 `gb_admin_reset_password()`（改 `auth.users.encrypted_password` 并清掉该用户的 `auth.sessions`）。**可选但很省事**，见第 4 节「重置密码」 |
-| 9 | `99_verify.sql` | 只读自查，逐项对照注释里的"应该是" |
+| 9 | `09_ban_until.sql` | 定时封号：`profiles` 加 `banned_until` / `ban_reason`，新增 `gb_ban_user(uid, 分钟, 原因)` / `gb_unban_user(uid)`，留言守卫改成"永久封 or 临时封未到期"都拦。封禁 1 分钟 ~ 30 天，到期自动失效，不用定时任务 |
+| 10 | `10_guest_pass.sql` | 游客通行证：`guest_no_seq` 序列 + 重写注册触发器，匿名登录自动分配「游客20XX」；游客号不能改资料。**必须在 09 之后执行** |
+| 11 | `99_verify.sql` | 只读自查，逐项对照注释里的"应该是" |
 
 `02` 结尾有一句 `notify pgrst, 'reload schema'`，让接口立刻读到新表结构，不用等缓存过期。
 
@@ -89,6 +91,17 @@ Supabase：Auth（账号） + Postgres（profiles / messages / user_roles）
 不会把自己锁死：记录为空时行为完全不变；只有「已经通过验证器」（`aal2`）
 那一刻才写得进记录，所以只有密码的人关不掉这个开关。
 验证器丢了怎么恢复见 4.4。
+
+### 2.8 开启匿名登录（游客通行证，**必做**）
+
+`Authentication → Sign In / Providers → Anonymous sign-ins` → **打开**。
+
+本站现在「下载必须先持号」：访客进站弹一张游客通行证，点一下就完成匿名登录，
+不填邮箱不填密码。这一项不开，点「以游客身份进入」会报 `anonymous_provider_disabled`，
+等于**整个下载入口都关着**。
+
+游客号只是"能下载、能留言"的最低门槛，清缓存 / 换浏览器就是一张新号，
+所以它是**管控入口**而不是身份证明。真要锁死文件得走 COS 私有读 + 签名 URL（见第 6 节）。
 
 ---
 
@@ -178,6 +191,37 @@ where user_id = (select id from auth.users where lower(email) = lower('对方邮
 
 改完让对方用临时密码登录，并提醒他自行更改。
 
+### 封号 / 解封（定时）
+
+后台 `admin.html` → 「用户」→ 点「封号」：
+
+1. 弹窗里选时长：1 分钟 / 1 小时 / 1 天 / 7 天 / 30 天，或者手填 1–43200 之间的分钟数；
+2. 原因可填可不填（只有你看得到，对方在看自己的状态时也能看到）；
+3. 确认后数据库里写 `profiles.banned_until = now() + 时长`，同时清掉 `is_banned`；
+4. 想提前放人：那一行的按钮会变成「立即解封」，点一下清空两个字段。
+
+封禁期间：**留言被数据库触发器直接拒绝**（`该账号已被封禁，暂时不能发言`），
+**站内下载被前端拦下**（弹「账号封禁中」，给出解封时间和申诉邮箱 `zjh041106@qq.com`）。
+
+到期**自动恢复**，因为判断条件是 `banned_until > now()`，不需要任何定时任务或云函数。
+页面挂很久的情况，前端也会重新比一次时间。
+
+直接写 SQL 也行：
+
+```sql
+-- 封 2 小时
+update public.profiles
+set banned_until = now() + interval '2 hours', is_banned = false
+where id = (select id from auth.users where email = '对方邮箱');
+
+-- 解封
+update public.profiles set banned_until = null, ban_reason = null, is_banned = false
+where id = (select id from auth.users where email = '对方邮箱');
+```
+
+`is_banned` 还留着，语义是「永久限制」（旧数据、`gb_set_ban` 走的路）；
+有效封禁 = `is_banned or banned_until > now()`，两者是「或」的关系。
+
 ### 看谁在什么时候做了什么
 
 ```sql
@@ -233,6 +277,9 @@ left join auth.users u on u.id = r.user_id;
 | 站长自己被"仅站长可以执行该操作"挡住 | 已启用强制，但这次登录没输验证器（aal1） | 刷新 `admin.html` 输一次 6 位码；验证器丢了见 4.4 |
 | 后台「重置密码」报 `function extensions.crypt(text, text) does not exist` | pgcrypto 没启用，或不在 `extensions` schema | Database → Extensions 打开 pgcrypto，重跑 `08_admin_reset_password.sql` |
 | 重置完对方还"像登录着" | 他那边还开着旧页面 | 旧 `auth.sessions` 已删，刷新任意页面就会回到未登录；让他用临时密码重登 |
+| 点「以游客身份进入」报 `anonymous_provider_disabled` | 控制台没开匿名登录 | 见 2.8，打开 Anonymous sign-ins |
+| 领了通行证还是点不动下载 | `09` / `10` 没执行，或 `gb_my_profile` 报错 | 重跑 09、10，F12 看 Network 里 `rpc/gb_my_profile` 的返回 |
+| 游客号改昵称没反应 | 设计如此：RLS 只放行非游客的更新 | 想自定义资料就注册正式账号 |
 
 ---
 
@@ -242,6 +289,8 @@ left join auth.users u on u.id = r.user_id;
 - 邮件通知、密码自助找回（全程不发信；改密码靠后台一键重置，见第 4 节）
 - 楼中楼 / 点赞 / 举报按钮
 - Turnstile 人机验证（见 2.5）
+- COS 私有读 + Edge Function 签名 URL（现在下载只拦"从站内点按钮"的人，
+  `data/downloads.json` 和直链本身仍是公开的，懂行的人可以直接下）
 - 用户之间的互相关注、公开个人主页路由（目前是"我的主页"）
 
 这些都留了扩展位：`messages` 加列、加策略即可，不需要改前端架构。

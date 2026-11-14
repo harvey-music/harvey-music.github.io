@@ -66,13 +66,128 @@
     });
   }
 
-  function setBan(userId, banned, btn) {
-    if (btn) btn.disabled = true;
-    sb.rpc('gb_set_ban', { p_user: userId, p_banned: banned }).then(function (res) {
-      if (btn) btn.disabled = false;
+  /* ---------- 封号 / 解封 ----------
+     时长写进 profiles.banned_until，数据库里用 banned_until > now() 判断，
+     到点自动失效，不需要任何定时任务 / 云函数。这里只负责把分钟数递过去。 */
+  var banDialog = document.querySelector('[data-ban-dialog]');
+  var banForm = document.querySelector('[data-ban-form]');
+  var banTargetEl = document.querySelector('[data-ban-target]');
+  var banMsgEl = document.querySelector('[data-ban-msg]');
+  var banCancelBtn = document.querySelector('[data-ban-cancel]');
+  var banUser = null;
+
+  function banSay(text, kind) {
+    if (!banMsgEl) return;
+    banMsgEl.textContent = text || '';
+    banMsgEl.className = 'form-msg' + (kind ? ' is-' + kind : '');
+  }
+
+  function closeBanDialog() {
+    banUser = null;
+    if (!banDialog) return;
+    if (typeof banDialog.close === 'function') banDialog.close();
+    else banDialog.removeAttribute('open');
+  }
+
+  function openBanDialog(u) {
+    if (!banDialog || !banForm) return;
+    banUser = u;
+    banForm.reset();
+
+    var input = banForm.querySelector('input[name="minutes"]');
+    if (input) input.value = 60;
+
+    if (banTargetEl) {
+      banTargetEl.textContent = '正在封禁「' + u.username + '」' +
+        (u.email ? '（' + u.email + '）' : '') + '。';
+    }
+    banSay('');
+
+    if (typeof banDialog.showModal === 'function') banDialog.showModal();
+    else banDialog.setAttribute('open', '');
+
+    if (input) { input.focus(); input.select(); }
+  }
+
+  // 剩余时间写成「剩 2 天 3 小时」，不用自己换算时间戳
+  function banLeft(until) {
+    var ms = new Date(until).getTime() - Date.now();
+    if (!(ms > 0)) return '已到期';
+    var mins = Math.ceil(ms / 60000);
+    if (mins < 60) return '剩 ' + mins + ' 分钟';
+    var hours = Math.floor(mins / 60);
+    if (hours < 24) return '剩 ' + hours + ' 小时' + (mins % 60 ? ' ' + (mins % 60) + ' 分钟' : '');
+    var days = Math.floor(hours / 24);
+    return '剩 ' + days + ' 天' + (hours % 24 ? ' ' + (hours % 24) + ' 小时' : '');
+  }
+
+  function unban(u, btn) {
+    if (btn) { btn.disabled = true; btn.textContent = '处理中…'; }
+    sb.rpc('gb_unban_user', { p_user: u.id }).then(function (res) {
+      if (btn) { btn.disabled = false; btn.textContent = '立即解封'; }
       if (res.error) { setMsg('操作失败：' + core.errorText(res.error), 'error'); return; }
-      setMsg(banned ? '已限制该账号发言。' : '已解除限制。', 'ok');
+      setMsg('已解除「' + u.username + '」的封禁。', 'ok');
       loadUsers();
+    });
+  }
+
+  if (banCancelBtn) banCancelBtn.addEventListener('click', closeBanDialog);
+
+  if (banDialog) {
+    // Esc / 点遮罩关闭时把待操作对象一起清掉，避免下次误封
+    banDialog.addEventListener('close', function () { banUser = null; });
+    banDialog.addEventListener('click', function (e) {
+      if (e.target === banDialog) closeBanDialog();
+    });
+  }
+
+  // 快捷时长按钮只改输入框，不提交
+  var banQuick = document.querySelector('[data-ban-quick]');
+  if (banQuick) {
+    banQuick.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-min]');
+      if (!btn || !banForm) return;
+      var input = banForm.querySelector('input[name="minutes"]');
+      if (input) input.value = btn.getAttribute('data-min');
+    });
+  }
+
+  if (banForm) {
+    banForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!banUser) return;
+
+      var input = banForm.querySelector('input[name="minutes"]');
+      var minutes = parseInt(input ? input.value : '', 10);
+      if (!(minutes >= 1 && minutes <= 43200)) {
+        banSay('时长要在 1 到 43200 分钟之间（最长 30 天）。', 'error');
+        return;
+      }
+
+      var reasonEl = banForm.querySelector('input[name="reason"]');
+      var reason = reasonEl ? reasonEl.value.trim() : '';
+      var btn = banForm.querySelector('[data-ban-submit]');
+      var name = banUser.username;
+      var targetId = banUser.id;
+
+      if (btn) { btn.disabled = true; btn.textContent = '正在封号…'; }
+      banSay('正在封号…');
+
+      sb.rpc('gb_ban_user', {
+        p_user: targetId,
+        p_minutes: minutes,
+        p_reason: reason || null
+      }).then(function (res) {
+        if (res.error) throw res.error;
+        var until = res.data ? core.fmtTime(res.data) : '';
+        closeBanDialog();
+        setMsg('已封禁「' + name + '」' + (until ? '至 ' + until : '') + '。', 'ok');
+        loadUsers();
+      }).catch(function (err) {
+        banSay('封号失败：' + errText(err), 'error');
+      }).then(function () {
+        if (btn) { btn.disabled = false; btn.textContent = '确认封号'; }
+      });
     });
   }
 
@@ -218,7 +333,7 @@
   /* 07 没执行时（函数不存在）退回直读表：功能照旧，只是那两列还没收窄 */
   function loadUsersFallback() {
     sb.from('profiles')
-      .select('id,username,trust_level,is_banned,created_at')
+      .select('id,username,trust_level,is_banned,banned_until,created_at')
       .order('created_at', { ascending: false })
       .limit(100)
       .then(function (res) {
@@ -252,11 +367,20 @@
       var sub = '注册于 ' + core.fmtTime(u.created_at).slice(0, 10);
       if (u.email) sub += ' · ' + u.email;
       if (isSelf) sub += ' · 这是你自己';
+      if (u.is_banned) {
+        sub += u.banned_until
+          ? ' · 封禁至 ' + core.fmtTime(u.banned_until) + '（' + banLeft(u.banned_until) + '）'
+          : ' · 永久限制发言';
+      }
       main.appendChild(el('div', 'adm-user-sub', sub));
 
       var actions = el('div', 'adm-actions');
+      if (u.is_guest) actions.appendChild(el('span', 'adm-tag', '游客'));
       if (u.trust_level >= 1) actions.appendChild(el('span', 'adm-tag adm-tag--ok', '信任'));
-      if (u.is_banned) actions.appendChild(el('span', 'adm-tag adm-tag--warn', '已限制'));
+      if (u.is_banned) {
+        actions.appendChild(el('span', 'adm-tag adm-tag--warn',
+          u.banned_until ? '封禁中' : '永久限制'));
+      }
 
       var trustBtn = el('button', 'btn btn-ghost btn--sm', u.trust_level >= 1 ? '取消信任' : '信任此人');
       trustBtn.type = 'button';
@@ -265,12 +389,18 @@
         setTrust(u.id, u.trust_level >= 1 ? 0 : 1, trustBtn);
       });
 
-      var banBtn = el('button', 'btn btn--danger btn--sm', u.is_banned ? '解除限制' : '限制发言');
-      banBtn.type = 'button';
-      banBtn.disabled = isSelf;
-      banBtn.addEventListener('click', function () {
-        setBan(u.id, !u.is_banned, banBtn);
-      });
+      var banBtn;
+      if (u.is_banned) {
+        banBtn = el('button', 'btn btn--danger btn--sm', '立即解封');
+        banBtn.type = 'button';
+        banBtn.disabled = isSelf;
+        banBtn.addEventListener('click', function () { unban(u, banBtn); });
+      } else {
+        banBtn = el('button', 'btn btn--danger btn--sm', '封号');
+        banBtn.type = 'button';
+        banBtn.disabled = isSelf;
+        banBtn.addEventListener('click', function () { openBanDialog(u); });
+      }
 
       var resetBtn = el('button', 'btn btn-ghost btn--sm', '重置密码');
       resetBtn.type = 'button';

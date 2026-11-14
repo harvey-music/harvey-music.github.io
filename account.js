@@ -183,13 +183,50 @@
       if (user.email) parts.push(user.email);
       if (profile && profile.created_at) parts.push('注册于 ' + core.fmtTime(profile.created_at).slice(0, 10));
       if (profile && profile.trust_level >= 1) parts.push('信任用户');
-      if (profile && profile.is_banned) parts.push('已限制发言');
+      if (profile && profile.is_banned) {
+        parts.push(profile.banned_until
+          ? '封禁至 ' + core.fmtTime(profile.banned_until)
+          : '已限制发言');
+      }
       meta.textContent = parts.join(' · ');
     }
 
+    // 封禁提示条：写清楚到什么时候、封多久、怎么申诉
+    var banNote = document.querySelector('[data-ban-note]');
+    if (banNote) {
+      if (profile && profile.is_banned) {
+        var line = '该账号正在封禁期';
+        if (profile.banned_until) line += '，' + core.fmtTime(profile.banned_until) + ' 自动解除';
+        else line += '（永久限制）';
+        line += '。期间不能发留言、不能用站内下载。';
+        if (profile.ban_reason) line += '原因：' + profile.ban_reason + '。';
+        line += '申诉请发邮件到 zjh041106@qq.com。';
+        banNote.hidden = false;
+        banNote.textContent = line;
+      } else {
+        banNote.hidden = true;
+        banNote.textContent = '';
+      }
+    }
+
     if (profileForm) {
+      var isGuest = !!(profile && profile.is_guest);
       profileForm.elements.username.value = name;
       profileForm.elements.bio.value = (profile && profile.bio) || '';
+
+      // 游客号改不了资料：数据库那边 RLS 也挡着（10_guest_pass.sql），
+      // 这里把表单禁掉，免得点了保存没反应还以为是坏了。
+      profileForm.elements.username.disabled = isGuest;
+      profileForm.elements.bio.disabled = isGuest;
+
+      var saveBtn = profileForm.querySelector('button[type="submit"]');
+      if (saveBtn) {
+        saveBtn.disabled = isGuest;
+        saveBtn.textContent = isGuest ? '游客号不能改资料' : '保存';
+      }
+
+      var guestHint = document.querySelector('[data-guest-hint]');
+      if (guestHint) guestHint.hidden = !isGuest;
     }
   }
 

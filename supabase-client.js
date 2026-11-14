@@ -86,7 +86,8 @@
     ['signup is disabled', '注册通道已关闭'],
     ['New password should be different', '新密码不能和旧密码相同'],
     ['Auth session missing', '登录状态已失效，请重新登录'],
-    ['JWT expired', '登录状态已过期，请重新登录']
+    ['JWT expired', '登录状态已过期，请重新登录'],
+    ['该账号已被封禁', '你的账号正在封禁期，暂时不能发言。申诉请发邮件到 zjh041106@qq.com']
   ];
 
   function errorText(err) {

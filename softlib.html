@@ -1302,6 +1302,12 @@
     })();
   </script>
 
+  <!-- 游客通行证：下载必须先领一张匿名通行证（不填邮箱密码），
+       被封号的账号在这里就被拦下。顺序不能换：supabase → client → gate。 -->
+  <script src="vendor/supabase.js" defer></script>
+  <script src="supabase-client.js" defer></script>
+  <script src="guest-gate.js" defer></script>
+
   <!-- 下载闸门：与 prism / silverdaw 两页同一份脚本，样式与交互完全一致 -->
   <script src="download-gate.js" defer></script>
 </body>

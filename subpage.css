@@ -371,6 +371,9 @@ body {
 .adm-tag--ok { border-color: var(--accent-line); background: var(--gold-wash); color: var(--accent); }
 .adm-tag--warn { border-color: var(--warn-line); background: var(--warn-wash); color: var(--warn); }
 
+/* 封号弹窗里的快捷时长按钮 */
+.adm-quick { display: flex; flex-wrap: wrap; gap: 8px; }
+
 /* ---------- 后台：重置密码弹窗 ---------- */
 .adm-dialog {
   width: min(460px, calc(100vw - 28px));

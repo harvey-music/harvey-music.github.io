@@ -81,12 +81,15 @@ python -m http.server 8000
 | `db/06_admin_mfa.sql` | 站长两步验证（TOTP）的数据库侧强制：没过验证器时 `is_admin()` 返回 false |
 | `db/07_hide_profile_flags.sql` | 把 `profiles` 的 select 收窄成列级（堵 `trust_level` / `is_banned` 被匿名读走）+ `gb_my_profile()` / `gb_admin_users()` |
 | `db/08_admin_reset_password.sql` | 后台一键重置用户密码（本站不发邮件，控制台的 Reset password 用不了）+ `gb_admin_users()` 补邮箱列 |
+| `db/09_ban_until.sql` | 定时封号（1 分钟 ~ 30 天，到期自动失效）+ 一键解封，`messages_guard` 按"有效封禁"拦截 |
+| `db/10_guest_pass.sql` | 游客通行证：匿名登录自动分配「游客2001、2002…」，游客号不能改资料 |
 | `db/99_verify.sql` | 只读验收自查 |
 | `vendor/supabase.js` | supabase-js 本地副本（不走 CDN，国内加载稳定） |
 | `supabase-client.js` | 连接、登录态、格式化等公共小工具 |
 | `guestbook.js` | 首页留言板 + 可复用的留言条渲染器 |
+| `guest-gate.js` | 游客通行证：未登录一键领匿名账号（游客2001、2002…），下载必须持号，封禁期内拦下载 |
 | `account.html` / `account.js` | 登录、注册、个人主页（忘记密码的指引也在登录框下面） |
-| `admin.html` / `admin.js` | 站长审核后台（审核、信任 / 限制、一键重置密码） |
+| `admin.html` / `admin.js` | 站长审核后台（审核、信任、定时封号 / 立即解封、一键重置密码） |
 | `privacy.html` | 隐私说明 |
 | `guestbook.css` / `subpage.css` | 新增样式（首页只多引一个 guestbook.css） |
 

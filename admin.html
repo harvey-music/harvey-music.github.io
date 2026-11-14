@@ -114,10 +114,51 @@
       <section class="panel">
         <h2 class="panel-title">用户</h2>
         <p class="form-hint">
-          「信任此人」之后，他发的留言不再需要审核，直接公开；「限制发言」会拦住新的留言，已有的不动。
+          「信任此人」之后，他发的留言不再需要审核，直接公开；「封号」可以设 1 分钟到 30 天的时长，
+          期间不能发留言、不能用站内下载，到期自动恢复；想提前放人就点「立即解封」。
         </p>
         <div data-user-list style="margin-top:14px"></div>
       </section>
+
+      <!-- ============ 封号弹窗（定时封禁） ============
+           时长写进 profiles.banned_until，判断用 banned_until > now()，
+           所以到期自动失效，不需要任何定时任务 / 云函数。
+           「立即解封」走 gb_unban_user，两个字段一起清空。 -->
+      <dialog class="adm-dialog" data-ban-dialog>
+        <form class="adm-dialog-inner" data-ban-form>
+          <h2 class="panel-title">封号</h2>
+          <p class="form-hint" data-ban-target></p>
+          <label class="field">
+            <span>封多久（分钟，最少 1，最多 43200 = 30 天）</span>
+            <input type="number" name="minutes" min="1" max="43200" step="1" value="60" required>
+          </label>
+          <div class="adm-quick" data-ban-quick>
+            <button class="btn btn-ghost btn--sm" type="button" data-min="1">1 分钟</button>
+            <button class="btn btn-ghost btn--sm" type="button" data-min="60">1 小时</button>
+            <button class="btn btn-ghost btn--sm" type="button" data-min="1440">1 天</button>
+            <button class="btn btn-ghost btn--sm" type="button" data-min="10080">7 天</button>
+            <button class="btn btn-ghost btn--sm" type="button" data-min="43200">30 天</button>
+          </div>
+          <label class="field">
+            <span>原因（可选，只有你看得到）</span>
+            <input type="text" name="reason" maxlength="100" autocomplete="off"
+                   placeholder="例如：发广告 / 辱骂">
+          </label>
+          <p class="form-hint">
+            封号期间对方不能发留言、不能用站内下载；到期自动恢复，不用回来点。
+            想提前放人就点那一行的「立即解封」。
+          </p>
+          <p class="form-hint">
+            申诉方式：让对方发邮件到
+            <a href="mailto:zjh041106@qq.com">zjh041106@qq.com</a>。
+          </p>
+          <div class="adm-dialog-actions">
+            <button class="btn btn-ghost" type="button" data-ban-cancel>取消</button>
+            <button class="btn btn--danger" type="submit" data-ban-submit>确认封号</button>
+          </div>
+          <p class="form-msg" data-ban-msg role="status"></p>
+        </form>
+      </dialog>
 
       <!-- ============ 重置密码弹窗（站长专属） ============
            为什么要在这里做：本站全程不发邮件，Supabase 控制台的

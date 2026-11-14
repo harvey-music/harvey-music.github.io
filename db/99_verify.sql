@@ -106,3 +106,33 @@ select has_column_privilege('anon',          'public.profiles', 'trust_level', '
 select has_function_privilege('anon',          'public.gb_admin_reset_password(uuid, text)', 'execute') as anon_call_reset,  -- f
        has_function_privilege('authenticated', 'public.gb_admin_reset_password(uuid, text)', 'execute') as user_call_reset;  -- t
 
+-- M. 定时封号（09_ban_until.sql 之后）
+-- anon 应全为 f，authenticated 应全为 t。
+-- 报 function does not exist 就是 09 还没执行。
+select has_function_privilege('anon',          'public.gb_ban_user(uuid, integer, text)', 'execute') as anon_call_ban,    -- f
+       has_function_privilege('authenticated', 'public.gb_ban_user(uuid, integer, text)', 'execute') as user_call_ban,    -- t
+       has_function_privilege('anon',          'public.gb_unban_user(uuid)',              'execute') as anon_call_unban,  -- f
+       has_function_privilege('authenticated', 'public.gb_unban_user(uuid)',              'execute') as user_call_unban;  -- t
+
+-- banned_until / ban_reason 是封号用的两列，客户端一律读不到（走 gb_my_profile）。
+-- 报 column does not exist 就是 09 还没执行。
+select has_column_privilege('anon',          'public.profiles', 'banned_until', 'select') as anon_read_until,   -- f
+       has_column_privilege('authenticated', 'public.profiles', 'banned_until', 'select') as user_read_until,   -- f
+       has_column_privilege('anon',          'public.profiles', 'ban_reason',   'select') as anon_read_reason,  -- f
+       has_column_privilege('authenticated', 'public.profiles', 'ban_reason',   'select') as user_read_reason;  -- f
+
+-- N. 游客通行证（10_guest_pass.sql 之后）
+-- is_guest 不该对客户端开放；序列也只给 security definer 触发器用。
+select has_column_privilege('anon',          'public.profiles', 'is_guest', 'select')            as anon_read_guest,  -- f
+       has_column_privilege('authenticated', 'public.profiles', 'is_guest', 'select')            as user_read_guest,  -- f
+       has_sequence_privilege('anon',          'public.guest_no_seq', 'usage')                   as anon_use_seq,     -- f
+       has_sequence_privilege('authenticated', 'public.guest_no_seq', 'usage')                   as user_use_seq;     -- f
+
+-- 资料更新策略应只剩"本人且不是游客"这一条
+select polname, pg_get_expr(polqual, polrelid) as using_expr
+from pg_policy
+where polrelid = 'public.profiles'::regclass;
+
+-- 现有的游客编号排到多少了（执行 10 之前这个查询会报错，属正常）
+select last_value, is_called from public.guest_no_seq;
+

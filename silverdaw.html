@@ -1791,6 +1791,12 @@
     })();
   </script>
 
+  <!-- 游客通行证：下载必须先领一张匿名通行证（不填邮箱密码），
+       被封号的账号在这里就被拦下。顺序不能换：supabase → client → gate。 -->
+  <script src="vendor/supabase.js" defer></script>
+  <script src="supabase-client.js" defer></script>
+  <script src="guest-gate.js" defer></script>
+
   <!-- 下载闸门：安装包 / 压缩包确认后先弹「运行环境核对」，确认时才真正开始下载 -->
   <script src="download-gate.js" defer></script>
 </body>
