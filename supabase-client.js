@@ -12,6 +12,24 @@
   var SUPABASE_URL = 'https://fowurkaatlohtiqvqvoc.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_aKWkBeYJh1pHo38dV6bkPQ_PWR7FD44';
 
+  // 本地测试环境隔离：localhost / 127.0.0.1 必须由 supabase-env.local.js
+  // 提供 staging 配置（该文件已被 .gitignore 排除，不入库、不部署）。
+  // 文件缺失 / 为空 / 格式错误时，拒绝初始化并明确报错，绝不回退生产数据库。
+  // 生产环境（GitHub Pages）始终使用上面的生产 URL / key，不受本地配置影响。
+  var IS_LOCAL = /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname);
+  if (IS_LOCAL) {
+    var env = window.SITE_ENV;
+    if (!env || typeof env !== 'object' || !env.url || !env.key) {
+      throw new Error(
+        '本地环境缺少有效的 supabase-env.local.js：请在仓库根目录创建该文件，' +
+        '内容为 window.SITE_ENV = { url: "https://<staging>.supabase.co", key: "sb_publishable_..." };。' +
+        '生产环境不受影响。'
+      );
+    }
+    SUPABASE_URL = env.url;
+    SUPABASE_KEY = env.key;
+  }
+
   var client = null;
 
   function getClient() {

@@ -1,3 +1,6 @@
 # 本地保留的原始版本备份（仅用于回滚对比，不部署到线上）
 *.stage0.html
 *.stage0.backup.html
+
+# 本地测试环境覆盖（staging 配置，绝不提交、不部署）
+supabase-env.local.js

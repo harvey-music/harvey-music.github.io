@@ -167,6 +167,19 @@
         </div>
       </details>
 
+      <!-- ============ 游客清理（站长专属） ============ -->
+      <section class="adm-card" id="guest-cleanup">
+        <h2 class="adm-card-title">游客清理</h2>
+        <p class="adm-note">连续 15 天无活动、且没有任何留言/审核记录/MFA 关联的游客才会进入清理候选；正式注册账户永不清理；有任何需保留数据的游客都会被跳过。执行前务必先「预览候选」。</p>
+        <div class="adm-ops" style="margin-bottom:14px">
+          <button class="btn btn-ghost btn--sm" type="button" data-cleanup-audit>身份审计</button>
+          <button class="btn btn-ghost btn--sm" type="button" data-cleanup-preview>预览候选</button>
+          <button class="btn btn--danger btn--sm" type="button" data-cleanup-execute>执行清理</button>
+        </div>
+        <p class="form-msg" data-cleanup-msg role="status"></p>
+        <div data-cleanup-result></div>
+      </section>
+
       <!-- ============ 下载统计（站长专属） ============ -->
       <section class="adm-card" id="stats">
         <h2 class="adm-card-title">下载统计</h2>
@@ -345,10 +358,13 @@
   </script>
 
   <script src="vendor/supabase.js" defer></script>
+  <script src="supabase-env.local.js" defer></script>
   <script src="supabase-client.js" defer></script>
+  <script src="activity.js" defer></script>
   <script src="guestbook.js" defer></script>
   <script src="admin.js" defer></script>
   <script src="admin-notices.js" defer></script>
   <script src="admin-stats.js" defer></script>
+  <script src="admin-cleanup.js" defer></script>
 </body>
 </html>
