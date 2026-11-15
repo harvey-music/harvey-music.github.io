@@ -5,1128 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Silverdaw 中文汉化 - Arthur 工作室</title>
   <meta name="description" content="Silverdaw 是一款免费开源的采样音乐工作站，这里提供完整中文汉化版、汉化补丁与官方原版三种获取方式。">
-  <meta name="theme-color" content="#0b0b0d">
+  <meta name="theme-color" content="#08090a">
   <meta property="og:title" content="Silverdaw 中文汉化">
   <meta property="og:description" content="免费开源采样音乐工作站（DAW）的完整中文本地化版本。">
   <meta property="og:type" content="article">
   <meta property="og:image" content="images/silverdaw-stem-separation.jpg">
   <link rel="icon" href="logo-mark.png">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    /* ---------- 色板：与首页、与 logo 同源的黑金。改配色只改这一段 ---------- */
-    :root {
-      --bg: #0b0b0d;
-      --bg-soft: #111216;
-      --bg-deep: #08080a;
-      --card: #17181c;
-      --card-sel: #221d12;
-      --line: #26272c;
-      --line-soft: #232429;
-      --line-strong: #3a3b42;
-      --text: #eaeaec;
-      --text-dim: #c4c6cb;
-      --text-mute: #9a9da4;
-      --text-faint: #6c6f76;
-      --gold: #c9a227;
-      --gold-line: rgba(201, 162, 39, 0.45);
-      --gold-edge: #6b5620;
-      --gold-wash: rgba(201, 162, 39, 0.08);
-      --accent: #e3c274;
-      --accent-hover: #f0d79a;
-      --accent-line: rgba(227, 194, 116, 0.45);
-      --accent-line-strong: rgba(227, 194, 116, 0.6);
-      --accent-dot: rgba(227, 194, 116, 0.55);
-      --accent-grad: linear-gradient(180deg, #f2d99b, #d9b25c);
-      --accent-grad-hover: linear-gradient(180deg, #f9e5b8, #e6c877);
-      --on-accent: #17181a;
-      --warn: #f0b429;
-      --warn-hover: #ffc95c;
-      --warn-wash: rgba(240, 180, 41, 0.08);
-      --warn-line: rgba(240, 180, 41, 0.38);
-      --danger: #ff9c8a;
-      --nav-h: 54px;
-      --chap-h: 46px;
-    }
-
-    a { color: var(--accent); }
-
-    /* ---------- 跨页面切换：0.24s 交叉淡入，无位移 ----------
-       只淡不滑，切页时不会整页平移；顶部导航命名后原地保留。
-       不支持的浏览器（如 Firefox）直接切页，不做 JS 兜底。 */
-    @view-transition {
-      navigation: auto;
-    }
-
-    .globalnav { view-transition-name: site-nav; }
-
-    ::view-transition-old(root),
-    ::view-transition-new(root) {
-      animation-duration: 0.24s;
-      animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
-    }
-
-    ::view-transition-old(site-nav),
-    ::view-transition-new(site-nav) {
-      animation: none;
-    }
-
-    @supports not (view-transition-name: none) {
-      body { animation: page-fade-in 0.26s ease-out both; }
-    }
-
-    @keyframes page-fade-in {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    /* 平滑滚动；横向溢出交给各区块自己的 min-width: 0 处理。
-       注意：html 上不要写 overflow（hidden 会破坏 sticky，clip 会让 html 不再是滚动容器，
-       scrollTop 赋值全部失效），页面本身没有横向溢出，不需要这条规则。 */
-    html {
-      scroll-behavior: smooth;
-    }
-
-    /* 跨页返回时用瞬时定位还原滚动位置，避免平滑滚动把整页"扫"一遍 */
-    html.is-restoring {
-      scroll-behavior: auto;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
-      line-height: 1.7;
-    }
-
-    /* 通用内容宽度：和首页一条基准线 */
-    .wrap {
-      width: min(1160px, 92%);
-      margin-inline: auto;
-    }
-
-    /* ================= 常驻顶部导航：与首页同一套 ================= */
-    .globalnav {
-      position: sticky;
-      top: 0;
-      z-index: 60;
-      height: var(--nav-h);
-      background: rgba(11, 11, 13, 0.72);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      backdrop-filter: saturate(180%) blur(20px);
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.25s, background 0.25s;
-    }
-
-    .globalnav.is-stuck {
-      background: rgba(11, 11, 13, 0.86);
-      border-bottom-color: var(--line);
-    }
-
-    .globalnav .wrap {
-      display: flex;
-      align-items: center;
-      gap: 30px;
-      height: 100%;
-    }
-
-    .nav-brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      color: var(--text);
-      font-size: 0.95rem;
-      font-weight: 700;
-      text-decoration: none;
-      white-space: nowrap;
-      flex: 0 0 auto;
-    }
-
-    .nav-brand img {
-      width: 26px;
-      height: 26px;
-      object-fit: contain;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 2px;
-      margin-left: auto;
-    }
-
-    .nav-link {
-      padding: 7px 14px;
-      border-radius: 999px;
-      color: var(--text-mute);
-      font-size: 0.9rem;
-      text-decoration: none;
-      white-space: nowrap;
-      transition: color 0.2s, background 0.2s, transform 0.16s;
-    }
-
-    .nav-link:hover {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .nav-link.is-active {
-      color: var(--accent);
-      background: var(--gold-wash);
-    }
-
-    .nav-gh {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      margin-left: 6px;
-      border-radius: 50%;
-      color: var(--text-faint);
-      text-decoration: none;
-      transition: color 0.2s, background 0.2s, transform 0.16s;
-    }
-
-    .nav-gh:hover {
-      color: var(--accent);
-      background: var(--gold-wash);
-    }
-    /* ================= 产品主视觉区（学 Apple 产品页：名字、一句话、两个按钮） ================= */
-    .product-hero {
-      padding: clamp(34px, 5vw, 70px) 0 clamp(28px, 4vw, 44px);
-      text-align: center;
-    }
-
-    /* 返回入口单独占一行，靠左对齐：back 按钮放在左上角才找得到，
-       跟着主视觉居中会让人犹豫要不要点 */
-    .hero-top {
-      display: flex;
-      justify-content: flex-start;
-      margin-bottom: clamp(14px, 2.2vw, 24px);
-    }
-
-    .hero-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      padding: 5px 14px 5px 10px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      color: var(--text-mute);
-      font-size: 0.82rem;
-      text-decoration: none;
-      transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.16s;
-    }
-
-    .hero-back:hover {
-      color: var(--accent);
-      border-color: var(--accent-line);
-      background: var(--gold-wash);
-    }
-
-    /* 尖角用文字画，别用 SVG：小字号下更稳 */
-    .hero-back .chev-l {
-      font-size: 1.1em;
-      line-height: 1;
-      transform: translateY(-0.5px);
-    }
-
-    .kicker {
-      display: inline-block;
-      font-size: 0.76rem;
-      font-weight: 600;
-      letter-spacing: 0.16em;
-      color: var(--gold);
-    }
-
-    .product-hero h1 {
-      margin-top: 12px;
-      font-size: clamp(2.4rem, 7vw, 4.4rem);
-      font-weight: 700;
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-    }
-
-    .tagline {
-      margin: 18px auto 0;
-      max-width: 24em;
-      font-size: clamp(1rem, 2.2vw, 1.32rem);
-      color: var(--text-dim);
-      text-wrap: pretty;
-    }
-
-    .ctas {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-      margin-top: 30px;
-    }
-
-    .hero-meta {
-      margin-top: 20px;
-      font-size: 0.82rem;
-      color: var(--text-faint);
-    }
-
-    /* 按钮：与首页同一套观感 */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 11px 26px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      font-family: inherit;
-      font-size: 0.94rem;
-      font-weight: 600;
-      line-height: 1.5;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.16s, box-shadow 0.2s;
-    }
-
-    .btn-primary {
-      background: var(--accent-grad);
-      color: var(--on-accent);
-      border-color: var(--gold-line);
-    }
-
-    .btn-primary:hover {
-      background: var(--accent-grad-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 10px 26px var(--gold-shadow);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text-dim);
-      border-color: var(--line-strong);
-    }
-
-    .btn-ghost:hover {
-      border-color: var(--accent-line);
-      color: var(--text);
-    }
-
-    /* ---------- 点击反馈：与首页同一套，按下缩 3%，松手回弹 ----------
-       只动 transform，不改宽高，周围元素不会跟着跳 */
-    .btn:active { transform: scale(0.97); }
-    .nav-link:active { transform: scale(0.96); }
-    .nav-gh:active { transform: scale(0.92); }
-    .hero-back:active { transform: scale(0.96); }
-    .chapbar a:active { transform: scale(0.96); }
-
-    /* ================= 主视觉大图 ================= */
-    .showcase {
-      padding-bottom: clamp(28px, 5vw, 54px);
-    }
-
-    .showcase img {
-      display: block;
-      width: 100%;
-      height: auto;
-      border-radius: 20px;
-      border: 1px solid var(--line);
-      background: var(--bg-soft);
-    }
-
-    .caption {
-      margin-top: 14px;
-      font-size: 0.82rem;
-      color: var(--text-faint);
-      text-align: center;
-      text-wrap: pretty;
-    }
-
-    /* ================= 本页章节导航（吸顶，与首页栏目条同义） ================= */
-    .chapbar {
-      position: sticky;
-      top: var(--nav-h);
-      z-index: 55;
-      background: rgba(11, 11, 13, 0.82);
-      -webkit-backdrop-filter: saturate(180%) blur(18px);
-      backdrop-filter: saturate(180%) blur(18px);
-      border-block: 1px solid var(--line-soft);
-    }
-
-    .chapbar .wrap {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      height: var(--chap-h);
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    .chapbar .wrap::-webkit-scrollbar { display: none; }
-
-    .chapbar a {
-      flex: 0 0 auto;
-      padding: 6px 14px;
-      border-radius: 999px;
-      color: var(--text-mute);
-      font-size: 0.86rem;
-      text-decoration: none;
-      white-space: nowrap;
-      transition: color 0.2s, background 0.2s, transform 0.16s;
-    }
-
-    .chapbar a:hover {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    /* 章节条左端常驻返回入口。sticky + 半透明底：
-       窄屏横向滚动时它钉在左边，后面的条目从底下穿过去 */
-    .chapbar a.chap-back {
-      position: sticky;
-      left: 0;
-      z-index: 2;
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      margin-right: 6px;
-      padding-left: 0;
-      padding-right: 14px;
-      border-right: 1px solid var(--line);
-      border-radius: 0;
-      background: rgba(11, 11, 13, 0.9);
-      -webkit-backdrop-filter: blur(18px);
-      backdrop-filter: blur(18px);
-    }
-
-    .chapbar a.chap-back:hover {
-      color: var(--accent);
-      background: rgba(11, 11, 13, 0.9);
-    }
-
-    .chapbar a.chap-back .chev-l {
-      font-size: 1.1em;
-      line-height: 1;
-      transform: translateY(-0.5px);
-    }
-
-    /* 锚点跳转要给吸顶导航和章节条让出高度，否则标题正好被盖住 */
-    #features,
-    #zh,
-    #get,
-    #specs {
-      scroll-margin-top: calc(var(--nav-h) + var(--chap-h) + 14px);
-    }
-    /* ================= 功能分段（学 Apple：一图一段，左右交替） ================= */
-    .features { padding: clamp(26px, 4vw, 50px) 0 clamp(16px, 3vw, 30px); }
-
-    .feature {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-      gap: clamp(24px, 4vw, 56px);
-      align-items: center;
-      padding: clamp(32px, 5vw, 58px) 0;
-      border-top: 1px solid var(--line-soft);
-    }
-
-    .feature:first-child { border-top: none; }
-
-    /* 偶数段图文对调，读起来有节奏 */
-    .feature:nth-child(even) .feature-text { order: 2; }
-    .feature:nth-child(even) .feature-shot { order: 1; }
-
-    .feature-text { min-width: 0; }
-
-    .feature-idx {
-      display: inline-block;
-      font-size: 0.74rem;
-      font-weight: 600;
-      letter-spacing: 0.16em;
-      color: var(--gold);
-    }
-
-    .feature h2 {
-      margin: 12px 0 14px;
-      font-size: clamp(1.3rem, 3vw, 1.8rem);
-      font-weight: 700;
-      line-height: 1.3;
-      letter-spacing: -0.01em;
-      /* 标题较长时按行均分，避免第二行只剩一个字的孤字 */
-      text-wrap: balance;
-    }
-
-    .feature p {
-      color: var(--text-mute);
-      font-size: 0.93rem;
-      text-wrap: pretty;
-    }
-
-    .feature p + p { margin-top: 10px; }
-
-    .feature-shot { min-width: 0; margin: 0; }
-
-    .feature-shot img {
-      display: block;
-      width: 100%;
-      height: auto;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: var(--bg-soft);
-    }
-
-    /* ================= 说明区块：汉化覆盖范围 ================= */
-    /* 下面这四个区块直接是 section（没有 .wrap 包着），自己限宽，
-       否则卡片和文字会一直顶到屏幕两边 */
-    .panel {
-      width: min(1160px, 92%);
-      margin: clamp(26px, 4vw, 52px) auto;
-      padding: clamp(26px, 4vw, 44px);
-      border-radius: 22px;
-      background: linear-gradient(150deg, #17181c 0%, #101116 100%);
-      border: 1px solid var(--line);
-    }
-
-    .panel h2 {
-      font-size: clamp(1.28rem, 2.8vw, 1.7rem);
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .panel > p {
-      color: var(--text-mute);
-      font-size: 0.92rem;
-      max-width: 40em;
-      text-wrap: pretty;
-    }
-
-    .panel-points {
-      list-style: none;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(238px, 1fr));
-      gap: 16px 26px;
-      margin-top: 24px;
-    }
-
-    .panel-points li {
-      position: relative;
-      padding-left: 20px;
-      font-size: 0.89rem;
-      color: var(--text-dim);
-      line-height: 1.75;
-    }
-
-    .panel-points li::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0.72em;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--accent-dot);
-    }
-
-    .panel-note {
-      margin-top: 22px;
-      padding-top: 16px;
-      border-top: 1px solid var(--line);
-      font-size: 0.82rem;
-      color: var(--text-faint);
-      text-wrap: pretty;
-    }
-    /* ================= 获取方式 ================= */
-    .get {
-      width: min(1160px, 92%);
-      margin-inline: auto;
-      padding: clamp(8px, 2vw, 18px) 0 clamp(28px, 5vw, 52px);
-    }
-
-    .get-head { margin-bottom: 24px; }
-
-    .get-head h2 {
-      font-size: clamp(1.4rem, 3vw, 1.88rem);
-      font-weight: 700;
-    }
-
-    .get-head p {
-      margin-top: 6px;
-      color: var(--text-mute);
-      font-size: 0.92rem;
-      text-wrap: pretty;
-    }
-
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
-      gap: 20px;
-      align-items: stretch;
-    }
-
-    .card {
-      display: flex;
-      flex-direction: column;
-      padding: 26px 24px 24px;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-
-    .card:hover {
-      border-color: var(--accent-line);
-      transform: translateY(-2px);
-    }
-
-    .card--featured { border-color: var(--gold-edge); }
-
-    .card-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .no {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--line-strong);
-      line-height: 1;
-    }
-
-    .tag {
-      display: inline-block;
-      padding: 1px 10px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      font-size: 0.74rem;
-      color: var(--text-mute);
-      line-height: 1.7;
-    }
-
-    .tag--accent {
-      color: var(--accent);
-      border-color: var(--accent-line);
-    }
-
-    .card h3 {
-      font-size: 1.14rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    .card .desc {
-      color: var(--text-mute);
-      font-size: 0.9rem;
-      text-wrap: pretty;
-    }
-
-    .spec-list {
-      list-style: none;
-      display: grid;
-      gap: 7px;
-      margin-top: 18px;
-    }
-
-    .spec-list li {
-      position: relative;
-      padding-left: 17px;
-      font-size: 0.85rem;
-      color: var(--text-dim);
-      line-height: 1.65;
-    }
-
-    .spec-list li::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0.72em;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent-dot);
-    }
-
-    .credit {
-      margin-top: 12px;
-      font-size: 0.8rem;
-      color: var(--text-faint);
-    }
-
-    .credit span { color: var(--text-mute); }
-
-    .card-foot {
-      margin-top: auto;
-      padding-top: 22px;
-    }
-
-    .card-foot .btn { width: 100%; }
-
-    /* ================= 规格表 ================= */
-    .specs {
-      width: min(1160px, 92%);
-      margin-inline: auto;
-      padding: clamp(16px, 3vw, 30px) 0 clamp(28px, 5vw, 52px);
-    }
-
-    .specs h2 {
-      font-size: clamp(1.4rem, 3vw, 1.88rem);
-      font-weight: 700;
-      margin-bottom: 18px;
-    }
-
-    .spec-table {
-      border-top: 1px solid var(--line);
-      margin: 0;
-    }
-
-    .spec-row {
-      display: grid;
-      grid-template-columns: minmax(110px, 170px) minmax(0, 1fr);
-      gap: 16px;
-      padding: 13px 2px;
-      border-bottom: 1px solid var(--line-soft);
-      font-size: 0.88rem;
-    }
-
-    .spec-row dt { color: var(--text-faint); }
-    .spec-row dd { color: var(--text-dim); }
-    /* ================= 原版介绍（折叠，中英对照） ================= */
-    .origin {
-      width: min(1160px, 92%);
-      margin: clamp(18px, 3vw, 32px) auto clamp(38px, 6vw, 68px);
-      border: 1px solid var(--line-soft);
-      border-radius: 18px;
-      background: var(--bg-soft);
-      overflow: hidden;
-    }
-
-    .origin summary {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 17px clamp(20px, 3vw, 30px);
-      cursor: pointer;
-      list-style: none;
-      user-select: none;
-    }
-
-    .origin summary::-webkit-details-marker { display: none; }
-
-    .origin summary h2 {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-dim);
-      transition: color 0.2s;
-    }
-
-    .origin summary:hover h2 { color: var(--accent); }
-
-    .origin summary:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: -4px;
-    }
-
-    .chev {
-      flex: none;
-      margin-left: auto;
-      width: 8px;
-      height: 8px;
-      border-right: 1.5px solid var(--text-faint);
-      border-bottom: 1.5px solid var(--text-faint);
-      transform: rotate(45deg);
-      transition: transform 0.2s;
-    }
-
-    .origin[open] .chev { transform: rotate(-135deg); }
-
-    .origin-body {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      border-top: 1px solid var(--line-soft);
-    }
-
-    .origin-col { padding: 22px clamp(20px, 3vw, 30px); }
-
-    .origin-col + .origin-col { border-left: 1px solid var(--line-soft); }
-
-    .origin-label {
-      display: inline-block;
-      margin-bottom: 10px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      color: var(--text-faint);
-    }
-
-    .origin-col p {
-      font-size: 0.87rem;
-      color: var(--text-dim);
-      margin-bottom: 12px;
-      text-wrap: pretty;
-    }
-
-    .origin-col ul {
-      list-style: none;
-      display: grid;
-      gap: 7px;
-    }
-
-    .origin-col li {
-      position: relative;
-      padding-left: 16px;
-      font-size: 0.82rem;
-      color: var(--text-mute);
-      line-height: 1.65;
-    }
-
-    .origin-col li::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0.72em;
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--accent-dot);
-    }
-
-    .origin-src {
-      grid-column: 1 / -1;
-      padding: 12px clamp(20px, 3vw, 30px);
-      border-top: 1px solid var(--line-soft);
-      font-size: 0.76rem;
-      color: var(--text-faint);
-      text-align: center;
-    }
-
-    /* ================= 页脚（与首页一致） ================= */
-    footer {
-      border-top: 1px solid var(--line);
-      padding: 52px 0 36px;
-      background: var(--bg-deep);
-    }
-
-    .footer-cols {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 28px;
-    }
-
-    .footer-col h4 {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-
-    .footer-col a {
-      display: block;
-      padding: 5px 0;
-      font-size: 0.84rem;
-      color: var(--text-faint);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .footer-col a:hover { color: var(--accent); }
-
-    .footer-bottom {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin-top: 40px;
-      padding-top: 22px;
-      border-top: 1px solid var(--line-soft);
-      font-size: 0.78rem;
-      color: var(--text-faint);
-    }
-
-    .footer-bottom a {
-      color: var(--text-faint);
-      text-decoration: none;
-    }
-
-    .footer-bottom a:hover { color: var(--accent); }
-    /* ================= 下载方式选择弹窗 ================= */
-    .dl-modal {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      background: rgba(6, 6, 8, 0.72);
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.2s, visibility 0s linear 0.2s;
-      z-index: 70;
-    }
-
-    .dl-modal.is-open {
-      opacity: 1;
-      visibility: visible;
-      /* 打开时 visibility 立刻生效，只有 opacity 做过渡 */
-      transition: opacity 0.2s, visibility 0s linear 0s;
-    }
-
-    .dl-modal-card {
-      width: min(430px, 100%);
-      /* 手机横屏或内容变长时，弹窗内部自己滚，不会顶出屏幕 */
-      max-height: calc(100vh - 40px);
-      overflow-y: auto;
-      padding: 26px 24px 20px;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
-      transform: translateY(10px);
-      /* 只过渡 transform，别用 all：否则继承来的 visibility 也要等过渡 */
-      transition: transform 0.2s;
-    }
-
-    .dl-modal.is-open .dl-modal-card { transform: translateY(0); }
-
-    .dl-modal-card h2 {
-      font-size: 1.1rem;
-      margin-bottom: 6px;
-    }
-
-    .dl-modal-sub {
-      color: var(--text-mute);
-      font-size: 0.84rem;
-      margin-bottom: 18px;
-      text-wrap: pretty;
-    }
-
-    /* 弹窗内的黄色提示条：停更说明 + 跳转公告栏 */
-    .dl-alert {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 16px;
-      padding: 11px 14px;
-      background: var(--warn-wash);
-      border: 1px solid var(--warn-line);
-      border-left: 3px solid var(--warn);
-      border-radius: 10px;
-    }
-
-    .dl-alert-icon {
-      flex: none;
-      width: 18px;
-      height: 18px;
-      margin-top: 2px;
-      border: 1.5px solid var(--warn);
-      border-radius: 50%;
-      color: var(--warn);
-      font-size: 0.68rem;
-      font-weight: 700;
-      line-height: 15px;
-      text-align: center;
-    }
-
-    .dl-alert-body {
-      flex: 1 1 auto;
-      min-width: 0;
-    }
-
-    .dl-alert p {
-      font-size: 0.79rem;
-      line-height: 1.65;
-      color: var(--text-dim);
-    }
-
-    .dl-alert p + p { margin-top: 2px; }
-
-    .dl-alert a {
-      color: var(--warn);
-      font-weight: 600;
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      white-space: nowrap;
-    }
-
-    .dl-alert a:hover { color: var(--warn-hover); }
-
-    /* 选项列表：单选弹窗内互斥，多选弹窗内可同时勾选多项 */
-    .dl-opts {
-      display: grid;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .dl-opt {
-      position: relative;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 13px 15px;
-      background: var(--bg-soft);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      cursor: pointer;
-      transition: border-color 0.18s, background 0.18s;
-    }
-
-    .dl-opt:hover { border-color: var(--line-strong); }
-
-    .dl-opt:has(.dl-radio:checked),
-    .dl-opt:has(.dl-check:checked) {
-      border-color: var(--accent-line-strong);
-      background: var(--card-sel);
-    }
-
-    /* 单选 radio 与多选 checkbox 都藏起来，方框外观交给 .dl-box */
-    .dl-radio,
-    .dl-check {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .dl-opt-text {
-      flex: 1;
-      display: grid;
-      gap: 2px;
-    }
-
-    .dl-opt-name {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .dl-opt-meta {
-      font-size: 0.77rem;
-      color: var(--text-faint);
-    }
-
-    .dl-box {
-      position: relative;
-      flex: 0 0 auto;
-      width: 20px;
-      height: 20px;
-      border: 1px solid var(--line-strong);
-      border-radius: 6px;
-      transition: background 0.18s, border-color 0.18s;
-    }
-
-    .dl-radio:checked ~ .dl-box,
-    .dl-check:checked ~ .dl-box {
-      background: var(--accent);
-      border-color: var(--accent);
-    }
-
-    .dl-radio:checked ~ .dl-box::after,
-    .dl-check:checked ~ .dl-box::after {
-      content: "";
-      position: absolute;
-      left: 6px;
-      top: 2px;
-      width: 5px;
-      height: 10px;
-      border: solid var(--on-accent);
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
-    }
-
-    .dl-radio:focus-visible ~ .dl-box,
-    .dl-check:focus-visible ~ .dl-box {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-
-    .dl-actions {
-      display: flex;
-      gap: 12px;
-    }
-
-    .dl-actions .btn {
-      flex: 1 1 0;
-      width: auto;
-    }
-
-    .dl-hint {
-      margin-top: 12px;
-      font-size: 0.79rem;
-      color: var(--danger);
-      text-align: center;
-    }
-
-    .dl-hint:empty { margin-top: 0; }
-
-    /* ================= 断点 ================= */
-    @media (max-width: 900px) {
-      .feature {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 22px;
-      }
-
-      /* 窄屏一律图在上、字在下，不再左右交替 */
-      .feature:nth-child(even) .feature-text,
-      .feature:nth-child(even) .feature-shot { order: 0; }
-
-      .origin-body { grid-template-columns: 1fr; }
-      .origin-col + .origin-col { border-left: none; border-top: 1px solid var(--line-soft); }
-
-      .footer-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
-    }
-
-    @media (max-width: 640px) {
-      :root { --nav-h: 50px; --chap-h: 42px; }
-
-      .globalnav .wrap { gap: 10px; }
-      .nav-brand { font-size: 0.86rem; gap: 7px; }
-      .nav-brand img { width: 22px; height: 22px; }
-      .nav-link { padding: 6px 8px; font-size: 0.82rem; }
-      .nav-gh { width: 28px; height: 28px; margin-left: 2px; }
-
-      .product-hero { padding-top: 42px; }
-      .ctas { flex-direction: column; align-items: stretch; }
-      .ctas .btn { width: 100%; }
-
-      .spec-row {
-        grid-template-columns: 1fr;
-        gap: 2px;
-      }
-
-      .spec-row dt { font-size: 0.78rem; }
-      .panel { border-radius: 18px; }
-      .dl-modal-card { padding: 22px 18px 16px; }
-      .dl-opt { padding: 12px 13px; }
-    }
-
-    /* 系统开了「减少动态效果」：过渡、位移与缩放全部关掉，只留颜色变化 */
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      body { animation: none; }
-
-      /* 跨页面过渡退回直接切换 */
-      ::view-transition-old(root),
-      ::view-transition-new(root) {
-        animation: none;
-      }
-
-      .card:hover { transform: none; }
-      .btn-primary:hover,
-      .btn:active,
-      .nav-link:active,
-      .nav-gh:active,
-      .hero-back:active,
-      .chapbar a:active { transform: none; }
-    }
-  </style>
+    <link rel="stylesheet" href="stage1.css">
 </head>
 <body>
+
+<a class="skip-link" href="#main-content">跳到主要内容</a>
 
   <!-- ============ 常驻顶部导航：与首页同一套，「汉化」为当前栏目 ============ -->
   <nav class="globalnav" id="globalnav" aria-label="主导航">
     <div class="wrap">
-      <a class="nav-brand" href="index.html">
-        <img src="logo-mark.png" alt="" width="26" height="26">
-        Arthur 工作室
+      <a class="nav-brand" href="index.html" aria-label="Arthur 工作室首页">
+        <img src="logo-mark.png" alt="" width="25" height="25">
+        <span class="nav-brand-name">
+          <strong>Arthur</strong>
+          <small>Studio · 开源汉化</small>
+        </span>
       </a>
 
       <div class="nav-links">
@@ -1134,7 +33,7 @@
         <a class="nav-link" href="softlib.html">软件库</a>
         <a class="nav-link" href="notice.html">公告</a>
         <a class="nav-link" href="index.html#liuyan">留言板</a>
-        <a class="nav-link" href="account.html">我的</a>
+        <a class="nav-link nav-account" href="account.html">我的</a>
         <a class="nav-link" href="index.html#about">关于</a>
         <a class="nav-gh" href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub 首页">
           <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -1142,35 +41,143 @@
           </svg>
         </a>
       </div>
+
+      <details class="nav-mobile">
+        <summary aria-label="打开导航菜单"><span></span><span></span></summary>
+        <nav class="nav-mobile-panel" aria-label="移动端导航">
+          <a href="index.html#hanhua">汉化 <span>01</span></a>
+          <a href="softlib.html">软件库 <span>02</span></a>
+          <a href="notice.html">公告 <span>03</span></a>
+          <a href="index.html#liuyan">留言板 <span>04</span></a>
+          <a href="account.html">我的 <span>05</span></a>
+          <a href="index.html#about">关于 <span>06</span></a>
+          <a href="https://github.com" target="_blank" rel="noopener">GitHub <span>↗</span></a>
+        </nav>
+      </details>
     </div>
   </nav>
 
   <main id="top">
 
-    <!-- ============ 产品主视觉：名字、一句话、两个按钮 ============ -->
-    <section class="product-hero">
+    <!-- ============ 产品主视觉：名字、一句话、版本速览 ============ -->
+    <section class="product-hero" id="main-content">
       <div class="wrap">
-        <div class="hero-top">
-          <a class="hero-back" href="index.html"><span class="chev-l" aria-hidden="true">‹</span> 返回首页</a>
+        <div class="product-breadcrumb" aria-label="面包屑">
+          <a href="index.html">Arthur 工作室</a>
+          <span>/</span>
+          <a href="index.html#hanhua">汉化</a>
+          <span>/</span>
+          <span>Silverdaw</span>
         </div>
-        <span class="kicker">中文汉化</span>
-        <h1>Silverdaw</h1>
-        <p class="tagline">免费开源采样音乐工作站（DAW）的完整中文本地化版本。</p>
-        <div class="ctas">
-          <button type="button" class="btn btn-primary" data-dl-open="dlModal">下载汉化版</button>
-          <a class="btn btn-ghost" href="https://www.silverdaw.com/" target="_blank" rel="noopener" data-ext-name="Silverdaw">前往官网</a>
+
+        <div class="product-hero-grid">
+          <div>
+            <p class="product-kicker">Silverdaw / 中文汉化</p>
+            <h1 class="product-title">Silverdaw<span class="cn">中文汉化</span></h1>
+            <p class="product-tagline">免费开源采样音乐工作站（DAW）的完整中文本地化版本。界面文本已替换为中文，面板位置、快捷键与工程文件格式保持原样。</p>
+            <div class="product-actions">
+              <button type="button" class="btn btn-primary" data-dl-open="dlModal">下载完整汉化版</button>
+              <a class="btn btn-ghost" href="#choose">先比较版本</a>
+            </div>
+            <p class="product-meta">
+              <span>完整版 1.9.0</span>
+              <span>补丁适配 1.10.0</span>
+              <span>Windows</span>
+              <span>AGPL-3.0</span>
+            </p>
+          </div>
+
+          <div class="product-cover" aria-label="Silverdaw 中文汉化版本信息">
+            <div class="cover-top">
+              <span class="cover-index">SD / 01</span>
+              <span class="cover-status">已发布</span>
+            </div>
+            <img class="cover-logo" src="images/silverdaw-logo.png" alt="" width="86" height="86" loading="lazy" decoding="async">
+            <p class="cover-name">Silverdaw</p>
+            <div class="cover-bottom">
+              <p>完整中文本地化<br>菜单 · 面板 · 提示 · 报错</p>
+              <span>ZH-CN / 1.9.0</span>
+            </div>
+          </div>
         </div>
-        <p class="hero-meta">完整汉化版 1.9.0 · Windows 平台 · AGPL-3.0 开源免费</p>
+      </div>
+    </section>
+
+    <!-- ============ 版本选择：完整汉化版 / 汉化补丁 ============ -->
+    <section class="edition-section" id="choose">
+      <div class="wrap">
+        <div class="edition-intro">
+          <p class="eyebrow">选择版本 / Choose edition</p>
+          <h2>先确认你属于哪种情况。</h2>
+          <p>完整汉化版与汉化补丁的基准版本不同，不能混用。第一次使用选完整版；已经装了官方 1.10.0 原版，才需要补丁。</p>
+        </div>
+
+        <div class="edition-grid">
+          <article class="edition-card edition-card--primary">
+            <div class="edition-top">
+              <span class="edition-badge">推荐 · 大多数用户</span>
+              <span class="edition-no">01</span>
+            </div>
+            <h3>完整汉化版</h3>
+            <p class="edition-for">适合：第一次安装 Silverdaw，或希望打开就是中文界面。</p>
+            <dl class="edition-specs">
+              <div><dt>基准版本</dt><dd>官方 1.9.0</dd></div>
+              <div><dt>中文资源</dt><dd>已内置，无需补丁</dd></div>
+              <div><dt>安装形式</dt><dd>安装包 / 便携版</dd></div>
+            </dl>
+            <ul class="edition-points">
+              <li>下载后直接安装或解压</li>
+              <li>打开即为中文界面</li>
+              <li>开源免费发布，AGPL-3.0</li>
+            </ul>
+            <button type="button" class="btn btn-primary" data-dl-open="dlModal">下载完整汉化版</button>
+            <p class="edition-foot">基于官方 1.9.0 · Windows · 腾讯云直链</p>
+          </article>
+
+          <article class="edition-card" id="patch">
+            <div class="edition-top">
+              <span class="edition-badge edition-badge--muted">仅限已有原版</span>
+              <span class="edition-no">02</span>
+            </div>
+            <h3>汉化补丁</h3>
+            <p class="edition-for">适合：已安装官方原版 1.10.0，想保留现有安装。</p>
+            <dl class="edition-specs">
+              <div><dt>基准版本</dt><dd>官方 1.10.0，仅适配该版本</dd></div>
+              <div><dt>安装形式</dt><dd>手动替换文件</dd></div>
+              <div><dt>使用门槛</dt><dd>需要一定技术基础</dd></div>
+            </dl>
+            <ul class="edition-points">
+              <li>不是可直接执行的安装程序</li>
+              <li>下载包含补丁与使用说明</li>
+              <li>仅供参考，后续不再更新</li>
+            </ul>
+            <button type="button" class="btn btn-ghost" data-dl-open="dlModalPatch">下载汉化补丁</button>
+            <p class="edition-foot">技术支持：鲸世一梦 · 仅适配 1.10.0</p>
+          </article>
+        </div>
+
+        <div class="choice-rule">
+          <p><strong>不确定选哪个？</strong> 如果电脑里还没有 Silverdaw，下载完整汉化版。只有已经装了官方 1.10.0 原版，才需要补丁。</p>
+        </div>
+
+        <p class="edition-update">更新说明：完整汉化版将在 2027 年 1 月前停止跟随官方原版更新；已发布版本仍可继续下载使用。详见 <a href="notice.html">公告栏</a>。</p>
       </div>
     </section>
 
     <!-- ============ 主视觉大图 ============ -->
     <section class="showcase">
       <div class="wrap">
-        <img src="images/silverdaw-stem-separation.jpg"
-             alt="Silverdaw 原版界面：工程里人声、鼓、贝斯、其他四条轨道已经拆开，下方素材库列出五个来源采样"
-             width="1400" height="831" fetchpriority="high" decoding="async">
-        <p class="caption">软件原版界面：可将整首曲目拆分为人声、鼓、贝斯等独立分轨，再自由重组。汉化版已将全部菜单与面板替换为中文。</p>
+        <figure>
+          <div class="showcase-frame">
+            <img src="images/silverdaw-stem-separation.jpg"
+                 alt="Silverdaw 原版界面：工程里人声、鼓、贝斯、其他四条轨道已经拆开，下方素材库列出五个来源采样"
+                 width="1400" height="831" fetchpriority="high" decoding="async">
+          </div>
+          <figcaption>
+            <span>软件原版界面：可将整首曲目拆分为人声、鼓、贝斯等独立分轨，再自由重组。汉化版已将全部菜单与面板替换为中文。</span>
+            <span>原版截图 / English UI</span>
+          </figcaption>
+        </figure>
       </div>
     </section>
 
@@ -1178,6 +185,7 @@
     <nav class="chapbar" aria-label="本页目录">
       <div class="wrap">
         <a class="chap-back" href="index.html"><span class="chev-l" aria-hidden="true">‹</span> 返回首页</a>
+        <a href="#choose">版本选择</a>
         <a href="#features">功能</a>
         <a href="#zh">中文界面</a>
         <a href="#get">获取方式</a>
@@ -1254,8 +262,11 @@
 
     <!-- ============ 中文界面：汉化到底做了什么 ============ -->
     <section class="panel" id="zh">
-      <h2>汉化覆盖范围</h2>
-      <p>汉化并非隐藏英文界面，而是将所有应显示中文的位置完整替换，使首次使用的用户无需另行查阅术语。</p>
+      <div class="panel-head">
+        <p class="eyebrow">Localization / 中文界面</p>
+        <h2>汉化覆盖范围</h2>
+        <p>汉化并非隐藏英文界面，而是将所有应显示中文的位置完整替换，使首次使用的用户无需另行查阅术语。</p>
+      </div>
       <ul class="panel-points">
         <li>菜单、面板标题、按钮、右键菜单、提示与报错文本，均逐条对照原文翻译</li>
         <li>同一概念全篇统一译名，不出现同一功能两种叫法</li>
@@ -1267,75 +278,74 @@
 
     <!-- ============ 获取方式 ============ -->
     <section class="get" id="get">
-      <div class="get-head">
-        <h2>获取方式</h2>
-        <p>同一款软件提供三种获取方式，可按现有条件选择：希望直接使用中文界面，请下载完整汉化版；需对照原文，请下载官方原版；已持有原版 1.10.0，则可单独取用汉化补丁。</p>
-      </div>
+      <div class="wrap">
+        <div class="get-head">
+          <p class="eyebrow">Download / 获取方式</p>
+          <h2>三条获取路径，按你的情况选。</h2>
+          <p>希望直接使用中文界面，请下载完整汉化版；已持有官方原版 1.10.0，可单独取用汉化补丁；只需对照原文或自行配置，请前往官网下载官方原版。</p>
+        </div>
 
-      <div class="products">
-
-        <!-- 01 官方原版：跳转官网自行下载（次要动作，用描边按钮，金色实心留给本站的下载入口） -->
-        <article class="card">
-          <div class="card-head">
-            <span class="no">01</span>
-            <span class="tag">官方原版</span>
+        <div class="download-list">
+        <article class="download-row download-row--featured">
+          <div class="download-main">
+            <span class="download-no">01</span>
+            <div>
+              <h3>完整汉化版</h3>
+              <p>已内置中文语言资源，安装后打开即为中文界面，无需任何额外操作，适合希望直接使用的用户。</p>
+              <p class="credit">基于官方 1.9.0 · 安装包 / 便携版</p>
+            </div>
           </div>
-          <h3>软件本体（未汉化）</h3>
-          <p class="desc">官方发布的原始安装包，界面为英文，未作任何改动。需要对照原文、自行配置或叠加汉化补丁，均以此版本为基础。</p>
-          <ul class="spec-list">
-            <li>官方原始版本，未经修改</li>
-            <li>界面语言：English</li>
-            <li>许可证：AGPL-3.0</li>
-          </ul>
-          <div class="card-foot">
-            <a class="btn btn-ghost" href="https://www.silverdaw.com/" target="_blank" rel="noopener" data-ext-name="Silverdaw">前往官网</a>
+          <div class="download-meta">
+            <span>含完整中文界面</span>
+            <span>无需安装补丁</span>
+            <span>开源免费发布</span>
           </div>
+          <button type="button" class="btn btn-primary" data-dl-open="dlModal">下载汉化版</button>
         </article>
 
-        <!-- 02 完整汉化版：点开后在页面正中弹出「安装包 / 便携版」二选一 -->
-        <article class="card card--featured">
-          <div class="card-head">
-            <span class="no">02</span>
-            <span class="tag tag--accent">推荐</span>
+        <article class="download-row">
+          <div class="download-main">
+            <span class="download-no">02</span>
+            <div>
+              <h3>汉化补丁</h3>
+              <p>以官方原版 1.10.0 为基准制作，仅适配该版本。补丁不是可直接执行的安装程序，需要具备一定技术基础，并借助相应工具手动完成文件替换，因此仅作为参考提供。</p>
+              <p class="credit">技术支持：<span>鲸世一梦</span> · 下载包含补丁与使用说明</p>
+            </div>
           </div>
-          <h3>完整汉化版</h3>
-          <p class="desc">已内置中文语言资源，安装后打开即为中文界面，无需任何额外操作，适合希望直接使用的用户。</p>
-          <ul class="spec-list">
-            <li>含完整中文界面</li>
-            <li>无需安装补丁</li>
-            <li>开源免费发布</li>
-          </ul>
-          <div class="card-foot">
-            <button type="button" class="btn btn-primary" data-dl-open="dlModal">下载汉化版</button>
+          <div class="download-meta">
+            <span>仅适配 1.10.0</span>
+            <span>需手动替换文件</span>
+            <span>后续不再更新</span>
           </div>
+          <button type="button" class="btn btn-ghost" data-dl-open="dlModalPatch">下载汉化补丁</button>
         </article>
 
-        <!-- 03 汉化补丁：点开后弹出单项确认框（补丁 + 使用说明可勾选） -->
-        <article class="card">
-          <div class="card-head">
-            <span class="no">03</span>
-            <span class="tag">用于原版</span>
+        <article class="download-row">
+          <div class="download-main">
+            <span class="download-no">03</span>
+            <div>
+              <h3>软件本体（未汉化）</h3>
+              <p>官方发布的原始安装包，界面为英文，未作任何改动。需要对照原文、自行配置或叠加汉化补丁，均以此版本为基础。</p>
+              <p class="credit">官方原始版本，未经修改</p>
+            </div>
           </div>
-          <h3>汉化补丁</h3>
-          <p class="desc">以官方原版 1.10.0 为基准制作，仅适配该版本。补丁不是可直接执行的安装程序，需要具备一定技术基础，并借助相应工具手动完成文件替换，因此仅作为参考提供。</p>
-          <ul class="spec-list">
-            <li>基于官方原版 1.10.0 制作，仅适配该版本</li>
-            <li>需一定技术基础，手动完成文件替换</li>
-            <li>仅供参考，后续不再更新</li>
-          </ul>
-          <p class="credit">技术支持：<span>鲸世一梦</span></p>
-          <div class="card-foot">
-            <button type="button" class="btn btn-primary" data-dl-open="dlModalPatch">下载汉化补丁</button>
+          <div class="download-meta">
+            <span>界面语言：English</span>
+            <span>许可证：AGPL-3.0</span>
+            <span>跳转官方网站</span>
           </div>
+          <a class="btn btn-ghost" href="https://www.silverdaw.com/" target="_blank" rel="noopener" data-ext-name="Silverdaw">前往官网</a>
         </article>
-
+        </div>
       </div>
     </section>
 
     <!-- ============ 规格 ============ -->
     <section class="specs" id="specs">
-      <h2>规格</h2>
-      <dl class="spec-table">
+      <div class="wrap">
+        <p class="eyebrow">Specs / 规格</p>
+        <h2>规格</h2>
+        <dl class="spec-table">
         <div class="spec-row">
           <dt>软件</dt>
           <dd>Silverdaw —— 免费开源的采样音乐工作站（DAW）</dd>
@@ -1368,15 +378,17 @@
           <dt>官网</dt>
           <dd><a href="https://www.silverdaw.com/" target="_blank" rel="noopener">silverdaw.com</a></dd>
         </div>
-      </dl>
+        </dl>
+      </div>
     </section>
 
     <!-- ============ 原版介绍：折叠起来，默认不占版面 ============ -->
-    <details class="origin">
-      <summary>
-        <h2>关于原版 Silverdaw</h2>
-        <span class="chev" aria-hidden="true"></span>
-      </summary>
+    <div class="wrap">
+      <details class="origin">
+        <summary>
+          <h2>关于原版 Silverdaw</h2>
+          <span class="chev" aria-hidden="true"></span>
+        </summary>
 
       <div class="origin-body">
         <div class="origin-col">
@@ -1403,13 +415,25 @@
 
         <p class="origin-src">介绍文案取自 Silverdaw 官网 silverdaw.com</p>
       </div>
-    </details>
+      </details>
+    </div>
 
   </main>
 
   <!-- ============ 页脚：与首页同一套多列目录 ============ -->
   <footer>
     <div class="wrap">
+      <div class="footer-top">
+        <a class="footer-brand" href="index.html">
+          <img src="logo-mark.png" alt="" width="30" height="30">
+          <span class="footer-brand-name">
+            <strong>Arthur 工作室</strong>
+            <span>好软件，不该有语言门槛。</span>
+          </span>
+        </a>
+        <p class="footer-statement">专注于开源汉化与独立软件开发。所有项目均开源免费发布，下载入口与版本说明以项目页为准。</p>
+      </div>
+
       <div class="footer-cols">
         <div class="footer-col">
           <h4>汉化</h4>
@@ -1430,6 +454,8 @@
         </div>
         <div class="footer-col">
           <h4>关于</h4>
+          <a href="index.html#liuyan">留言板</a>
+          <a href="privacy.html">隐私说明</a>
           <a href="index.html#about">工作室简介</a>
           <a href="index.html#about">联系方式</a>
           <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
@@ -1536,6 +562,20 @@
       }
       window.addEventListener('scroll', onScroll, { passive: true });
       onScroll();
+
+      // 移动端导航：点链接或点空白处收起，Esc 也可以关闭
+      var mobileNav = document.querySelector('.nav-mobile');
+      if (mobileNav) {
+        mobileNav.querySelectorAll('a').forEach(function (a) {
+          a.addEventListener('click', function () { mobileNav.open = false; });
+        });
+        document.addEventListener('click', function (e) {
+          if (mobileNav.open && !mobileNav.contains(e.target)) mobileNav.open = false;
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') mobileNav.open = false;
+        });
+      }
 
       var yearEl = document.getElementById('year');
       if (yearEl) yearEl.textContent = new Date().getFullYear();
