@@ -473,13 +473,45 @@
 
   /* ---------------- 下载与声明式绑定 ---------------- */
 
-  function download(url) {
+  // 从直链地址里抠出文件名当统计 key（命令式下载没有 data-dl 时用）
+  function keyFromUrl(url) {
+    try {
+      var u = new URL(url, window.location.href);
+      var seg = u.pathname.split('/').filter(Boolean);
+      return seg.length ? decodeURIComponent(seg[seg.length - 1]) : 'unknown';
+    } catch (err) {
+      return 'unknown';
+    }
+  }
+
+  // 下载埋点：真正发起下载时上报一次，fire-and-forget，绝不阻塞下载。
+  // 纯前端埋点防不了伪造，这里只做「同一 key 若干秒内去重」的轻量缓解；
+  // 写不进去（没加载 SiteCore / 没权限 / 网络失败）一律静默。
+  var LAST_RECORD = {};
+  function recordDownload(key, kind) {
+    try {
+      if (!window.SiteCore || typeof window.SiteCore.getClient !== 'function') return;
+      var now = Date.now();
+      var last = LAST_RECORD[key] || 0;
+      if (now - last < 8000) return;   // 8 秒内同一下载只记一次
+      LAST_RECORD[key] = now;
+      window.SiteCore.getClient().rpc('dl_record', {
+        p_key: key || 'unknown',
+        p_kind: kind || 'download'
+      });
+    } catch (err) { /* 静默 */ }
+  }
+
+  function download(url, meta) {
     var a = document.createElement('a');
     a.href = url;
     a.rel = 'noopener';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+
+    meta = meta || {};
+    recordDownload(meta.key || keyFromUrl(url), meta.kind);
   }
 
   function attach(node) {
@@ -497,7 +529,12 @@
         open({
           fileCount: 1,
           macText: node.getAttribute('data-dl-mac') || '',
-          onConfirm: function () { download(url); }
+          onConfirm: function () {
+            download(url, {
+              key: node.getAttribute('data-dl') || node.getAttribute('data-dl-key') || '',
+              kind: node.getAttribute('data-dl-kind') || ''
+            });
+          }
         });
       }
 

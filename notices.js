@@ -1,8 +1,8 @@
 /* ===================================================================
    公告渲染 notices.js
    -------------------------------------------------------------------
-   数据来源：data/notices.json（唯一来源）
-   职责：把这个 JSON 渲染到页面上的四处容器里
+   数据来源：Supabase 的 public.notices 表优先，data/notices.json 兜底
+   职责：把条目渲染到页面上的四处容器里
 
      [data-notice-ribbon]   首页顶部公告条（最新一条，不看置顶）
      [data-notice-list]     首页最新几条（默认 3，可用 data-limit 改）
@@ -275,15 +275,51 @@
 
   var loading = null;
 
-  function load() {
-    if (loading) return loading;
-    // 加时间戳 + no-store：改完 JSON 不会读到浏览器或 CDN 的旧副本
-    loading = window.fetch(DATA_URL + '?t=' + Date.now(), {
+  // 优先读 Supabase 的 notices 表：表里有数据就用表，空 / 失败再回退 JSON。
+  // 加超时：表不存在或 supabase.co 从国内访问偏慢时，别让首页公告一直卡在
+  // 「正在读取」，2.5 秒没回来就落到 JSON 兜底。
+  function loadFromDb() {
+    if (!window.SiteCore || typeof window.SiteCore.getClient !== 'function') {
+      return Promise.reject(new Error('SiteCore 未加载'));
+    }
+    var sb = window.SiteCore.getClient();
+    var timer = new Promise(function (resolve, reject) {
+      setTimeout(function () { reject(new Error('Supabase 响应超时')); }, 2500);
+    });
+    var query = sb.from('notices')
+      .select('id,date,tags,pin,hidden,title,body')
+      .eq('hidden', false)
+      .then(function (res) {
+        if (res.error) throw res.error;
+        if (!res.data || !res.data.length) throw new Error('notices 表暂无数据');
+        return res.data;
+      });
+    return Promise.race([query, timer]);
+  }
+
+  // JSON 兜底：加时间戳 + no-store，改完 JSON 不会读到浏览器或 CDN 的旧副本
+  function loadJson() {
+    return window.fetch(DATA_URL + '?t=' + Date.now(), {
       cache: 'no-store',
       credentials: 'same-origin'
     }).then(function (res) {
       if (!res.ok) throw new Error('HTTP ' + res.status);
       return res.json();
+    });
+  }
+
+  function load() {
+    if (loading) return loading;
+    loading = Promise.all([
+      // 条目：Supabase 优先，JSON 兜底
+      loadFromDb().catch(function () {
+        return loadJson().then(function (d) { return (d && d.items) || []; });
+      }),
+      // 顶部提示条 alert：仍从 data/notices.json 维护（低频、常驻）
+      loadJson().then(function (d) { return (d && d.alert) || null; })
+        .catch(function () { return null; })
+    ]).then(function (parts) {
+      return { items: parts[0], alert: parts[1] };
     });
     return loading;
   }

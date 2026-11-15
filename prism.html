@@ -4,986 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prism 中文汉化 - Arthur 工作室</title>
-  <meta name="description" content="Prism 是一款免费开源的实时音频分析与电平表机架，八种仪表可自由排布。本站提供中文汉化版 0.4.0-beta 的安装包与便携版下载，并整理原版功能与规格说明。">
-  <meta name="theme-color" content="#0b0b0d">
+  <meta name="description" content="Prism 是一款免费开源的实时音频分析与电平表机架，八种仪表可自由排布。本站提供中文汉化版 0.4.0-beta 的安装包与便携版下载，并说明 Beta 状态、汉化覆盖范围与已知问题。">
+  <meta name="theme-color" content="#08090a">
   <meta property="og:title" content="Prism 中文汉化">
-  <meta property="og:description" content="免费开源的实时音频分析与电平表机架，八种仪表可自由排布，中文汉化版已发布。">
+  <meta property="og:description" content="免费开源的实时音频分析与电平表机架，八种仪表可自由排布，中文汉化版 0.4.0-beta 已发布。">
   <meta property="og:type" content="article">
   <meta property="og:image" content="images/prism-scopes.jpg">
   <link rel="icon" href="logo-mark.png">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    /* ---------- 色板：与首页、与 logo 同源的黑金。改配色只改这一段 ---------- */
-    :root {
-      --bg: #0b0b0d;
-      --bg-soft: #111216;
-      --bg-deep: #08080a;
-      --card: #17181c;
-      --card-sel: #221d12;
-      --line: #26272c;
-      --line-soft: #232429;
-      --line-strong: #3a3b42;
-      --text: #eaeaec;
-      --text-dim: #c4c6cb;
-      --text-mute: #9a9da4;
-      --text-faint: #6c6f76;
-      --gold: #c9a227;
-      --gold-line: rgba(201, 162, 39, 0.45);
-      --gold-edge: #6b5620;
-      --gold-wash: rgba(201, 162, 39, 0.08);
-      --accent: #e3c274;
-      --accent-hover: #f0d79a;
-      --accent-line: rgba(227, 194, 116, 0.45);
-      --accent-line-strong: rgba(227, 194, 116, 0.6);
-      --accent-dot: rgba(227, 194, 116, 0.55);
-      --accent-grad: linear-gradient(180deg, #f2d99b, #d9b25c);
-      --accent-grad-hover: linear-gradient(180deg, #f9e5b8, #e6c877);
-      --on-accent: #17181a;
-      --warn: #f0b429;
-      --warn-hover: #ffc95c;
-      --warn-wash: rgba(240, 180, 41, 0.08);
-      --warn-line: rgba(240, 180, 41, 0.38);
-      --danger: #ff9c8a;
-      --nav-h: 54px;
-      --chap-h: 46px;
-    }
-
-    a { color: var(--accent); }
-
-    /* ---------- 跨页面切换：0.24s 交叉淡入，无位移 ----------
-       只淡不滑，切页时不会整页平移；顶部导航命名后原地保留。
-       不支持的浏览器（如 Firefox）直接切页，不做 JS 兜底。 */
-    @view-transition {
-      navigation: auto;
-    }
-
-    .globalnav { view-transition-name: site-nav; }
-
-    ::view-transition-old(root),
-    ::view-transition-new(root) {
-      animation-duration: 0.24s;
-      animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
-    }
-
-    ::view-transition-old(site-nav),
-    ::view-transition-new(site-nav) {
-      animation: none;
-    }
-
-    @supports not (view-transition-name: none) {
-      body { animation: page-fade-in 0.26s ease-out both; }
-    }
-
-    @keyframes page-fade-in {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    /* 平滑滚动；横向溢出交给各区块自己的 min-width: 0 处理。
-       注意：html 上不要写 overflow（hidden 会破坏 sticky，clip 会让 html 不再是滚动容器，
-       scrollTop 赋值全部失效），页面本身没有横向溢出，不需要这条规则。 */
-    html {
-      scroll-behavior: smooth;
-    }
-
-    /* 跨页返回时用瞬时定位还原滚动位置，避免平滑滚动把整页"扫"一遍 */
-    html.is-restoring {
-      scroll-behavior: auto;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
-      line-height: 1.7;
-    }
-
-    /* 通用内容宽度：和首页一条基准线 */
-    .wrap {
-      width: min(1160px, 92%);
-      margin-inline: auto;
-    }
-
-    /* ================= 常驻顶部导航：与首页同一套 ================= */
-    .globalnav {
-      position: sticky;
-      top: 0;
-      z-index: 60;
-      height: var(--nav-h);
-      background: rgba(11, 11, 13, 0.72);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      backdrop-filter: saturate(180%) blur(20px);
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.25s, background 0.25s;
-    }
-
-    .globalnav.is-stuck {
-      background: rgba(11, 11, 13, 0.86);
-      border-bottom-color: var(--line);
-    }
-
-    .globalnav .wrap {
-      display: flex;
-      align-items: center;
-      gap: 30px;
-      height: 100%;
-    }
-
-    .nav-brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      color: var(--text);
-      font-size: 0.95rem;
-      font-weight: 700;
-      text-decoration: none;
-      white-space: nowrap;
-      flex: 0 0 auto;
-    }
-
-    .nav-brand img {
-      width: 26px;
-      height: 26px;
-      object-fit: contain;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 2px;
-      margin-left: auto;
-    }
-
-    .nav-link {
-      padding: 7px 14px;
-      border-radius: 999px;
-      color: var(--text-mute);
-      font-size: 0.9rem;
-      text-decoration: none;
-      white-space: nowrap;
-      transition: color 0.2s, background 0.2s, transform 0.16s;
-    }
-
-    .nav-link:hover {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .nav-link.is-active {
-      color: var(--accent);
-      background: var(--gold-wash);
-    }
-
-    .nav-gh {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      margin-left: 6px;
-      border-radius: 50%;
-      color: var(--text-faint);
-      text-decoration: none;
-      transition: color 0.2s, background 0.2s, transform 0.16s;
-    }
-
-    .nav-gh:hover {
-      color: var(--accent);
-      background: var(--gold-wash);
-    }
-    /* ================= 产品主视觉区（学 Apple 产品页：名字、一句话、两个按钮） ================= */
-    .product-hero {
-      padding: clamp(34px, 5vw, 70px) 0 clamp(28px, 4vw, 44px);
-      text-align: center;
-    }
-
-    /* 返回入口单独占一行，靠左对齐：back 按钮放在左上角才找得到，
-       跟着主视觉居中会让人犹豫要不要点 */
-    .hero-top {
-      display: flex;
-      justify-content: flex-start;
-      margin-bottom: clamp(14px, 2.2vw, 24px);
-    }
-
-    .hero-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      padding: 5px 14px 5px 10px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      color: var(--text-mute);
-      font-size: 0.82rem;
-      text-decoration: none;
-      transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.16s;
-    }
-
-    .hero-back:hover {
-      color: var(--accent);
-      border-color: var(--accent-line);
-      background: var(--gold-wash);
-    }
-
-    /* 尖角用文字画，别用 SVG：小字号下更稳 */
-    .hero-back .chev-l {
-      font-size: 1.1em;
-      line-height: 1;
-      transform: translateY(-0.5px);
-    }
-
-    .kicker {
-      display: inline-block;
-      font-size: 0.76rem;
-      font-weight: 600;
-      letter-spacing: 0.16em;
-      color: var(--gold);
-    }
-
-    .product-hero h1 {
-      margin-top: 12px;
-      font-size: clamp(2.4rem, 7vw, 4.4rem);
-      font-weight: 700;
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-    }
-
-    .tagline {
-      margin: 18px auto 0;
-      max-width: 24em;
-      font-size: clamp(1rem, 2.2vw, 1.32rem);
-      color: var(--text-dim);
-      text-wrap: pretty;
-    }
-
-    .ctas {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-      margin-top: 30px;
-    }
-
-    .hero-meta {
-      margin-top: 20px;
-      font-size: 0.82rem;
-      color: var(--text-faint);
-    }
-
-    /* 按钮：与首页同一套观感 */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 11px 26px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      font-family: inherit;
-      font-size: 0.94rem;
-      font-weight: 600;
-      line-height: 1.5;
-      text-decoration: none;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.16s, box-shadow 0.2s;
-    }
-
-    .btn-primary {
-      background: var(--accent-grad);
-      color: var(--on-accent);
-      border-color: var(--gold-line);
-    }
-
-    .btn-primary:hover {
-      background: var(--accent-grad-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 10px 26px var(--gold-shadow);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--text-dim);
-      border-color: var(--line-strong);
-    }
-
-    .btn-ghost:hover {
-      border-color: var(--accent-line);
-      color: var(--text);
-    }
-
-    /* ---------- 点击反馈：与首页同一套，按下缩 3%，松手回弹 ----------
-       只动 transform，不改宽高，周围元素不会跟着跳 */
-    .btn:active { transform: scale(0.97); }
-    .nav-link:active { transform: scale(0.96); }
-    .nav-gh:active { transform: scale(0.92); }
-    .hero-back:active { transform: scale(0.96); }
-    .chapbar a:active { transform: scale(0.96); }
-
-    /* ================= 主视觉大图 ================= */
-    .showcase {
-      padding-bottom: clamp(28px, 5vw, 54px);
-    }
-
-    .showcase img {
-      display: block;
-      width: 100%;
-      height: auto;
-      border-radius: 20px;
-      border: 1px solid var(--line);
-      background: var(--bg-soft);
-    }
-
-    .caption {
-      margin-top: 14px;
-      font-size: 0.82rem;
-      color: var(--text-faint);
-      text-align: center;
-      text-wrap: pretty;
-    }
-
-    /* ================= 本页章节导航（吸顶，与首页栏目条同义） ================= */
-    .chapbar {
-      position: sticky;
-      top: var(--nav-h);
-      z-index: 55;
-      background: rgba(11, 11, 13, 0.82);
-      -webkit-backdrop-filter: saturate(180%) blur(18px);
-      backdrop-filter: saturate(180%) blur(18px);
-      border-block: 1px solid var(--line-soft);
-    }
-
-    .chapbar .wrap {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      height: var(--chap-h);
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    .chapbar .wrap::-webkit-scrollbar { display: none; }
-
-    .chapbar a {
-      flex: 0 0 auto;
-      padding: 6px 14px;
-      border-radius: 999px;
-      color: var(--text-mute);
-      font-size: 0.86rem;
-      text-decoration: none;
-      white-space: nowrap;
-      transition: color 0.2s, background 0.2s, transform 0.16s;
-    }
-
-    .chapbar a:hover {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    /* 章节条左端常驻返回入口。sticky + 半透明底：
-       窄屏横向滚动时它钉在左边，后面的条目从底下穿过去 */
-    .chapbar a.chap-back {
-      position: sticky;
-      left: 0;
-      z-index: 2;
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      margin-right: 6px;
-      padding-left: 0;
-      padding-right: 14px;
-      border-right: 1px solid var(--line);
-      border-radius: 0;
-      background: rgba(11, 11, 13, 0.9);
-      -webkit-backdrop-filter: blur(18px);
-      backdrop-filter: blur(18px);
-    }
-
-    .chapbar a.chap-back:hover {
-      color: var(--accent);
-      background: rgba(11, 11, 13, 0.9);
-    }
-
-    .chapbar a.chap-back .chev-l {
-      font-size: 1.1em;
-      line-height: 1;
-      transform: translateY(-0.5px);
-    }
-
-    /* 锚点跳转要给吸顶导航和章节条让出高度，否则标题正好被盖住 */
-    #features,
-    #scopes,
-    #get,
-    #specs,
-    #about {
-      scroll-margin-top: calc(var(--nav-h) + var(--chap-h) + 14px);
-    }
-    /* ================= 功能分段（学 Apple：一图一段，左右交替） ================= */
-    .features { padding: clamp(26px, 4vw, 50px) 0 clamp(16px, 3vw, 30px); }
-
-    .feature {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-      gap: clamp(24px, 4vw, 56px);
-      align-items: center;
-      padding: clamp(32px, 5vw, 58px) 0;
-      border-top: 1px solid var(--line-soft);
-    }
-
-    .feature:first-child { border-top: none; }
-
-    /* 偶数段图文对调，读起来有节奏 */
-    .feature:nth-child(even) .feature-text { order: 2; }
-    .feature:nth-child(even) .feature-shot { order: 1; }
-
-    .feature-text { min-width: 0; }
-
-    .feature-idx {
-      display: inline-block;
-      font-size: 0.74rem;
-      font-weight: 600;
-      letter-spacing: 0.16em;
-      color: var(--gold);
-    }
-
-    .feature h2 {
-      margin: 12px 0 14px;
-      font-size: clamp(1.3rem, 3vw, 1.8rem);
-      font-weight: 700;
-      line-height: 1.3;
-      letter-spacing: -0.01em;
-      /* 标题较长时按行均分，避免第二行只剩一个字的孤字 */
-      text-wrap: balance;
-    }
-
-    .feature p {
-      color: var(--text-mute);
-      font-size: 0.93rem;
-      text-wrap: pretty;
-    }
-
-    .feature p + p { margin-top: 10px; }
-
-    .feature-shot { min-width: 0; margin: 0; }
-
-    .feature-shot img {
-      display: block;
-      width: 100%;
-      height: auto;
-      border-radius: 16px;
-      border: 1px solid var(--line);
-      background: var(--bg-soft);
-    }
-
-    /* ================= 说明区块：汉化覆盖范围 ================= */
-    /* 下面这四个区块直接是 section（没有 .wrap 包着），自己限宽，
-       否则卡片和文字会一直顶到屏幕两边 */
-    .panel {
-      width: min(1160px, 92%);
-      margin: clamp(26px, 4vw, 52px) auto;
-      padding: clamp(26px, 4vw, 44px);
-      border-radius: 22px;
-      background: linear-gradient(150deg, #17181c 0%, #101116 100%);
-      border: 1px solid var(--line);
-    }
-
-    .panel h2 {
-      font-size: clamp(1.28rem, 2.8vw, 1.7rem);
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .panel > p {
-      color: var(--text-mute);
-      font-size: 0.92rem;
-      max-width: 40em;
-      text-wrap: pretty;
-    }
-
-    .panel-points {
-      list-style: none;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(238px, 1fr));
-      gap: 16px 26px;
-      margin-top: 24px;
-    }
-
-    .panel-points li {
-      position: relative;
-      padding-left: 20px;
-      font-size: 0.89rem;
-      color: var(--text-dim);
-      line-height: 1.75;
-    }
-
-    .panel-points li::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0.72em;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--accent-dot);
-    }
-
-    .panel-note {
-      margin-top: 22px;
-      padding-top: 16px;
-      border-top: 1px solid var(--line);
-      font-size: 0.82rem;
-      color: var(--text-faint);
-      text-wrap: pretty;
-    }
-
-    /* ================= 获取方式（与 Silverdaw 页同一套卡片） ================= */
-    .get {
-      width: min(1160px, 92%);
-      margin-inline: auto;
-      padding: clamp(8px, 2vw, 18px) 0 clamp(28px, 5vw, 52px);
-    }
-
-    .get-head { margin-bottom: 24px; }
-
-    .get-head h2 {
-      font-size: clamp(1.4rem, 3vw, 1.88rem);
-      font-weight: 700;
-    }
-
-    .get-head p {
-      margin-top: 6px;
-      color: var(--text-mute);
-      font-size: 0.92rem;
-      text-wrap: pretty;
-    }
-
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
-      gap: 20px;
-      align-items: stretch;
-    }
-
-    .card {
-      display: flex;
-      flex-direction: column;
-      padding: 26px 24px 24px;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-
-    .card:hover {
-      border-color: var(--accent-line);
-      transform: translateY(-2px);
-    }
-
-    .card--featured { border-color: var(--gold-edge); }
-
-    .card-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .no {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--line-strong);
-      line-height: 1;
-    }
-
-    .tag {
-      display: inline-block;
-      padding: 1px 10px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      font-size: 0.74rem;
-      color: var(--text-mute);
-      line-height: 1.7;
-    }
-
-    .tag--accent {
-      color: var(--accent);
-      border-color: var(--accent-line);
-    }
-
-    .card h3 {
-      font-size: 1.14rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-
-    .card .desc {
-      color: var(--text-mute);
-      font-size: 0.9rem;
-      text-wrap: pretty;
-    }
-
-    .spec-list {
-      list-style: none;
-      display: grid;
-      gap: 7px;
-      margin-top: 18px;
-    }
-
-    .spec-list li {
-      position: relative;
-      padding-left: 17px;
-      font-size: 0.85rem;
-      color: var(--text-dim);
-      line-height: 1.65;
-    }
-
-    .spec-list li::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0.72em;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--accent-dot);
-    }
-
-    .card-foot {
-      margin-top: auto;
-      padding-top: 22px;
-    }
-
-    .card-foot .btn { width: 100%; }
-
-    /* ================= 规格表 ================= */
-    .specs {
-      width: min(1160px, 92%);
-      margin-inline: auto;
-      padding: clamp(16px, 3vw, 30px) 0 clamp(28px, 5vw, 52px);
-    }
-
-    .specs h2 {
-      font-size: clamp(1.4rem, 3vw, 1.88rem);
-      font-weight: 700;
-      margin-bottom: 18px;
-    }
-
-    .spec-table {
-      border-top: 1px solid var(--line);
-      margin: 0;
-    }
-
-    .spec-row {
-      display: grid;
-      grid-template-columns: minmax(110px, 170px) minmax(0, 1fr);
-      gap: 16px;
-      padding: 13px 2px;
-      border-bottom: 1px solid var(--line-soft);
-      font-size: 0.88rem;
-    }
-
-    .spec-row dt { color: var(--text-faint); }
-    .spec-row dd { color: var(--text-dim); }
-    /* ================= 原版介绍（折叠，中英对照） ================= */
-    .origin {
-      width: min(1160px, 92%);
-      margin: clamp(18px, 3vw, 32px) auto clamp(38px, 6vw, 68px);
-      border: 1px solid var(--line-soft);
-      border-radius: 18px;
-      background: var(--bg-soft);
-      overflow: hidden;
-    }
-
-    .origin summary {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 17px clamp(20px, 3vw, 30px);
-      cursor: pointer;
-      list-style: none;
-      user-select: none;
-    }
-
-    .origin summary::-webkit-details-marker { display: none; }
-
-    .origin summary h2 {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-dim);
-      transition: color 0.2s;
-    }
-
-    .origin summary:hover h2 { color: var(--accent); }
-
-    .origin summary:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: -4px;
-    }
-
-    .chev {
-      flex: none;
-      margin-left: auto;
-      width: 8px;
-      height: 8px;
-      border-right: 1.5px solid var(--text-faint);
-      border-bottom: 1.5px solid var(--text-faint);
-      transform: rotate(45deg);
-      transition: transform 0.2s;
-    }
-
-    .origin[open] .chev { transform: rotate(-135deg); }
-
-    .origin-body {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      border-top: 1px solid var(--line-soft);
-    }
-
-    .origin-col { padding: 22px clamp(20px, 3vw, 30px); }
-
-    .origin-col + .origin-col { border-left: 1px solid var(--line-soft); }
-
-    .origin-label {
-      display: inline-block;
-      margin-bottom: 10px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      color: var(--text-faint);
-    }
-
-    .origin-col p {
-      font-size: 0.87rem;
-      color: var(--text-dim);
-      margin-bottom: 12px;
-      text-wrap: pretty;
-    }
-
-    .origin-col ul {
-      list-style: none;
-      display: grid;
-      gap: 7px;
-    }
-
-    .origin-col li {
-      position: relative;
-      padding-left: 16px;
-      font-size: 0.82rem;
-      color: var(--text-mute);
-      line-height: 1.65;
-    }
-
-    .origin-col li::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0.72em;
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--accent-dot);
-    }
-
-    .origin-src {
-      grid-column: 1 / -1;
-      padding: 12px clamp(20px, 3vw, 30px);
-      border-top: 1px solid var(--line-soft);
-      font-size: 0.76rem;
-      color: var(--text-faint);
-      text-align: center;
-    }
-
-    /* ================= 页脚（与首页一致） ================= */
-    footer {
-      border-top: 1px solid var(--line);
-      padding: 52px 0 36px;
-      background: var(--bg-deep);
-    }
-
-    .footer-cols {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 28px;
-    }
-
-    .footer-col h4 {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-
-    .footer-col a {
-      display: block;
-      padding: 5px 0;
-      font-size: 0.84rem;
-      color: var(--text-faint);
-      text-decoration: none;
-      transition: color 0.2s;
-    }
-
-    .footer-col a:hover { color: var(--accent); }
-
-    .footer-bottom {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      flex-wrap: wrap;
-      margin-top: 40px;
-      padding-top: 22px;
-      border-top: 1px solid var(--line-soft);
-      font-size: 0.78rem;
-      color: var(--text-faint);
-    }
-
-    .footer-bottom a {
-      color: var(--text-faint);
-      text-decoration: none;
-    }
-
-    .footer-bottom a:hover { color: var(--accent); }
-    /* ================= 断点 ================= */
-    @media (max-width: 900px) {
-      .feature {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 22px;
-      }
-
-      /* 窄屏一律图在上、字在下，不再左右交替 */
-      .feature:nth-child(even) .feature-text,
-      .feature:nth-child(even) .feature-shot { order: 0; }
-
-      .origin-body { grid-template-columns: 1fr; }
-      .origin-col + .origin-col { border-left: none; border-top: 1px solid var(--line-soft); }
-
-      .footer-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
-    }
-
-    @media (max-width: 640px) {
-      :root { --nav-h: 50px; --chap-h: 42px; }
-
-      .globalnav .wrap { gap: 10px; }
-      .nav-brand { font-size: 0.86rem; gap: 7px; }
-      .nav-brand img { width: 22px; height: 22px; }
-      .nav-link { padding: 6px 8px; font-size: 0.82rem; }
-      .nav-gh { width: 28px; height: 28px; margin-left: 2px; }
-
-      .product-hero { padding-top: 42px; }
-      .ctas { flex-direction: column; align-items: stretch; }
-      .ctas .btn { width: 100%; }
-
-      .spec-row {
-        grid-template-columns: 1fr;
-        gap: 2px;
-      }
-
-      .spec-row dt { font-size: 0.78rem; }
-      .panel { border-radius: 18px; }
-    }
-
-    /* 系统开了「减少动态效果」：过渡、位移与缩放全部关掉，只留颜色变化 */
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      body { animation: none; }
-
-      /* 跨页面过渡退回直接切换 */
-      ::view-transition-old(root),
-      ::view-transition-new(root) {
-        animation: none;
-      }
-
-      .btn-primary:hover,
-      .btn:active,
-      .nav-link:active,
-      .nav-gh:active,
-      .hero-back:active,
-      .chapbar a:active { transform: none; }
-    }
-
-    /* ================= 发布状态提示（与软件库页同一套样式） ================= */
-    /* 本页色板里没有这个淡金底，按软件库页的取值补一个别名，两边观感一致 */
-    :root { --gold-wash-soft: rgba(201, 162, 39, 0.06); }
-
-    /* 本页标语比 Silverdaw 页长两个词，把一行放宽些，避免换行后只剩半句孤字 */
-    .tagline { max-width: 32em; }
-
-    .tip {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin: 0 0 34px;
-      padding: 13px 16px;
-      border: 1px solid var(--line);
-      border-left: 2px solid var(--accent-line);
-      border-radius: 14px;
-      background: var(--gold-wash-soft);
-      color: var(--text-mute);
-      font-size: 0.87rem;
-      line-height: 1.75;
-    }
-
-    .tip-label {
-      flex: none;
-      color: var(--accent);
-      font-size: 0.76rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      /* 与正文首行对齐 */
-      line-height: 1.95;
-    }
-
-    .tip p {
-      margin: 0;
-      /* 末行不留孤字，Chromium 系生效，其余浏览器忽略 */
-      text-wrap: pretty;
-    }
-
-    .tip strong {
-      color: var(--text-dim);
-      font-weight: 600;
-    }
-
-    /* 邮箱做成胶囊：整体不可拆行，换行时整枚移到下一行，不会出现半个邮箱 */
-    .tip-mail {
-      display: inline-block;
-      padding: 0 10px;
-      border: 1px solid var(--accent-line);
-      border-radius: 999px;
-      background: var(--gold-wash);
-      color: var(--accent);
-      font-size: 0.83rem;
-      line-height: 1.7;
-      text-decoration: none;
-      white-space: nowrap;
-      transition: border-color 0.22s, background 0.22s;
-    }
-
-    .tip-mail:hover {
-      border-color: var(--accent-line-strong);
-      background: var(--gold-wash-soft);
-    }
-
-    /* 窄屏：标签与正文各占一行，邮箱随正文走，不横向溢出 */
-    @media (max-width: 640px) {
-      .tip {
-        flex-direction: column;
-        gap: 4px;
-        font-size: 0.82rem;
-        padding: 12px 14px;
-        margin-bottom: 26px;
-      }
-
-      .tip-label { line-height: 1.6; }
-    }
-  </style>
+  <link rel="stylesheet" href="stage1.css">
+  <link rel="stylesheet" href="stage2.css">
 </head>
-<body>
+<body class="product-page product-prism">
+
+<a class="skip-link" href="#main-content">跳到主要内容</a>
 
   <!-- ============ 常驻顶部导航：与首页同一套，「汉化」为当前栏目 ============ -->
   <nav class="globalnav" id="globalnav" aria-label="主导航">
     <div class="wrap">
-      <a class="nav-brand" href="index.html">
-        <img src="logo-mark.png" alt="" width="26" height="26">
-        Arthur 工作室
+      <a class="nav-brand" href="index.html" aria-label="Arthur 工作室首页">
+        <img src="logo-mark.png" alt="" width="25" height="25">
+        <span class="nav-brand-name">
+          <strong>Arthur</strong>
+          <small>Studio · 开源汉化</small>
+        </span>
       </a>
 
       <div class="nav-links">
@@ -991,7 +34,7 @@
         <a class="nav-link" href="softlib.html">软件库</a>
         <a class="nav-link" href="notice.html">公告</a>
         <a class="nav-link" href="index.html#liuyan">留言板</a>
-        <a class="nav-link" href="account.html">我的</a>
+        <a class="nav-link nav-account" href="account.html">我的</a>
         <a class="nav-link" href="index.html#about">关于</a>
         <a class="nav-gh" href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub 首页">
           <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -999,226 +42,462 @@
           </svg>
         </a>
       </div>
+
+      <details class="nav-mobile">
+        <summary aria-label="打开导航菜单"><span></span><span></span></summary>
+        <nav class="nav-mobile-panel" aria-label="移动端导航">
+          <a href="index.html#hanhua">汉化 <span>01</span></a>
+          <a href="softlib.html">软件库 <span>02</span></a>
+          <a href="notice.html">公告 <span>03</span></a>
+          <a href="index.html#liuyan">留言板 <span>04</span></a>
+          <a href="account.html">我的 <span>05</span></a>
+          <a href="index.html#about">关于 <span>06</span></a>
+          <a href="https://github.com" target="_blank" rel="noopener">GitHub <span>↗</span></a>
+        </nav>
+      </details>
     </div>
   </nav>
 
-  <main id="top">
+<main id="top">
 
-    <!-- ============ 产品主视觉：名字、一句话、两个按钮 ============ -->
-    <section class="product-hero">
-      <div class="wrap">
-        <div class="hero-top">
-          <a class="hero-back" href="index.html"><span class="chev-l" aria-hidden="true">‹</span> 返回首页</a>
-        </div>
-        <span class="kicker">中文汉化 · 已发布</span>
-        <h1>Prism</h1>
-        <p class="tagline">免费开源的实时音频分析与电平表机架，八种仪表可自由排布。</p>
-        <div class="ctas">
-          <a class="btn btn-primary" href="#get">下载汉化版</a>
-          <a class="btn btn-ghost" href="https://github.com/Boof2015/prism" target="_blank" rel="noopener">查看官方仓库</a>
-        </div>
-        <p class="hero-meta">0.4.0-beta · Windows · 安装包与便携版两种形式</p>
-      </div>
-    </section>
-
-    <!-- ============ 发布状态：先说清楚现在没有下载 ============ -->
+  <!-- ============ 产品主视觉：Beta 状态、版本、下载入口 ============ -->
+  <section class="product-hero" id="main-content">
     <div class="wrap">
-      <aside class="tip" aria-label="发布状态">
-        <span class="tip-label">已发布</span>
-        <p>汉化版 0.4.0-beta 已发布，<strong>安装包与便携版内容一致</strong>，按习惯选其一即可。首发版本仍在跟进上游，遇到译文错漏或界面显示异常，欢迎发邮件反馈：<a class="tip-mail" href="mailto:zjh041106@qq.com">zjh041106@qq.com</a></p>
-      </aside>
+      <div class="product-breadcrumb" aria-label="面包屑">
+        <a href="index.html">Arthur 工作室</a>
+        <span>/</span>
+        <a href="index.html#hanhua">汉化</a>
+        <span>/</span>
+        <span>Prism</span>
+      </div>
+
+      <div class="product-hero-grid">
+        <div>
+          <p class="product-kicker">Prism / 中文汉化 · 首发 Beta</p>
+          <h1 class="product-title">Prism<span class="cn">中文汉化</span></h1>
+          <p class="product-tagline">免费开源的实时音频分析与电平表机架，八种仪表可自由排布。中文桌面版界面已发布，安装包与便携版内容一致，按使用习惯选其一即可。</p>
+          <div class="product-actions">
+            <a class="btn btn-primary" href="#get">下载汉化版</a>
+            <a class="btn btn-ghost" href="#beta">Beta 说明</a>
+          </div>
+          <p class="product-meta">
+            <span>0.4.0-beta</span>
+            <span>首发 Beta</span>
+            <span>Windows</span>
+            <span>GPL-3.0</span>
+          </p>
+        </div>
+
+        <div class="product-cover" aria-label="Prism 中文汉化 0.4.0-beta 版本信息">
+          <div class="cover-top">
+            <span class="cover-index">PR / 01</span>
+            <span class="cover-status">已发布 · Beta</span>
+          </div>
+          <div class="cover-visual" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <p class="cover-name">Prism</p>
+          <div class="cover-bottom">
+            <p>实时音频分析与电平表机架<br>桌面版界面已中文化</p>
+            <span>ZH-CN / 0.4.0-beta</span>
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <!-- ============ 主视觉大图 ============ -->
-    <section class="showcase">
-      <div class="wrap">
-        <img src="images/prism-scopes.jpg"
-             alt="Prism 原版界面：频谱仪、瀑布图、声谱图、波形、矢量示波器与 VU 表拼在同一块机架里"
-             width="1800" height="426" fetchpriority="high" decoding="async">
-        <p class="caption">软件原版界面：各种实时仪表可以摆成一块机架，同一屏内同时查看频谱、声谱、波形与电平。本页截图取自原版（英文界面）。</p>
+  <!-- ============ Beta 说明：版本状态与覆盖范围 ============ -->
+  <section class="section" id="beta">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Release status / 版本状态</p>
+          <h2>0.4.0-beta：首个公开测试版。</h2>
+          <p>这是 Prism 中文汉化的首发版本，对应上游同一版本号。先用可用的中文桌面界面覆盖日常操作，再在真实使用中继续校对与跟进上游。</p>
+        </div>
+        <a class="section-more" href="#known">查看已知问题 →</a>
       </div>
-    </section>
 
-    <!-- ============ 本页章节导航：往下滚动时贴在顶部导航下方 ============ -->
-    <nav class="chapbar" aria-label="本页目录">
-      <div class="wrap">
-        <a class="chap-back" href="index.html"><span class="chev-l" aria-hidden="true">‹</span> 返回首页</a>
-        <a href="#features">功能</a>
-        <a href="#scopes">八种仪表</a>
-        <a href="#get">下载</a>
-        <a href="#specs">规格</a>
-        <a href="#about">关于原版</a>
-      </div>
-    </nav>
-
-    <!-- ============ 功能分段：一图一段，左右交替 ============ -->
-    <section class="features" id="features">
-      <div class="wrap">
-
-        <!-- 01 机架与排布 -->
-        <article class="feature">
-          <div class="feature-text">
-            <span class="feature-idx">01 · 机架与排布</span>
-            <h2>每个仪表单独设置，再拼成一块自己的机架</h2>
-            <p>八种仪表各自独立配置：FFT 尺寸、频谱倾斜、Log / Mel / 线性刻度、触发方式、0 VU 参考与缩放比例，改一个不会牵动其他仪表。</p>
-            <p>尺寸与位置可随手拖动，支持的仪表还能旋转、拆成独立窗口，或置顶在其他程序之上；整套布局可存成配置，换了场合再调回来。Windows 下还能让机架停靠在一个显示器上，为它预留屏幕空间。</p>
-          </div>
-          <figure class="feature-shot">
-            <img src="images/prism-themes.jpg"
-                 alt="Prism 原版界面：同一套仪表在橙红、蓝、紫等不同配色下的样子"
-                 width="1400" height="350" loading="lazy" decoding="async">
-          </figure>
+      <div class="meta-grid">
+        <article class="meta-card">
+          <span class="meta-label">当前版本</span>
+          <strong>0.4.0-beta</strong>
+          <p>对应上游同一版本号</p>
         </article>
-
-        <!-- 02 配色与主题 -->
-        <article class="feature">
-          <div class="feature-text">
-            <span class="feature-idx">02 · 配色与主题</span>
-            <h2>配色与主题都可整体替换</h2>
-            <p>线条、填充与热度色随主题整体替换；瀑布图可在主题色与热度色之间切换，矢量示波器可开启多频段 RGB，按颜色分辨各频段的相位分布。</p>
-            <p>界面以深色为底，仪表颜色只作用于显示，测量读数与数值本身不受影响。</p>
-          </div>
-          <figure class="feature-shot">
-            <img src="images/prism-chroma.jpg"
-                 alt="Prism 原版界面：蓝色主题下的波形与相位散点显示"
-                 width="1400" height="177" loading="lazy" decoding="async">
-          </figure>
+        <article class="meta-card">
+          <span class="meta-label">发布状态</span>
+          <strong>已发布</strong>
+          <p>2026 年 11 月 11 日首发</p>
         </article>
-
+        <article class="meta-card">
+          <span class="meta-label">汉化范围</span>
+          <strong>桌面版</strong>
+          <p>界面文本与说明文本</p>
+        </article>
+        <article class="meta-card">
+          <span class="meta-label">下载形式</span>
+          <strong>安装包 / 便携版</strong>
+          <p>两个包内容一致</p>
+        </article>
       </div>
-    </section>
 
-    <!-- ============ 八种仪表逐项说明 ============ -->
-    <section class="panel" id="scopes">
-      <h2>八种实时仪表</h2>
-      <p>桌面版、插件版与终端界面共用同一套分析核心，下面按官方仓库的顺序逐项列出，括号内为原版界面上的英文名称，汉化时以左侧中文译名为准。</p>
-      <ul class="panel-points">
-        <li>频谱仪（Spectrum Analyzer）：FFT 频谱，带校准的 dBFS 电平，可调 FFT 尺寸与频谱倾斜，支持 Log / Mel / 线性刻度、热图与填充两种显示，并给出峰值与音高读数</li>
-        <li>示波器（Oscilloscope）：时域波形，按基频锁定音高并使用亚采样触发，画面不会来回抖动</li>
-        <li>矢量示波器（Vectorscope）：全频段立体声相位分析，XY、极坐标与 M/S 线性三种视图，带校准刻度、缩放与可选的多频段 RGB</li>
-        <li>瀑布图（Waterfall）：频谱历史层层叠起，可回看 1–30 秒，脊线密度自适应，桌面版、终端界面与插件均可用</li>
-        <li>声谱图（Spectrogram）：频率随时间滚动的谱图，Log / Mel / 线性刻度，可做立体声能量分析，Sharp 与 Sharper 两种频率重分配</li>
-        <li>VU 表（VU Meter）：按 300 毫秒特性表针，0 VU 参考可调，附立体声相关度，指针与条形两种样式</li>
-        <li>响度表（Loudness Meter）：按 ITU-R BS.1770 给出瞬时、短时与整体 LUFS，并显示真峰值活动</li>
-        <li>波形显示（Waveform）：单声道或立体声滚动波形，用 min/max 采样保留瞬态，可选多频段能量着色</li>
-      </ul>
+      <div class="status-callout">
+        <span class="status-callout-label">Beta 说明</span>
+        <p><strong>0.4.0-beta 是首个公开版本，不是功能冻结版。</strong>当前汉化以桌面版界面与说明文本为主，VST3 / AU / CLAP 插件与终端界面尚未逐项验证；首发版本仍在跟进上游。遇到译文错漏或界面显示异常，请通过下方反馈入口告知。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 主视觉大图 ============ -->
+  <section class="showcase">
+    <div class="wrap">
+      <figure>
+        <div class="showcase-frame">
+          <img src="images/prism-scopes.jpg"
+               alt="Prism 原版界面：频谱仪、瀑布图、声谱图、波形、矢量示波器与 VU 表拼在同一块机架里"
+               width="1800" height="426" fetchpriority="high" decoding="async">
+        </div>
+        <figcaption class="shot-caption">
+          <span>软件原版界面：各种实时仪表可以摆成一块机架，同一屏内同时查看频谱、声谱、波形与电平。本页截图取自原版英文界面。</span>
+          <span>原版截图 / English UI</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ 本页章节导航 ============ -->
+  <nav class="chapbar" aria-label="本页目录">
+    <div class="wrap">
+      <a class="chap-back" href="index.html"><span class="chev-l" aria-hidden="true">‹</span> 返回首页</a>
+      <a href="#beta">Beta 状态</a>
+      <a href="#features">功能</a>
+      <a href="#scopes">八种仪表</a>
+      <a href="#get">下载</a>
+      <a href="#known">已知问题</a>
+      <a href="#specs">规格</a>
+      <a href="#about">关于原版</a>
+    </div>
+  </nav>
+
+  <!-- ============ 功能分段：一图一段，左右交替 ============ -->
+  <section class="features features--headed" id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Features / 原版功能</p>
+          <h2>八种仪表，拼成一块自己的机架。</h2>
+          <p>以下内容按 Prism 官方仓库整理，说明原版能做什么；截图取自原版英文界面，用于对照界面位置与结构。</p>
+        </div>
+      </div>
+
+      <!-- 01 机架与排布 -->
+      <article class="feature">
+        <div class="feature-text">
+          <span class="feature-idx">01 · 机架与排布</span>
+          <h2>每个仪表单独设置，再拼成一块自己的机架</h2>
+          <p>八种仪表各自独立配置：FFT 尺寸、频谱倾斜、Log / Mel / 线性刻度、触发方式、0 VU 参考与缩放比例，改一个不会牵动其他仪表。</p>
+          <p>尺寸与位置可随手拖动，支持的仪表还能旋转、拆成独立窗口，或置顶在其他程序之上；整套布局可存成配置，换了场合再调回来。Windows 下还能让机架停靠在一个显示器上，为它预留屏幕空间。</p>
+        </div>
+        <figure class="feature-shot">
+          <img src="images/prism-themes.jpg"
+               alt="Prism 原版界面：同一套仪表在橙红、蓝、紫等不同配色下的样子"
+               width="1400" height="350" loading="lazy" decoding="async">
+          <figcaption class="shot-caption">
+            <span>原版界面：同一套机架仪表可保存为不同布局与配色。</span>
+            <span>原版截图 / English UI</span>
+          </figcaption>
+        </figure>
+      </article>
+
+      <!-- 02 配色与主题 -->
+      <article class="feature">
+        <div class="feature-text">
+          <span class="feature-idx">02 · 配色与主题</span>
+          <h2>配色与主题都可整体替换</h2>
+          <p>线条、填充与热度色随主题整体替换；瀑布图可在主题色与热度色之间切换，矢量示波器可开启多频段 RGB，按颜色分辨各频段的相位分布。</p>
+          <p>界面以深色为底，仪表颜色只作用于显示，测量读数与数值本身不受影响。</p>
+        </div>
+        <figure class="feature-shot">
+          <img src="images/prism-chroma.jpg"
+               alt="Prism 原版界面：蓝色主题下的波形与相位散点显示"
+               width="1400" height="177" loading="lazy" decoding="async">
+          <figcaption class="shot-caption">
+            <span>原版界面：蓝色主题下的波形与相位散点显示。</span>
+            <span>原版截图 / English UI</span>
+          </figcaption>
+        </figure>
+      </article>
+    </div>
+  </section>
+
+
+  <!-- ============ 八种仪表逐项说明 ============ -->
+  <section class="section" id="scopes">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Eight scopes / 八种仪表</p>
+          <h2>同一套分析核心，八种读法。</h2>
+          <p>桌面版、插件版与终端界面共用同一套分析核心，下面按官方仓库的顺序逐项列出；括号内为原版界面上的英文名称，汉化时以中文译名为主。</p>
+        </div>
+      </div>
+
+      <ol class="scope-grid">
+        <li class="scope-item">
+          <span class="scope-no">01</span>
+          <div>
+            <h3>频谱仪</h3>
+            <span class="scope-en">Spectrum Analyzer</span>
+            <p>FFT 频谱，带校准的 dBFS 电平，可调 FFT 尺寸与频谱倾斜，支持 Log / Mel / 线性刻度、热图与填充两种显示，并给出峰值与音高读数。</p>
+          </div>
+        </li>
+        <li class="scope-item">
+          <span class="scope-no">02</span>
+          <div>
+            <h3>示波器</h3>
+            <span class="scope-en">Oscilloscope</span>
+            <p>时域波形，按基频锁定音高并使用亚采样触发，画面不会来回抖动。</p>
+          </div>
+        </li>
+        <li class="scope-item">
+          <span class="scope-no">03</span>
+          <div>
+            <h3>矢量示波器</h3>
+            <span class="scope-en">Vectorscope</span>
+            <p>全频段立体声相位分析，XY、极坐标与 M/S 线性三种视图，带校准刻度、缩放与可选的多频段 RGB。</p>
+          </div>
+        </li>
+        <li class="scope-item">
+          <span class="scope-no">04</span>
+          <div>
+            <h3>瀑布图</h3>
+            <span class="scope-en">Waterfall</span>
+            <p>频谱历史层层叠起，可回看 1–30 秒，脊线密度自适应，桌面版、终端界面与插件均可用。</p>
+          </div>
+        </li>
+        <li class="scope-item">
+          <span class="scope-no">05</span>
+          <div>
+            <h3>声谱图</h3>
+            <span class="scope-en">Spectrogram</span>
+            <p>频率随时间滚动的谱图，Log / Mel / 线性刻度，可做立体声能量分析，Sharp 与 Sharper 两种频率重分配。</p>
+          </div>
+        </li>
+        <li class="scope-item">
+          <span class="scope-no">06</span>
+          <div>
+            <h3>VU 表</h3>
+            <span class="scope-en">VU Meter</span>
+            <p>按 300 毫秒特性表针，0 VU 参考可调，附立体声相关度，指针与条形两种样式。</p>
+          </div>
+        </li>
+        <li class="scope-item">
+          <span class="scope-no">07</span>
+          <div>
+            <h3>响度表</h3>
+            <span class="scope-en">Loudness Meter</span>
+            <p>按 ITU-R BS.1770 给出瞬时、短时与整体 LUFS，并显示真峰值活动。</p>
+          </div>
+        </li>
+        <li class="scope-item">
+          <span class="scope-no">08</span>
+          <div>
+            <h3>波形显示</h3>
+            <span class="scope-en">Waveform</span>
+            <p>单声道或立体声滚动波形，用 min/max 采样保留瞬态，可选多频段能量着色。</p>
+          </div>
+        </li>
+      </ol>
+
       <p class="panel-note">截图取自软件原版（英文界面），用于说明各功能的位置与界面结构。汉化以桌面版界面与说明文本为主；插件版与终端界面如何处理，确定后会另行说明。</p>
-    </section>
+    </div>
+  </section>
 
-    <!-- ============ 获取方式：原版、汉化安装包、汉化便携版，三路并列 ============ -->
-    <section class="get" id="get">
+
+  <!-- ============ 获取方式：安装包 / 便携版 / 官方原版 ============ -->
+  <section class="get" id="get">
+    <div class="wrap">
       <div class="get-head">
-        <h2>获取方式</h2>
-        <p>同一款软件提供三种获取方式：希望直接使用中文界面，按习惯在安装包与便携版里选一个即可，两者内容一致；需要对照原文或自行配置，则取用官方原版。</p>
+        <p class="eyebrow">Download / 获取方式</p>
+        <h2>两种汉化包，内容一致。</h2>
+        <p>希望直接使用中文桌面界面，按习惯在安装包与便携版里选一个即可；两个包内容一致，只是打包方式不同。需要对照原文或自行配置，请取用官方原版。</p>
       </div>
 
-      <div class="products">
-
-        <!-- 01 官方原版：跳转官网自行下载（次要动作，描边按钮，金色实心留给本站的两个下载入口） -->
-        <article class="card">
-          <div class="card-head">
-            <span class="no">01</span>
-            <span class="tag">官方原版</span>
+      <div class="download-list">
+        <article class="download-row download-row--featured">
+          <div class="download-main">
+            <span class="download-no">01</span>
+            <div>
+              <h3>汉化版 · 安装包</h3>
+              <p>已内置中文桌面界面，双击安装并自动创建开始菜单项与卸载项，适合固定在一台机器上长期使用。</p>
+              <p class="credit">0.4.0-beta · Windows · 安装程序</p>
+            </div>
           </div>
-          <h3>软件本体（未汉化）</h3>
-          <p class="desc">上游发布的原始安装包，界面为英文，未作任何改动。需要对照原文、自行配置或自行处理汉化，均以此版本为基础。</p>
-          <ul class="spec-list">
-            <li>官方原始版本，未经修改</li>
-            <li>界面语言：English</li>
-            <li>许可证：GPL-3.0</li>
-          </ul>
-          <div class="card-foot">
-            <a class="btn btn-ghost" href="https://astramusic.dev/prism" target="_blank" rel="noopener" data-ext-name="Prism">前往官网</a>
+          <div class="download-meta">
+            <span>含中文桌面界面</span>
+            <span>自动创建开始菜单与卸载项</span>
+            <span>与便携版内容一致</span>
           </div>
+          <a class="btn btn-primary"
+             href="https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/Prism%20Setup%200.4.0-beta.exe"
+             data-dl-gate
+             data-dl-mac="可下载本站「官方原版」，原生支持 macOS / Linux">下载安装包</a>
         </article>
 
-        <!-- 02 汉化安装包：腾讯云直链，点按钮即下载 -->
-        <article class="card card--featured">
-          <div class="card-head">
-            <span class="no">02</span>
-            <span class="tag tag--accent">推荐</span>
+        <article class="download-row">
+          <div class="download-main">
+            <span class="download-no">02</span>
+            <div>
+              <h3>汉化版 · 便携版</h3>
+              <p>解压后直接运行，不写入系统、不留安装记录，可放入 U 盘随身携带；与安装包界面、功能一致。</p>
+              <p class="credit">0.4.0-beta · Windows · .zip 压缩包</p>
+            </div>
           </div>
-          <h3>汉化版 · 安装包</h3>
-          <p class="desc">已内置中文界面，双击安装并自动创建开始菜单项与卸载项，适合固定在一台机器上长期使用。版本对应上游 0.4.0-beta。</p>
-          <ul class="spec-list">
-            <li>.exe 安装程序，双击即可安装</li>
-            <li>自动创建开始菜单项与卸载项</li>
-            <li>含完整中文界面，Windows 版</li>
-          </ul>
-          <div class="card-foot">
-            <a class="btn btn-primary" href="https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/Prism%20Setup%200.4.0-beta.exe" data-dl-gate data-dl-mac="可下载本站「官方原版」，原生支持 macOS / Linux">下载安装包</a>
+          <div class="download-meta">
+            <span>解压即用</span>
+            <span>不写入系统，可放入 U 盘</span>
+            <span>与安装包内容一致</span>
           </div>
+          <a class="btn btn-ghost"
+             href="https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/Prism-0.4.0-beta-win.zip"
+             data-dl-gate
+             data-dl-mac="可下载本站「官方原版」，原生支持 macOS / Linux">下载便携版</a>
         </article>
 
-        <!-- 03 汉化便携版：腾讯云直链，点按钮即下载 -->
-        <article class="card">
-          <div class="card-head">
-            <span class="no">03</span>
-            <span class="tag">免安装</span>
+        <article class="download-row">
+          <div class="download-main">
+            <span class="download-no">03</span>
+            <div>
+              <h3>软件本体（未汉化）</h3>
+              <p>上游发布的原始安装包，界面为英文，未作任何改动。需要对照原文、自行配置或处理插件版与终端界面，均以此版本为基础。</p>
+              <p class="credit">官方原始版本 · 未经修改</p>
+            </div>
           </div>
-          <h3>汉化版 · 便携版</h3>
-          <p class="desc">解压后直接运行，不写入系统、不留安装记录，可放入 U 盘随身携带；与安装包内容一致，只是打包方式不同。</p>
-          <ul class="spec-list">
-            <li>.zip 压缩包，解压即用</li>
-            <li>不写入系统，可放入 U 盘</li>
-            <li>与安装包界面、功能一致</li>
-          </ul>
-          <div class="card-foot">
-            <a class="btn btn-primary" href="https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/Prism-0.4.0-beta-win.zip" data-dl-gate data-dl-mac="可下载本站「官方原版」，原生支持 macOS / Linux">下载便携版</a>
+          <div class="download-meta">
+            <span>界面语言：English</span>
+            <span>许可证：GPL-3.0</span>
+            <span>跳转官方网站</span>
           </div>
+          <a class="btn btn-ghost" href="https://astramusic.dev/prism" target="_blank" rel="noopener" data-ext-name="Prism">前往官网</a>
         </article>
-
       </div>
-    </section>
 
-    <!-- ============ 规格 ============ -->
-    <section class="specs" id="specs">
+      <div class="choice-rule">
+        <p><strong>Beta 提示：</strong>本页下载的是 0.4.0-beta 首发汉化版，安装包与便携版内容一致；版本仍在跟进上游，反馈入口见 <a href="#known">已知问题</a>。</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============ 已知问题与反馈 ============ -->
+  <section class="section" id="known">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Known issues / 已知问题</p>
+          <h2>先把范围说清楚，再收集问题。</h2>
+          <p>下面不是猜测清单，而是本次首发版本已经确认的覆盖限制与待验证项；具体个案需要结合界面位置与实际版本判断。</p>
+        </div>
+      </div>
+
+      <div class="issue-list">
+        <article class="issue-row">
+          <span class="issue-no">01</span>
+          <div>
+            <h3>插件版与终端界面尚未逐项验证</h3>
+            <p>本次汉化以桌面版界面与说明文本为主。VST3 / AU / CLAP 插件与 prism-tui 的中文显示、术语与排版尚未逐项核对，确定处理方式后会另行说明。</p>
+          </div>
+          <span class="issue-tag">范围限制</span>
+        </article>
+        <article class="issue-row">
+          <span class="issue-no">02</span>
+          <div>
+            <h3>Beta 阶段可能仍有个别译文错漏</h3>
+            <p>首发版本难免存在译名不统一、断行不理想或界面显示异常。遇到时请附上界面位置、操作步骤与截图，便于定位具体文本。</p>
+          </div>
+          <span class="issue-tag">待校对</span>
+        </article>
+        <article class="issue-row">
+          <span class="issue-no">03</span>
+          <div>
+            <h3>后续上游变更尚未合并</h3>
+            <p>0.4.0-beta 对应上游同一版本号，首发版本仍在跟进上游。上游后续新增的界面文本与说明不在当前版本覆盖范围内。</p>
+          </div>
+          <span class="issue-tag">跟进上游</span>
+        </article>
+      </div>
+
+      <div class="feedback-card" id="feedback">
+        <div>
+          <p class="eyebrow">Feedback / 反馈</p>
+          <h3>遇到译文错漏或界面显示异常？</h3>
+          <p>请附上 Prism 版本、界面位置、操作步骤与截图，发送邮件至 zjh041106@qq.com。仅凭文字描述也可以，但截图能更快确认问题。</p>
+        </div>
+        <a class="btn btn-primary" href="mailto:zjh041106@qq.com">发送邮件反馈</a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============ 规格 ============ -->
+  <section class="specs" id="specs">
+    <div class="wrap">
+      <p class="eyebrow">Specs / 规格</p>
       <h2>规格</h2>
-      <dl class="spec-table">
-        <div class="spec-row">
-          <dt>软件</dt>
-          <dd>Prism —— 免费开源的实时音频分析与电平表机架</dd>
-        </div>
-        <div class="spec-row">
-          <dt>形态</dt>
-          <dd>桌面应用（机架界面）· VST3 / AU / CLAP 插件 · 终端界面 prism-tui</dd>
-        </div>
-        <div class="spec-row">
-          <dt>平台</dt>
-          <dd>Windows · macOS · Linux（汉化版目前仅提供 Windows）</dd>
-        </div>
-        <div class="spec-row">
-          <dt>输入</dt>
-          <dd>系统音频与设备输入，左右声道可分别选择来源，路由按来源保存</dd>
-        </div>
-        <div class="spec-row">
-          <dt>界面语言</dt>
-          <dd>中文（汉化版）· English（官方原版）</dd>
-        </div>
-        <div class="spec-row">
-          <dt>汉化版本</dt>
-          <dd>0.4.0-beta（安装包 / 便携版）</dd>
-        </div>
-        <div class="spec-row">
-          <dt>发布状态</dt>
-          <dd>已发布 · 2026 年 11 月 11 日，后续跟进上游更新</dd>
-        </div>
-        <div class="spec-row">
-          <dt>许可证</dt>
-          <dd>GNU GPL v3.0</dd>
-        </div>
-        <div class="spec-row">
-          <dt>官网</dt>
-          <dd><a href="https://astramusic.dev/prism" target="_blank" rel="noopener">astramusic.dev/prism</a></dd>
-        </div>
-        <div class="spec-row">
-          <dt>官方仓库</dt>
-          <dd><a href="https://github.com/Boof2015/prism" target="_blank" rel="noopener">github.com/Boof2015/prism</a></dd>
-        </div>
-      </dl>
-    </section>
+      <div class="spec-grid">
+        <dl class="spec-col">
+          <div class="spec-row">
+            <dt>软件</dt>
+            <dd>Prism —— 免费开源的实时音频分析与电平表机架</dd>
+          </div>
+          <div class="spec-row">
+            <dt>形态</dt>
+            <dd>桌面应用（机架界面）· VST3 / AU / CLAP 插件 · 终端界面 prism-tui</dd>
+          </div>
+          <div class="spec-row">
+            <dt>平台</dt>
+            <dd>Windows · macOS · Linux（汉化版目前仅提供 Windows）</dd>
+          </div>
+          <div class="spec-row">
+            <dt>输入</dt>
+            <dd>系统音频与设备输入，左右声道可分别选择来源，路由按来源保存</dd>
+          </div>
+          <div class="spec-row">
+            <dt>界面语言</dt>
+            <dd>中文（桌面版汉化）· English（官方原版）</dd>
+          </div>
+        </dl>
 
-    <!-- ============ 原版介绍：折叠起来，默认不占版面 ============ -->
+        <dl class="spec-col">
+          <div class="spec-row">
+            <dt>汉化版本</dt>
+            <dd>0.4.0-beta（安装包 / 便携版）</dd>
+          </div>
+          <div class="spec-row">
+            <dt>发布状态</dt>
+            <dd>已发布 · 2026 年 11 月 11 日，后续跟进上游更新</dd>
+          </div>
+          <div class="spec-row">
+            <dt>许可证</dt>
+            <dd>GNU GPL v3.0</dd>
+          </div>
+          <div class="spec-row">
+            <dt>官网</dt>
+            <dd><a href="https://astramusic.dev/prism" target="_blank" rel="noopener">astramusic.dev/prism</a></dd>
+          </div>
+          <div class="spec-row">
+            <dt>官方仓库</dt>
+            <dd><a href="https://github.com/Boof2015/prism" target="_blank" rel="noopener">github.com/Boof2015/prism</a></dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============ 原版介绍：折叠起来，默认不占版面 ============ -->
+  <div class="wrap">
     <details class="origin" id="about">
       <summary>
         <h2>关于原版 Prism</h2>
@@ -1254,12 +533,24 @@
         <p class="origin-src">介绍文案取自 Prism 官方仓库 README，功能细节以该仓库为准</p>
       </div>
     </details>
+  </div>
 
-  </main>
+</main>
 
   <!-- ============ 页脚：与首页同一套多列目录 ============ -->
   <footer>
     <div class="wrap">
+      <div class="footer-top">
+        <a class="footer-brand" href="index.html">
+          <img src="logo-mark.png" alt="" width="30" height="30">
+          <span class="footer-brand-name">
+            <strong>Arthur 工作室</strong>
+            <span>好软件，不该有语言门槛。</span>
+          </span>
+        </a>
+        <p class="footer-statement">专注于开源汉化与独立软件开发。所有项目均开源免费发布，下载入口与版本说明以项目页为准。</p>
+      </div>
+
       <div class="footer-cols">
         <div class="footer-col">
           <h4>汉化</h4>
@@ -1280,6 +571,8 @@
         </div>
         <div class="footer-col">
           <h4>关于</h4>
+          <a href="index.html#liuyan">留言板</a>
+          <a href="privacy.html">隐私说明</a>
           <a href="index.html#about">工作室简介</a>
           <a href="index.html#about">联系方式</a>
           <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
@@ -1303,131 +596,150 @@
       window.addEventListener('scroll', onScroll, { passive: true });
       onScroll();
 
+      // 移动端导航：点链接或点空白处收起，Esc 也可以关闭
+      var mobileNav = document.querySelector('.nav-mobile');
+      if (mobileNav) {
+        mobileNav.querySelectorAll('a').forEach(function (a) {
+          a.addEventListener('click', function () { mobileNav.open = false; });
+        });
+        document.addEventListener('click', function (e) {
+          if (mobileNav.open && !mobileNav.contains(e.target)) mobileNav.open = false;
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') mobileNav.open = false;
+        });
+      }
+
       var yearEl = document.getElementById('year');
       if (yearEl) yearEl.textContent = new Date().getFullYear();
     })();
   </script>
 
-
-  <!-- ============ 跨页返回 + 锚点落点 ============
-       1. 离开页面时把当前滚动位置按路径记进 sessionStorage（按标签页隔离）；
-       2. 从站内别的页面点进来时瞬时还原，新开标签或首次进入仍停在顶部；
-       3. 带 # 锚点进来时瞬时对准锚点 —— 浏览器默认会从页顶平滑滑过去，淡入那一下看着像跳错位置；
-       4. 浏览器自带的前进/后退会自己还原，这里不插手。
-       与 index / notice 两页保持一致。 -->
   <script>
+    /* 下载弹窗：按钮上的 data-dl-open 指向要打开的弹窗 id，下载地址写在选项的 data-url 里
+       安装包 .exe   -> #dlModal      value="setup"
+       便携版 .zip   -> #dlModal      value="portable"
+       汉化补丁 .zip -> #dlModalPatch value="patch"
+       使用说明 .txt -> #dlModalPatch value="guide"
+       发布新版本时记得同步改直链里的文件名（安装包/便携版 1.9.0，补丁 1.10.0） */
     (function () {
-      var KEY = 'arthur-scroll';
-      // 根目录可能写成 "/" 也可能写成 "/index.html"，视作同一页，位置才对得上
-      var here = location.pathname.replace(/index\.html$/, '') + location.search;
-      var root = document.documentElement;
+      var modals = document.querySelectorAll('.dl-modal');
 
-      // 用户一开始操作就停手，绝不抢滚动
-      var touched = false;
-      ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (type) {
-        window.addEventListener(type, function () { touched = true; }, { passive: true, once: true });
-      });
-
-      // 在「瞬时滚动」窗口里定位：is-restoring 把 scroll-behavior 换回 auto，
-      // 两帧后放开，之后用户点页内锚点依旧是平滑滚动
-      function snap(fn) {
-        root.classList.add('is-restoring');
-        fn();
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () { root.classList.remove('is-restoring'); });
-        });
+      // 说明类文件（txt / md / pdf）在新标签打开查看，其余按安装包 / 压缩包触发下载
+      function isDocFile(url) {
+        return /\.(txt|md|pdf)([?#]|$)/i.test(url);
       }
 
-      // ---------- A) 带 # 锚点进来：解析期先把位置对上 ----------
-      // 首次锚点定位浏览器走的是 scroll-behavior: smooth —— 淡入那一下还停在页顶，
-      // 接着自己往下滑一段，看起来就像「跳错位置」。这里自己瞬时对准一次。
-      // 用 scrollIntoView 才能自动吃上元素自己的 scroll-margin-top（给吸顶导航让位）。
-      var hasHash = location.hash.length > 1;
-
-      var anchor = null;
-      if (hasHash) {
-        var hashId = location.hash.slice(1);
-        try { hashId = decodeURIComponent(hashId); } catch (err) {}
-        anchor = document.getElementById(hashId);
+      // 触发下载：用临时 <a>，连点多个也不会互相覆盖（不写 target 就不会切走当前页）
+      function startFileDownload(url) {
+        var a = document.createElement('a');
+        a.href = url;
+        a.rel = 'noopener';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       }
 
-      if (anchor) {
-        // 图片、字体没到位时页面高度还会变，所以每次都重新「对准」，不记绝对坐标
-        var alignToAnchor = function () {
-          if (touched) return;
-          snap(function () {
-            anchor.scrollIntoView({ block: 'start', inline: 'nearest' });
-          });
-        };
-        alignToAnchor();
-        document.addEventListener('DOMContentLoaded', alignToAnchor);
-        window.addEventListener('load', function () { requestAnimationFrame(alignToAnchor); });
-        if (document.fonts && document.fonts.ready) document.fonts.ready.then(alignToAnchor);
+      /* 锁背景滚动。直接写 overflow: hidden 会让滚动条消失，可用宽度多出
+         十余像素，整页内容随之横向位移——点击下载时看到的画面偏移即由此产生。
+         因此先把滚动条占用的宽度以 padding-right 补到 html 上，关闭弹窗时再撤销。 */
+      function lockScroll() {
+        var gap = window.innerWidth - document.documentElement.clientWidth;
+        if (gap > 0) document.documentElement.style.paddingRight = gap + 'px';
+        document.body.style.overflow = 'hidden';
       }
 
-      function read() {
-        try {
-          var raw = sessionStorage.getItem(KEY);
-          return raw ? JSON.parse(raw) : { pos: {}, last: '' };
-        } catch (err) {
-          return null; // 隐私模式或文件协议禁用了存储，直接放弃，不影响页面
+      function unlockScroll() {
+        document.body.style.overflow = '';
+        document.documentElement.style.paddingRight = '';
+      }
+
+      function openModal(modal) {
+        if (!modal) return;
+        var hint = modal.querySelector('[data-dl-hint]');
+        if (hint) hint.textContent = '';
+        modal.classList.add('is-open');
+        lockScroll();
+        var checked = modal.querySelector('.dl-radio:checked, .dl-check:checked');
+        if (checked) checked.focus({ preventScroll: true });
+      }
+
+      function closeModal(modal) {
+        modal.classList.remove('is-open');
+        // 没有其它弹窗还开着时，恢复页面滚动
+        if (!document.querySelector('.dl-modal.is-open')) {
+          unlockScroll();
         }
       }
 
-      function write(data) {
-        try {
-          sessionStorage.setItem(KEY, JSON.stringify(data));
-        } catch (err) {}
-      }
-
-      // 1) 记下离开时的位置（pagehide 与切到后台各记一次，移动端更稳）
-      function save() {
-        var data = read();
-        if (!data) return;
-        data.pos[here] = Math.round(window.pageYOffset || document.documentElement.scrollTop || 0);
-        data.last = here;
-        write(data);
-      }
-
-      window.addEventListener('pagehide', save);
-      document.addEventListener('visibilitychange', function () {
-        if (document.visibilityState === 'hidden') save();
-      });
-
-      // 2) 只有「从站内别的页面点进来」才还原（带 # 的上面已按锚点对准）
-      var data = read();
-      if (hasHash || !data || !data.last || data.last === here) return;
-
-      var navType = '';
-      try {
-        var entry = performance.getEntriesByType('navigation')[0];
-        navType = entry ? entry.type : '';
-      } catch (err) {}
-      if (navType === 'back_forward' || navType === 'prerender') return;
-
-      var target = data.pos[here];
-      if (typeof target !== 'number' || target < 1) return;
-
-      function apply() {
-        snap(function () { window.scrollTo(0, target); });
-      }
-
-      // 图片没加载完时页面还短，滚动会被截断，加载完再补一次
-      function fixLater() {
-        if (touched) return;
-        if (Math.abs((window.pageYOffset || 0) - target) > 4) apply();
-      }
-
-      apply();
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function () {
-          if (!touched) apply();
+      document.querySelectorAll('[data-dl-open]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          openModal(document.getElementById(btn.getAttribute('data-dl-open')));
         });
-      }
-      window.addEventListener('load', function () {
-        requestAnimationFrame(fixLater);
       });
-      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fixLater);
+
+      modals.forEach(function (modal) {
+        var hint = modal.querySelector('[data-dl-hint]');
+        var confirm = modal.querySelector('[data-dl-confirm]');
+
+        modal.querySelectorAll('[data-dl-close]').forEach(function (btn) {
+          btn.addEventListener('click', function () { closeModal(modal); });
+        });
+
+        // 点遮罩空白处关掉（点卡片内部不关）
+        modal.addEventListener('click', function (e) {
+          if (e.target === modal) closeModal(modal);
+        });
+
+        // 确认：说明文件直接开新标签；安装包 / 压缩包先确认运行环境，确认后才下载（单选弹窗里最多只会有一项）
+        confirm.addEventListener('click', function () {
+          var picked = [].slice.call(modal.querySelectorAll('.dl-radio:checked, .dl-check:checked'));
+          if (!picked.length) {
+            hint.textContent = '请至少选择一项后再确认。';
+            return;
+          }
+          var urls = picked.map(function (el) { return el.getAttribute('data-url') || ''; });
+          if (urls.indexOf('') !== -1) {
+            hint.textContent = '部分选项的下载地址尚未发布，请稍后再试。';
+            return;
+          }
+          hint.textContent = '';
+
+          // 说明文件先开新标签：window.open 必须在这次点击里同步调用，否则会被当成弹窗拦掉
+          urls.filter(isDocFile).forEach(function (url) {
+            window.open(url, '_blank', 'noopener');
+          });
+          // 安装包 / 压缩包：先过「运行环境核对」，用户点「继续」后才真正开始下载
+          var pkgs = urls.filter(function (url) { return !isDocFile(url); });
+          if (!pkgs.length) {
+            closeModal(modal);
+            return;
+          }
+
+          DownloadGate.confirm({
+            fileCount: pkgs.length,
+            onConfirm: function () {
+              // 仍在「继续」这次点击的调用栈里，浏览器才认这是用户手势
+              closeModal(modal);
+              pkgs.forEach(startFileDownload);
+            }
+          });
+        });
+
+        // 勾选变化时清掉上一次的提示
+        modal.querySelectorAll('.dl-radio, .dl-check').forEach(function (item) {
+          item.addEventListener('change', function () {
+            if (hint) hint.textContent = '';
+          });
+        });
+      });
+
+      // Esc 关闭当前打开的弹窗
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        var open = document.querySelector('.dl-modal.is-open');
+        if (open) closeModal(open);
+      });
     })();
   </script>
 
@@ -1437,7 +749,8 @@
   <script src="supabase-client.js" defer></script>
   <script src="guest-gate.js" defer></script>
 
-  <!-- 下载闸门：安装包 / 压缩包点击后先弹「运行环境核对」，确认后才开始下载 -->
+  <!-- 下载闸门：安装包 / 压缩包确认后先弹「运行环境核对」，确认时才真正开始下载 -->
   <script src="download-gate.js" defer></script>
 </body>
+
 </html>

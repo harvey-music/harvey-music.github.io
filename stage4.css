@@ -1,0 +1,360 @@
+/* ============================================================
+   Arthur Studio · Stage 4 admin console
+   Scope: admin.html only.
+   Extends stage1.css (nav / section / btn / tokens) and keeps
+   subpage.css for the pre-existing forms + dialogs; this file only
+   adds what the admin page newly needs (page head, single-column
+   cards, download stats, notice manager) plus a few overrides so the
+   small/danger buttons read correctly on top of stage1's .btn.
+   ============================================================ */
+
+/* ---------- Page head ---------- */
+
+.admin-head {
+  padding: clamp(48px, 7vw, 88px) 0 clamp(28px, 4vw, 48px);
+}
+
+/* 正文容器：复用 .section 的版心，但压掉它过大的上下留白和顶部分隔线 */
+.admin-body {
+  padding: 8px 0 clamp(40px, 6vw, 72px);
+  border-top: 0;
+}
+
+.admin-title {
+  margin-top: 16px;
+  font-size: clamp(2.2rem, 5.4vw, 4rem);
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+}
+
+.admin-lead {
+  max-width: 48em;
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.9;
+}
+
+/* ---------- Single-column card (replaces subpage .panel,
+   because stage1.css redefines .panel as a two-column showcase) ---------- */
+
+.adm-card {
+  padding: clamp(20px, 3vw, 30px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.adm-card + .adm-card {
+  margin-top: 16px;
+}
+
+.adm-card[hidden] {
+  display: none;
+}
+
+.adm-card-title {
+  margin-bottom: 14px;
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Button size/danger overrides (on top of stage1 .btn) ---------- */
+
+.btn--sm {
+  min-height: 32px;
+  padding: 0 13px;
+  font-size: 0.76rem;
+  gap: 6px;
+}
+
+.btn--danger {
+  border-color: rgba(238, 156, 140, 0.45);
+  color: var(--danger);
+}
+
+
+/* ---------- Download stats ---------- */
+
+.adm-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+  gap: 12px;
+}
+
+.adm-stat {
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+}
+
+.adm-stat b {
+  display: block;
+  color: var(--gold-bright);
+  font-family: var(--font-mono);
+  font-size: clamp(1.7rem, 3.4vw, 2.3rem);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.adm-stat span {
+  display: block;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+/* Ranking table */
+
+.adm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.adm-table th {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.adm-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--line-soft);
+  color: var(--ink-soft);
+  vertical-align: top;
+}
+
+.adm-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.adm-table .num {
+  color: var(--gold-bright);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.adm-table .dim {
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+/* 30-day trend bars */
+
+.adm-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 140px;
+  padding: 10px 2px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.adm-bar {
+  flex: 1;
+  min-width: 6px;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(180deg, var(--gold-line-strong), rgba(201, 168, 106, 0.16));
+  transition: background 0.2s var(--ease);
+}
+
+.adm-bar:hover {
+  background: linear-gradient(180deg, var(--gold-bright), rgba(201, 168, 106, 0.3));
+}
+
+.adm-bar.is-zero {
+  min-height: 3px;
+  opacity: 0.35;
+}
+
+.adm-bar-labels {
+  display: flex;
+
+/* ---------- Notice manager ---------- */
+
+.adm-note {
+  margin: 2px 0 18px;
+  color: var(--faint);
+  font-size: 0.8rem;
+  line-height: 1.8;
+}
+
+.adm-note code {
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+}
+
+.adm-form {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding: 18px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+}
+
+.adm-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.adm-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.adm-check input {
+  accent-color: var(--gold);
+  width: 15px;
+  height: 15px;
+}
+
+.adm-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.adm-notice + .adm-notice {
+  margin-top: 10px;
+}
+
+.adm-notice.is-hidden {
+  opacity: 0.55;
+}
+
+.adm-notice-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.adm-notice-title {
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.adm-notice-meta {
+  margin-top: 3px;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+}
+
+.adm-status {
+  flex: none;
+  padding: 2px 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.adm-status--pin {
+  border-color: var(--gold-line);
+  background: var(--gold-wash);
+  color: var(--gold-bright);
+}
+
+.adm-status--hidden {
+  border-color: var(--warn-line);
+  background: var(--warn-wash);
+  color: var(--warn);
+}
+
+.adm-ops {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  max-width: 320px;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 720px) {
+  .adm-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .adm-notice {
+    flex-wrap: wrap;
+  }
+
+  .adm-ops {
+    max-width: none;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .adm-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .adm-table th,
+  .adm-table td {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+/* ---------- Motion / accessibility ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .adm-bar {
+    transition: none;
+  }
+}
+
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.adm-bar-labels span {
+  flex: 1;
+  min-width: 6px;
+  overflow: hidden;
+  color: var(--ghost);
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.btn--danger:hover {
+  border-color: rgba(238, 156, 140, 0.7);
+  background: rgba(238, 156, 140, 0.08);
+  color: var(--danger);
+}

@@ -1,0 +1,693 @@
+/* ============================================================
+   Arthur Studio · Stage 3 list pages
+   Scope: softlib.html + notice.html only.
+   Extends stage1.css (tokens, nav, section, footer) and reuses the
+   stage2.css product-hero blocks, so the two list pages share the
+   same skeleton as the product detail pages.
+   Page-local rules below are scoped by class names that only exist
+   on these two pages; no first- or second-stage page is affected.
+   ============================================================ */
+
+/* ---------- Anchors under the sticky nav ---------- */
+
+#lib,
+#all,
+#notice-alert,
+.notice {
+  scroll-margin-top: calc(var(--nav-h) + 24px);
+}
+
+/* ---------- List page hero: same skeleton, calmer type ---------- */
+
+.list-hero .product-title {
+  font-size: clamp(3rem, 6.4vw, 4.9rem);
+  letter-spacing: -0.06em;
+  line-height: 1;
+}
+
+.list-hero .product-hero-grid {
+  grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
+}
+
+/* Cover panel of the two list pages: bars + serif wordmark, same as
+   the product pages, but a shorter panel (no version meta below). */
+.list-cover {
+  min-height: clamp(300px, 29vw, 380px);
+}
+
+.list-cover .cover-name {
+  margin-top: 4px;
+}
+
+/* ---------- Slim band that follows the hero ---------- */
+
+.tip-band,
+.alert-band {
+  padding-top: clamp(24px, 3.6vw, 38px);
+}
+
+/* ---------- Access tip: same grammar as .status-callout ---------- */
+
+.tip {
+  display: grid;
+  grid-template-columns: 108px minmax(0, 1fr);
+  gap: 20px;
+  padding: 20px 24px;
+  border-left: 2px solid var(--gold);
+  background: var(--gold-wash-soft);
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.85;
+}
+
+.tip-label {
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 2.1;
+  text-transform: uppercase;
+}
+
+.tip p {
+  max-width: 62em;
+}
+
+.tip-mail {
+  display: inline-block;
+  padding: 0 9px;
+  border: 1px solid var(--gold-line);
+  border-radius: 999px;
+  color: var(--gold-bright);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.tip-mail:hover {
+  border-color: var(--gold-line-strong);
+  background: var(--gold-wash);
+  color: var(--gold-bright);
+}
+
+/* ---------- Count pill on the right of a section head ---------- */
+
+.count {
+  align-self: end;
+  justify-self: start;
+  padding: 5px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+  white-space: nowrap;
+}
+
+/* ---------- Filter chips: sticky, mirrors the chapter bar ---------- */
+
+.chips {
+  position: sticky;
+  top: var(--nav-h);
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 13px 0;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line-soft);
+  background: rgba(8, 9, 10, 0.9);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  scrollbar-width: none;
+}
+
+.chips::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  flex: none;
+  padding: 7px 15px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  line-height: 1.7;
+  white-space: nowrap;
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease),
+    background 0.2s var(--ease), transform 0.16s var(--ease);
+}
+
+.chip:hover {
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+
+.chip[aria-pressed="true"] {
+  color: var(--gold-bright);
+  border-color: var(--gold-line);
+  background: var(--gold-wash);
+}
+
+.chip:active {
+  transform: scale(0.96);
+}
+
+/* ---------- Software cards ---------- */
+
+.lib-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(212px, 1fr));
+  gap: 14px;
+}
+
+.app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-height: 216px;
+  padding: 18px 18px 16px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.22s var(--ease), border-color 0.22s var(--ease),
+    background 0.22s var(--ease), box-shadow 0.22s var(--ease);
+}
+
+.app:hover {
+  transform: translateY(-3px);
+  border-color: var(--gold-line);
+  background: var(--surface-2);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.42);
+}
+
+.app:active {
+  transform: scale(0.99);
+}
+
+/* Filtered-out cards must not keep their cell */
+.app[hidden] {
+  display: none;
+}
+
+/* Official logos sit on a light plate: dark logos stay readable and
+   white-on-transparent logos keep their edge against the dark card. */
+.app-icon {
+  flex: none;
+  display: block;
+  width: 42px;
+  height: 42px;
+  padding: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 11px;
+  background: #f4f5f7;
+  object-fit: contain;
+  transition: border-color 0.22s var(--ease), background 0.22s var(--ease);
+}
+
+.app:hover .app-icon {
+  border-color: var(--gold-line);
+  background: #f7f6f2;
+}
+
+.app-name {
+  margin-top: 4px;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 0.94rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* 「网站作者也在用」小标签：钉在右上角，不进文档流，长名字不会被挤成省略号 */
+.app-tag {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 2px 9px;
+  border: 1px solid var(--gold-line);
+  border-radius: 999px;
+  background: var(--gold-wash);
+  color: var(--gold-bright);
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.app-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.79rem;
+  line-height: 1.75;
+}
+
+.app-foot {
+  margin-top: 2px;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  line-height: 1.8;
+}
+
+.app-foot .sep {
+  opacity: 0.6;
+}
+
+/* 双按钮固定在卡片底部：卡片等高，按钮就在同一条水平线上 */
+.app-acts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: auto;
+  padding-top: 13px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.app-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-size: 0.7rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s var(--ease), border-color 0.2s var(--ease),
+    background 0.2s var(--ease), transform 0.16s var(--ease);
+}
+
+.app-btn:hover {
+  border-color: var(--gold-line);
+  background: var(--gold-wash-soft);
+  color: var(--gold-bright);
+}
+
+.app-btn:active {
+  transform: scale(0.96);
+}
+
+/* 下载是主操作：金描边 + 淡金底，与站内次级按钮同一套 */
+.app-btn-dl {
+  border-color: var(--gold-line);
+  background: var(--gold-wash-soft);
+  color: var(--gold-bright);
+}
+
+.app-btn-dl:hover {
+  border-color: var(--gold-line-strong);
+  background: var(--gold-wash);
+}
+
+/* 安装包还没上架：虚线弱化，点一下给「正在加急投放」的提示 */
+.app-btn-dl.is-pending {
+  border-style: dashed;
+  border-color: var(--line-strong);
+  background: transparent;
+  color: var(--faint);
+}
+
+.app-btn-dl.is-pending:hover {
+  border-color: var(--warn-line);
+  background: var(--warn-wash);
+  color: var(--warn);
+}
+
+/* 外链提示：箭头跟在「官方网站」按钮后面，悬停轻推一下 */
+.app-ext {
+  font-size: 0.72rem;
+  line-height: 1;
+  transition: transform 0.22s var(--ease);
+}
+
+.app-btn:hover .app-ext {
+  transform: translate(1px, -1px);
+}
+
+.app-btn:focus-visible {
+  outline: 2px solid var(--gold-bright);
+  outline-offset: 2px;
+}
+
+/* ---------- 轻提示：点还没上架的下载按钮时浮出来 ---------- */
+
+.dl-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  z-index: 90;
+  max-width: min(560px, calc(100vw - 32px));
+  padding: 13px 18px;
+  border: 1px solid var(--warn-line);
+  border-radius: var(--radius-md);
+  background: rgba(14, 16, 18, 0.96);
+  color: var(--ink-soft);
+  font-size: 0.84rem;
+  line-height: 1.7;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 14px);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.55);
+  transition: opacity 0.22s var(--ease), transform 0.22s var(--ease),
+    visibility 0.22s;
+}
+
+.dl-toast.is-on {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+/* ---------- 页尾备注 ---------- */
+
+.lib-foot {
+  max-width: 62em;
+  margin-top: clamp(28px, 4vw, 40px);
+  padding-top: 20px;
+  border-top: 1px solid var(--line-soft);
+  color: var(--faint);
+  font-size: 0.8rem;
+  line-height: 1.9;
+}
+
+.lib-foot a {
+  color: var(--gold);
+  text-decoration: none;
+  border-bottom: 1px solid var(--gold-line);
+  overflow-wrap: break-word;
+}
+
+.lib-foot a:hover {
+  border-bottom-color: var(--gold-line-strong);
+  color: var(--gold-bright);
+}
+
+/* ---------- 公告页：金色提示条（内容来自 data/notices.json） ---------- */
+
+.alert {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 16px;
+  padding: 20px 24px;
+  border-left: 2px solid var(--gold);
+  background: var(--gold-wash-soft);
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.85;
+}
+
+.alert[hidden],
+.alert:empty {
+  display: none;
+}
+
+.alert-icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  border: 1px solid var(--gold-line);
+  border-radius: 50%;
+  color: var(--gold-bright);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.alert-body {
+  min-width: 0;
+}
+
+.alert-title {
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.9;
+  text-transform: uppercase;
+}
+
+.alert-body p {
+  max-width: 62em;
+}
+
+.alert a {
+  color: var(--gold);
+}
+
+.alert a:hover {
+  color: var(--gold-bright);
+}
+
+/* ---------- 公告条目 ---------- */
+
+.notice-list {
+  display: grid;
+  gap: 14px;
+}
+
+.notice {
+  padding: clamp(22px, 3vw, 30px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.notice:hover {
+  border-color: var(--line-strong);
+  background: var(--surface-2);
+}
+
+/* 置顶条目：金色描边 + 顶部一层极淡的金雾，不抢正文 */
+.notice--pin {
+  border-color: var(--gold-line);
+  background:
+    linear-gradient(180deg, var(--gold-wash-soft), transparent 44%),
+    var(--surface);
+}
+
+.notice-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+}
+
+.notice-date {
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  line-height: 1.8;
+}
+
+.tag {
+  padding: 2px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.6rem;
+  line-height: 1.8;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.tag--accent {
+  border-color: var(--gold-line);
+  background: var(--gold-wash);
+  color: var(--gold-bright);
+}
+
+.notice h3 {
+  margin-top: 13px;
+  font-size: clamp(1.12rem, 1.9vw, 1.4rem);
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.45;
+}
+
+.notice p {
+  max-width: 66em;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.95;
+}
+
+.notice p + p {
+  margin-top: 8px;
+}
+
+.notice a {
+  color: var(--gold);
+  text-decoration: underline;
+  text-decoration-color: var(--gold-line);
+  text-underline-offset: 3px;
+}
+
+.notice a:hover {
+  color: var(--gold-bright);
+  text-decoration-color: var(--gold-line-strong);
+}
+
+/* notices.js 的加载失败占位也复用 .group-hint */
+.group-hint {
+  max-width: 60em;
+  color: var(--faint);
+  font-size: 0.86rem;
+  line-height: 1.9;
+}
+
+.group-hint a {
+  color: var(--gold);
+}
+
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 900px) {
+  .list-hero .product-hero-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lib-grid {
+    grid-template-columns: repeat(auto-fill, minmax(196px, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .tip,
+  .alert {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .tip-label,
+  .alert-title {
+    line-height: 1.7;
+  }
+
+  .chips {
+    margin-bottom: 20px;
+  }
+
+  .notice {
+    padding: 20px 18px;
+  }
+}
+
+@media (max-width: 560px) {
+  .lib-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 11px;
+  }
+
+  .app {
+    min-height: 0;
+    padding: 14px 13px 13px;
+    gap: 6px;
+  }
+
+  .app-icon {
+    width: 34px;
+    height: 34px;
+    padding: 3px;
+    border-radius: 9px;
+  }
+
+  .app-name {
+    font-size: 0.86rem;
+  }
+
+  .app-tag {
+    top: 13px;
+    right: 12px;
+    font-size: 0.5rem;
+  }
+
+  .app-desc {
+    -webkit-line-clamp: 2;
+    font-size: 0.74rem;
+  }
+
+  .app-foot {
+    font-size: 0.54rem;
+  }
+
+  .app-acts {
+    gap: 5px;
+    padding-top: 11px;
+  }
+
+  .app-btn {
+    min-height: 30px;
+    padding: 0 4px;
+    font-size: 0.62rem;
+    gap: 2px;
+  }
+
+  .app-ext {
+    font-size: 0.62rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-acts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- Motion / accessibility ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .app,
+  .app-btn,
+  .chip,
+  .dl-toast {
+    transition-duration: 0.001ms;
+  }
+
+  .app:hover,
+  .app:active,
+  .app-btn:active,
+  .chip:active {
+    transform: none;
+  }
+}
+

@@ -4,681 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arthur 工作室 - 软件库</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    /* ---------- 色板：与 logo 同源的黑金。以后改配色只改这一段 ---------- */
-    :root {
-      /* 底色：中性黑，去掉原来的蓝调 */
-      --bg: #0b0b0d;
-      --bg-soft: #111216;
-      --bg-deep: #08080a;
-      --card: #17181c;
-      --card-hover: #1b1c21;
-      --card-sel: #221d12;
-      --line: #26272c;
-      --line-soft: #232429;
-      --line-strong: #3a3b42;
-      /* 文字 */
-      --text: #eaeaec;
-      --text-dim: #c4c6cb;
-      --text-mute: #9a9da4;
-      --text-faint: #6c6f76;
-      --text-ghost: #565a61;
-      /* 品牌金：取自 logo 渐变，只用于状态与身份标识 */
-      --gold: #c9a227;
-      --gold-line: rgba(201, 162, 39, 0.45);
-      --gold-edge: #6b5620;
-      --gold-wash: rgba(201, 162, 39, 0.08);
-      --gold-wash-soft: rgba(201, 162, 39, 0.06);
-      --gold-shadow: rgba(201, 162, 39, 0.26);
-      /* 交互层：浅金，比标志金亮一档，小字号和按钮都清楚 */
-      --accent: #e3c274;
-      --accent-hover: #f0d79a;
-      --accent-line: rgba(227, 194, 116, 0.45);
-      --accent-line-strong: rgba(227, 194, 116, 0.6);
-      --accent-dot: rgba(227, 194, 116, 0.55);
-      --accent-glow: rgba(227, 194, 116, 0.16);
-      --accent-grad: linear-gradient(180deg, #f2d99b, #d9b25c);
-      --accent-grad-hover: linear-gradient(180deg, #f9e5b8, #e6c877);
-      --on-accent: #17181a;
-      /* 状态色：警示保留独立暖黄，不参与品牌金 */
-      --warn: #f0b429;
-      --warn-hover: #ffc95c;
-      --warn-wash: rgba(240, 180, 41, 0.08);
-      --warn-line: rgba(240, 180, 41, 0.38);
-      --danger: #ff9c8a;
-      --nav-h: 54px;
-    }
-
-    /* 正文链接兜底：没单独设色的链接不要退回浏览器默认蓝 */
-    a { color: var(--accent); }
-
-    /* ---------- 跨页面切换：0.24s 交叉淡入，无位移 ----------
-       只淡不滑；顶部导航命名后原地保留，不跟着内容一起淡。 */
-    @view-transition {
-      navigation: auto;
-    }
-
-    .globalnav { view-transition-name: site-nav; }
-
-    ::view-transition-old(root),
-    ::view-transition-new(root) {
-      animation-duration: 0.24s;
-      animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
-    }
-
-    ::view-transition-old(site-nav),
-    ::view-transition-new(site-nav) {
-      animation: none;
-    }
-
-    @supports not (view-transition-name: none) {
-      body { animation: page-fade-in 0.26s ease-out both; }
-    }
-
-    @keyframes page-fade-in {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    /* 页内锚点平滑滚动 */
-    html {
-      scroll-behavior: smooth;
-    }
-
-    /* 跨页返回时用瞬时定位还原滚动位置，避免平滑滚动把整页"扫"一遍 */
-    html.is-restoring {
-      scroll-behavior: auto;
-    }
-
-    body {
-      min-height: 100vh;
-      background: var(--bg);
-      color: var(--text);
-      font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
-      line-height: 1.8;
-    }
-
-    /* ---------- 常驻顶部导航：与首页、公告页、Silverdaw 页同一套 ---------- */
-    .globalnav {
-      position: sticky;
-      top: 0;
-      z-index: 60;
-      height: var(--nav-h);
-      background: rgba(11, 11, 13, 0.72);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      backdrop-filter: saturate(180%) blur(20px);
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.25s, background 0.25s;
-    }
-
-    /* 一滚动就补一条细线，让导航和内容分层 */
-    .globalnav.is-stuck {
-      background: rgba(11, 11, 13, 0.86);
-      border-bottom-color: var(--line);
-    }
-
-    .nav-inner {
-      display: flex;
-      align-items: center;
-      gap: 30px;
-      width: min(1160px, 92%);
-      height: 100%;
-      margin-inline: auto;
-    }
-
-    .nav-brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      color: var(--text);
-      font-size: 0.95rem;
-      font-weight: 700;
-      text-decoration: none;
-      white-space: nowrap;
-      flex: 0 0 auto;
-    }
-
-    .nav-brand img {
-      width: 26px;
-      height: 26px;
-      object-fit: contain;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 2px;
-      margin-left: auto;
-    }
-
-    .nav-link {
-      padding: 7px 14px;
-      border-radius: 999px;
-      color: var(--text-mute);
-      font-size: 0.9rem;
-      text-decoration: none;
-      white-space: nowrap;
-      transition: color 0.2s, background 0.2s, transform 0.16s;
-    }
-
-    .nav-link:hover {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    /* 当前所在栏目 */
-    .nav-link.is-active {
-      color: var(--accent);
-      background: var(--gold-wash);
-    }
-
-    .nav-gh {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      margin-left: 6px;
-      border-radius: 50%;
-      color: var(--text-faint);
-      text-decoration: none;
-      transition: color 0.2s, background 0.2s, transform 0.16s;
-    }
-
-    .nav-gh:hover {
-      color: var(--accent);
-      background: var(--gold-wash);
-    }
-
-    @media (max-width: 640px) {
-      :root { --nav-h: 50px; }
-      /* 导航项在 390px 窄屏上原本正好卡满容器宽度，字体一宽就溢出；
-         这里留出余量，避免页面被撑出横向滚动 */
-      .nav-inner { gap: 8px; }
-      .nav-brand { font-size: 0.84rem; gap: 6px; }
-      .nav-brand img { width: 20px; height: 20px; }
-      .nav-link { padding: 6px 7px; font-size: 0.8rem; }
-      .nav-gh { width: 26px; height: 26px; margin-left: 0; }
-    }
-
-
-    /* 页内锚点落地时，给吸顶导航让出高度 */
-    [id] { scroll-margin-top: calc(var(--nav-h) + 16px); }
-
-    /* ---------- 返回入口：与公告页、Silverdaw 产品页同款胶囊 ---------- */
-    .page-back {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      margin-bottom: 22px;
-      padding: 5px 14px 5px 10px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      color: var(--text-mute);
-      font-size: 0.82rem;
-      text-decoration: none;
-      transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.16s;
-    }
-
-    .page-back:hover {
-      color: var(--accent);
-      border-color: var(--accent-line);
-      background: var(--gold-wash);
-    }
-
-    /* 尖角用文字画，与产品页保持一致 */
-    .page-back .chev-l {
-      font-size: 1.1em;
-      line-height: 1;
-      transform: translateY(-0.5px);
-    }
-
-    /* ---------- 点击反馈：与其它页同一套，按下缩 4%，松手回弹 ---------- */
-    .nav-link:active { transform: scale(0.96); }
-    .nav-gh:active { transform: scale(0.92); }
-    .page-back:active { transform: scale(0.96); }
-
-    /* 软件库比公告页宽：一排要放下 5 张方形卡片 */
-    .page {
-      width: min(1080px, 92%);
-      margin: 56px auto 72px;
-    }
-
-    /* ---------- 欢迎区 ---------- */
-    .hero {
-      text-align: center;
-      margin-bottom: 48px;
-    }
-
-    .hero h1 {
-      font-size: clamp(1.75rem, 4.5vw, 2.5rem);
-      letter-spacing: 1px;
-      margin-bottom: 16px;
-    }
-
-    .hero p {
-      color: var(--text-mute);
-      font-size: 0.98rem;
-      max-width: 620px;
-      margin: 0 auto;
-    }
-
-    /* ---------- 分组标题 ---------- */
-    .group-head {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      margin-bottom: 6px;
-    }
-
-    .group-head h2 {
-      font-size: 1.25rem;
-      letter-spacing: 0.5px;
-    }
-
-    .group-head .count {
-      font-size: 0.82rem;
-      color: var(--text-faint);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 1px 10px;
-      line-height: 1.7;
-      white-space: nowrap;
-    }
-
-    .group-hint {
-      color: var(--text-faint);
-      font-size: 0.88rem;
-      margin-bottom: 20px;
-    }
-
-    .group-hint a { color: var(--text-mute); text-decoration: none; border-bottom: 1px solid var(--line-strong); }
-    .group-hint a:hover { color: var(--accent); border-bottom-color: var(--accent-line); }
-
-    /* 下载方式那段的关键词：提亮一档、加重，别被当成可跳过的说明 */
-    .group-hint b { color: var(--text-dim); font-weight: 600; }
-
-    /* ---------- 访问提示：外网站点打不开时走邮箱 ---------- */
-    .tip {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin: 0 0 34px;
-      padding: 13px 16px;
-      border: 1px solid var(--line);
-      border-left: 2px solid var(--accent-line);
-      border-radius: 14px;
-      background: var(--gold-wash-soft);
-      color: var(--text-mute);
-      font-size: 0.87rem;
-      line-height: 1.75;
-    }
-
-    .tip-label {
-      flex: none;
-      color: var(--accent);
-      font-size: 0.76rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      /* 与正文首行对齐 */
-      line-height: 1.95;
-    }
-
-    .tip p {
-      margin: 0;
-      /* 末行不留孤字，Chromium 系生效，其余浏览器忽略 */
-      text-wrap: pretty;
-    }
-
-    /* 邮箱做成胶囊：整体不可拆行，换行时整枚移到下一行，不会出现半个邮箱 */
-    .tip-mail {
-      display: inline-block;
-      padding: 0 10px;
-      border: 1px solid var(--accent-line);
-      border-radius: 999px;
-      background: var(--gold-wash);
-      color: var(--accent);
-      font-size: 0.83rem;
-      line-height: 1.7;
-      text-decoration: none;
-      white-space: nowrap;
-      transition: border-color 0.22s, background 0.22s;
-    }
-
-    .tip-mail:hover {
-      border-color: var(--accent-line-strong);
-      background: var(--gold-wash-soft);
-    }
-
-    /* ---------- 页尾备注：与提示呼应，同时给页面一个收尾 ---------- */
-    .lib-foot {
-      margin-top: 36px;
-      padding-top: 18px;
-      border-top: 1px solid var(--line);
-      color: var(--text-faint);
-      font-size: 0.84rem;
-      line-height: 1.9;
-      text-align: center;
-    }
-
-    .lib-foot a {
-      color: var(--text-mute);
-      text-decoration: none;
-      border-bottom: 1px solid var(--line-strong);
-      overflow-wrap: break-word;
-    }
-
-    .lib-foot a:hover {
-      color: var(--accent);
-      border-bottom-color: var(--accent-line);
-    }
-
-    /* ---------- 分类筛选：胶囊，选中为金描边 ---------- */
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 22px;
-    }
-
-    .chip {
-      padding: 6px 15px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: transparent;
-      color: var(--text-mute);
-      font-family: inherit;
-      font-size: 0.85rem;
-      line-height: 1.7;
-      cursor: pointer;
-      transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.16s;
-    }
-
-    .chip:hover {
-      color: var(--text);
-      border-color: var(--line-strong);
-    }
-
-    .chip[aria-pressed="true"] {
-      color: var(--accent);
-      border-color: var(--accent-line);
-      background: var(--gold-wash);
-    }
-
-    .chip:active { transform: scale(0.96); }
-
-    .chip:focus-visible,
-    .app-btn:focus-visible {
-      outline: 2px solid var(--accent-line-strong);
-      outline-offset: 2px;
-    }
-
-    /* ---------- 应用方格：正方形卡片，5 列自适应 ---------- */
-    .lib-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(186px, 1fr));
-      gap: 14px;
-    }
-
-    .app {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      /* 方格：宽度由网格决定，高度跟随宽度。
-         底部多了一行「官网 / 下载」双按钮，比例调高一点才装得下 */
-      aspect-ratio: 1 / 1.1;
-      padding: 14px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      background: var(--card);
-      color: inherit;
-      text-decoration: none;
-      transition: transform 0.22s, border-color 0.22s, background 0.22s, box-shadow 0.22s;
-    }
-
-    .app:hover {
-      transform: translateY(-3px);
-      border-color: var(--accent-line);
-      background: var(--card-hover);
-      box-shadow: 0 16px 34px rgba(0, 0, 0, 0.4);
-    }
-
-    .app:active { transform: scale(0.985); }
-
-    /* 被筛选掉的条目直接不占位 */
-    .app[hidden] { display: none; }
-
-    /* 图标用各软件官方 logo（images/soft/<data-key>.png）；
-       圆角、底板、内边距在这一层统一处理。
-       底板走浅色：深色 logo（终端、Rufus）压深底看不清，
-       白底 logo（7-Zip、DDU）又要与卡片背景分得开 */
-    .app-icon {
-      flex: none;
-      display: block;
-      box-sizing: border-box;
-      width: 44px;
-      height: 44px;
-      padding: 4px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 13px;
-      background: #f4f5f7;
-      object-fit: contain;
-      transition: border-color 0.22s, background 0.22s;
-    }
-
-
-    .app:hover .app-icon {
-      border-color: var(--accent-line);
-      background: var(--gold-wash-soft);
-    }
-
-    .app-name {
-      font-size: 0.92rem;
-      font-weight: 700;
-      line-height: 1.4;
-      /* 长名字压成一行，卡片高度才稳定 */
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    /* 「网站作者也在用」小标签：绝对定位钉在右上角，不进文档流，
-       长名字（BCUninstaller）就不会被挤成省略号 */
-    .app-tag {
-      position: absolute;
-      top: 11px;
-      right: 11px;
-      padding: 1px 8px;
-      border: 1px solid var(--accent-line);
-      border-radius: 999px;
-      background: var(--gold-wash);
-      color: var(--accent);
-      font-size: 0.62rem;
-      font-weight: 600;
-      line-height: 1.65;
-      letter-spacing: 0.02em;
-      white-space: nowrap;
-      pointer-events: none;
-    }
-
-    .app-desc {
-      font-size: 0.79rem;
-      line-height: 1.55;
-      color: var(--text-mute);
-      /* 最多两行，超出的部分裁掉，正方形不会被文字撑破 */
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .app-foot {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      margin-top: auto;
-      font-size: 0.72rem;
-      color: var(--text-ghost);
-      line-height: 1.4;
-    }
-
-    .app-foot .sep { opacity: 0.6; }
-
-    /* 操作行：官网 / 下载安装包，两列等宽，贴在卡片底部 */
-    .app-acts {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-      margin-top: 2px;
-    }
-
-    .app-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-      padding: 6px 4px;
-      border: 1px solid var(--line-strong);
-      border-radius: 9px;
-      background: var(--bg-soft);
-      color: var(--text-dim);
-      font-size: 0.71rem;
-      font-weight: 600;
-      line-height: 1.25;
-      text-align: center;
-      text-decoration: none;
-      white-space: nowrap;
-      overflow: hidden;
-      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.16s;
-    }
-
-    .app-btn:hover {
-      border-color: var(--accent-line);
-      background: var(--gold-wash-soft);
-      color: var(--accent);
-    }
-
-    .app-btn:active { transform: scale(0.96); }
-
-    /* 下载是主操作：金底深字，和站内其他主按钮同一套 */
-    .app-btn-dl {
-      border-color: var(--accent-line);
-      background: var(--accent-grad);
-      color: var(--on-accent);
-    }
-
-    .app-btn-dl:hover {
-      border-color: var(--accent-line-strong);
-      background: var(--accent-grad-hover);
-      color: var(--on-accent);
-    }
-
-    /* 安装包还没上架：虚线弱化，点一下给“正在加急投放”的提示 */
-    .app-btn-dl.is-pending {
-      border-style: dashed;
-      border-color: var(--line-strong);
-      background: transparent;
-      color: var(--text-mute);
-    }
-
-    .app-btn-dl.is-pending:hover {
-      border-color: var(--warn-line);
-      background: var(--warn-wash);
-      color: var(--warn);
-    }
-
-    /* 外链提示：箭头跟在「官方网站」按钮后面，悬停轻推一下 */
-    .app-ext {
-      font-size: 0.74rem;
-      line-height: 1;
-      transition: transform 0.22s;
-    }
-
-    .app-btn:hover .app-ext { transform: translate(1px, -1px); }
-
-    /* ---------- 轻提示：点还没上架的「下载安装包」时浮出来 ----------
-       出现在视口底部，3 秒后自己淡出，不挡操作、不打断滚动 */
-    .dl-toast {
-      position: fixed;
-      left: 50%;
-      bottom: 26px;
-      z-index: 80;
-      max-width: min(560px, calc(100vw - 32px));
-      padding: 12px 18px;
-      border: 1px solid var(--warn-line);
-      border-radius: 14px;
-      background: rgba(23, 24, 28, 0.96);
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
-      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
-      color: var(--text);
-      font-size: 0.85rem;
-      line-height: 1.6;
-      text-align: center;
-      opacity: 0;
-      visibility: hidden;
-      transform: translate(-50%, 14px);
-      transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
-    }
-
-    .dl-toast.is-on {
-      opacity: 1;
-      visibility: visible;
-      transform: translate(-50%, 0);
-    }
-
-    /* ---------- 窄屏：两列，方格外边距收一点 ---------- */
-    @media (max-width: 640px) {
-      .page { margin: 36px auto 56px; }
-      .hero { margin-bottom: 36px; }
-      .lib-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
-      }
-      .app { padding: 12px; border-radius: 17px; gap: 5px; aspect-ratio: 1 / 1.14; }
-      .app-icon { width: 34px; height: 34px; padding: 3px; border-radius: 10px; }
-      .app-name { font-size: 0.86rem; }
-      .app-tag { top: 8px; right: 8px; padding: 0 6px; font-size: 0.58rem; }
-      .app-desc { font-size: 0.74rem; -webkit-line-clamp: 2; }
-      .app-foot { font-size: 0.64rem; }
-      .app-acts { gap: 5px; }
-      .app-btn { padding: 5px 3px; border-radius: 8px; font-size: 0.64rem; gap: 2px; }
-      .app-ext { font-size: 0.64rem; }
-      /* 提示块在窄屏改成上下两行，邮箱不挤在标签右边 */
-      .tip { flex-direction: column; gap: 4px; font-size: 0.82rem; padding: 12px 14px; margin-bottom: 26px; }
-      .tip-label { line-height: 1.6; }
-      .lib-foot { font-size: 0.79rem; margin-top: 28px; }
-    }
-
-    /* 系统开了「减少动态效果」：淡入与点亮动画全部关掉 */
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      body { animation: none; }
-
-      ::view-transition-old(root),
-      ::view-transition-new(root) {
-        animation: none;
-      }
-
-      .app,
-      .chip,
-      .nav-link:active,
-      .nav-gh:active,
-      .page-back:active { transform: none; transition: none; }
-    }
-  </style>
+  <meta name="description" content="24 个常用电脑工具的整理清单，按系统工具、影音与图像、网络与传输、文档与效率四类分开。每个条目都给官方网站与站内安装包两种取法。">
+  <meta name="theme-color" content="#08090a">
+  <meta property="og:title" content="软件库 - Arthur 工作室">
+  <meta property="og:description" content="24 个常用电脑工具，按用途分成四类，每个条目都给官方网站与站内安装包两种取法。">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="logo-mark.png">
+  <link rel="stylesheet" href="stage1.css">
+  <link rel="stylesheet" href="stage2.css">
+  <link rel="stylesheet" href="stage3.css">
 </head>
-<body>
-  <!-- ============ 常驻顶部导航：与首页、公告页同一套，「软件库」为当前栏目 ============ -->
+<body class="list-page softlib-page">
+
+<a class="skip-link" href="#main-content">跳到主要内容</a>
+
+  <!-- ============ 常驻顶部导航：与首页、详情页同一套，「软件库」为当前栏目 ============ -->
   <nav class="globalnav" id="globalnav" aria-label="主导航">
-    <div class="nav-inner">
-      <a class="nav-brand" href="index.html">
-        <img src="logo-mark.png" alt="" width="26" height="26">
-        Arthur 工作室
+    <div class="wrap">
+      <a class="nav-brand" href="index.html" aria-label="Arthur 工作室首页">
+        <img src="logo-mark.png" alt="" width="25" height="25">
+        <span class="nav-brand-name">
+          <strong>Arthur</strong>
+          <small>Studio · 开源汉化</small>
+        </span>
       </a>
 
       <div class="nav-links">
@@ -686,7 +34,7 @@
         <a class="nav-link is-active" href="softlib.html" aria-current="page">软件库</a>
         <a class="nav-link" href="notice.html">公告</a>
         <a class="nav-link" href="index.html#liuyan">留言板</a>
-        <a class="nav-link" href="account.html">我的</a>
+        <a class="nav-link nav-account" href="account.html">我的</a>
         <a class="nav-link" href="index.html#about">关于</a>
         <a class="nav-gh" href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub 首页">
           <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -694,32 +42,89 @@
           </svg>
         </a>
       </div>
+
+      <details class="nav-mobile">
+        <summary aria-label="打开导航菜单"><span></span><span></span></summary>
+        <nav class="nav-mobile-panel" aria-label="移动端导航">
+          <a href="index.html#hanhua">汉化 <span>01</span></a>
+          <a href="softlib.html" aria-current="page">软件库 <span>02</span></a>
+          <a href="notice.html">公告 <span>03</span></a>
+          <a href="index.html#liuyan">留言板 <span>04</span></a>
+          <a href="account.html">我的 <span>05</span></a>
+          <a href="index.html#about">关于 <span>06</span></a>
+          <a href="https://github.com" target="_blank" rel="noopener">GitHub <span>↗</span></a>
+        </nav>
+      </details>
     </div>
   </nav>
 
-  <div class="page">
+<main id="top">
 
-    <!-- 返回入口：软件库是独立页面，没有栏目内导航，单独给一个返回首页的落点 -->
-    <a class="page-back" href="index.html"><span class="chev-l" aria-hidden="true">‹</span> 返回首页</a>
+  <!-- ============ 页首：与详情页同一套主视觉，标题换成栏目名 ============ -->
+  <section class="product-hero list-hero" id="main-content">
+    <div class="wrap">
+      <div class="product-breadcrumb" aria-label="面包屑">
+        <a href="index.html">Arthur 工作室</a>
+        <span>/</span>
+        <span>软件库</span>
+      </div>
 
-    <!-- 欢迎区 -->
-    <header class="hero">
-      <h1>软件库</h1>
-      <p>常用工具按用途分类整理，列明许可协议与官方来源。</p>
-    </header>
+      <div class="product-hero-grid">
+        <div>
+          <p class="product-kicker">Soft library / 常用工具整理 · 24 个条目</p>
+          <h1 class="product-title">软件库<span class="cn">常用工具，按用途取齐</span></h1>
+          <p class="product-tagline">装系统、解压缩、剪片子、传文件、写文档，日常用得上的电脑工具按用途分成四类。每个条目给两种取法：自己核对后从官网取，或直接从站内取安装包。</p>
+          <div class="product-actions">
+            <a class="btn btn-primary" href="#lib">浏览全部条目</a>
+            <a class="btn btn-ghost" href="notice.html">查看站点公告</a>
+          </div>
+          <p class="product-meta">
+            <span>24 个条目</span>
+            <span>4 类用途</span>
+            <span>全部指向官方来源</span>
+          </p>
+        </div>
 
-    <!-- 访问提示：GitHub / 境外站点打不开时改走邮箱 -->
-    <aside class="tip" aria-label="访问提示">
-      <span class="tip-label">访问提示</span>
-      <p>部分条目托管在 GitHub 或境外站点，网络受限时可能打不开。遇到这种情况可发邮件索取：<a class="tip-mail" href="mailto:zjh041106@qq.com">zjh041106@qq.com</a></p>
-    </aside>
+        <div class="product-cover list-cover" aria-label="软件库索引结构">
+          <div class="cover-top">
+            <span class="cover-index">LB / 24</span>
+            <span class="cover-status">持续补充</span>
+          </div>
+          <div class="cover-visual" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <p class="cover-name">Soft Library</p>
+          <div class="cover-bottom">
+            <p>系统工具 · 影音与图像<br>网络与传输 · 文档与效率</p>
+            <span>INDEX / 24</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <section class="group">
-      <div class="group-head">
-        <h2>全部条目</h2>
+  <!-- ============ 访问提示：境外站点打不开时的兜底办法 ============ -->
+  <section class="tip-band" aria-label="访问提示">
+    <div class="wrap">
+      <aside class="tip">
+        <span class="tip-label">访问提示</span>
+        <p>部分条目托管在 GitHub 或境外站点，网络受限时可能打不开。遇到这种情况可以直接邮件索取，写明软件名即可：<a class="tip-mail" href="mailto:zjh041106@qq.com">zjh041106@qq.com</a></p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ 全部条目：筛选 + 方格 ============ -->
+  <section class="section" id="lib">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">All entries / 全部条目</p>
+          <h2>全部条目</h2>
+          <p>怕站内转存的安装包来路不明，点「官方网站」自己核对后下载最稳妥；官网打不开，或嫌注册、跳转、限速麻烦，就直接点「下载安装包」，文件与各项目官方发布一致。</p>
+        </div>
         <span class="count" id="lib-count">共 24 个条目</span>
       </div>
-      <p class="group-hint">每个条目给两种取法：怕站内转存的安装包来路不明，点<b>「官方网站」</b>自己核对后下载最稳妥；官网打不开，或嫌注册、跳转、限速麻烦，就直接点<b>「下载安装包」</b>，文件与各项目官方发布一致。</p>
 
       <!-- 分类筛选：点一下只留该类条目，再点「全部」恢复 -->
       <div class="chips" role="group" aria-label="按用途筛选">
@@ -1006,12 +411,84 @@
 
 
       </div>
-    </section>
 
     <!-- 页尾备注：缺软件、链接失效同样可以邮件说明 -->
     <p class="lib-foot">以上条目均指向各项目官方来源。缺少想找的软件，或发现链接失效，同样可以邮件告知：<a href="mailto:zjh041106@qq.com">zjh041106@qq.com</a>。</p>
 
-  </div>
+    </div>
+  </section>
+
+</main>
+
+  <!-- ============ 页脚：与首页、详情页同一套多列目录 ============ -->
+  <footer>
+    <div class="wrap">
+      <div class="footer-top">
+        <a class="footer-brand" href="index.html">
+          <img src="logo-mark.png" alt="" width="30" height="30">
+          <span class="footer-brand-name">
+            <strong>Arthur 工作室</strong>
+            <span>好软件，不该有语言门槛。</span>
+          </span>
+        </a>
+        <p class="footer-statement">专注于开源汉化与独立软件开发。所有项目均开源免费发布，下载入口与版本说明以项目页为准。</p>
+      </div>
+
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>汉化</h4>
+          <a href="silverdaw.html">Silverdaw 中文汉化</a>
+          <a href="prism.html">Prism 中文汉化</a>
+          <a href="chatbox.html">Chatbox 中文汉化（制作中）</a>
+          <a href="softlib.html">开源软件汉化索引</a>
+        </div>
+        <div class="footer-col">
+          <h4>软件库</h4>
+          <a href="softlib.html">常用工具整合</a>
+          <a href="softlib.html#lib">全部条目</a>
+        </div>
+        <div class="footer-col">
+          <h4>公告</h4>
+          <a href="notice.html">全部公告 · <span data-notice-count>10</span> 条</a>
+          <a href="notice.html#notice-prism">Prism 中文汉化</a>
+        </div>
+        <div class="footer-col">
+          <h4>关于</h4>
+          <a href="index.html#liuyan">留言板</a>
+          <a href="privacy.html">隐私说明</a>
+          <a href="index.html#about">工作室简介</a>
+          <a href="index.html#about">联系方式</a>
+          <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> Arthur 工作室 · 所有项目均开源免费发布</span>
+        <a href="#top">回到顶部 ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* 移动端导航 + 页脚年份：点链接或点空白处收起，Esc 也可以关闭 */
+    (function () {
+      var mobileNav = document.querySelector('.nav-mobile');
+      if (mobileNav) {
+        mobileNav.querySelectorAll('a').forEach(function (a) {
+          a.addEventListener('click', function () { mobileNav.open = false; });
+        });
+        document.addEventListener('click', function (e) {
+          if (mobileNav.open && !mobileNav.contains(e.target)) mobileNav.open = false;
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') mobileNav.open = false;
+        });
+      }
+
+      var yearEl = document.getElementById('year');
+      if (yearEl) yearEl.textContent = new Date().getFullYear();
+    })();
+  </script>
 
   <script>
     /* 导航滚动态：一滚动就补一条细线 */

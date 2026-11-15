@@ -758,6 +758,8 @@
     if (mfaEl) mfaEl.hidden = true;
     if (bodyEl) bodyEl.hidden = false;
     refresh();
+    // 通知公告管理 / 下载统计两个脚本：站长已通过验证，可以开始加载
+    document.dispatchEvent(new CustomEvent('admin:ready'));
   }
 
   /* ---------- 判权 ----------

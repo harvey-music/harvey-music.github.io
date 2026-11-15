@@ -1,0 +1,3 @@
+# 本地保留的原始版本备份（仅用于回滚对比，不部署到线上）
+*.stage0.html
+*.stage0.backup.html
