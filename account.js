@@ -97,6 +97,37 @@
   }
 
   /* ---------- 注册 ---------- */
+  /* 密码强度：监听密码输入，实时显示 弱(红)/一般(黄)/不错(绿) */
+  var pwInput = signupForm ? signupForm.elements.password : null;
+  var pwMeter = document.querySelector('[data-pw-meter]');
+  var pwBar = document.querySelector('[data-pw-bar]');
+  var pwText = document.querySelector('[data-pw-text]');
+
+  function pwStrength(pw) {
+    var types = 0;
+    if (/[a-z]/.test(pw)) types++;
+    if (/[A-Z]/.test(pw)) types++;
+    if (/\d/.test(pw)) types++;
+    if (/[^a-zA-Z0-9]/.test(pw)) types++;
+    if (pw.length < 8 || types <= 1) return 0;  // 弱
+    if (types >= 3) return 2;                    // 强
+    return 1;                                     // 中
+  }
+
+  if (pwInput && pwMeter && pwBar && pwText) {
+    pwInput.addEventListener('input', function () {
+      var pw = pwInput.value;
+      if (!pw) { pwMeter.hidden = true; return; }
+      pwMeter.hidden = false;
+      var level = pwStrength(pw);
+      var cls = level === 0 ? 'is-weak' : (level === 1 ? 'is-mid' : 'is-strong');
+      var txt = level === 0 ? '密码较弱' : (level === 1 ? '密码一般' : '密码不错');
+      pwBar.className = cls;
+      pwText.className = 'pw-meter-text ' + cls;
+      pwText.textContent = txt;
+    });
+  }
+
   if (signupForm) {
     signupForm.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -110,6 +141,11 @@
       }
       if (password.length < 8) {
         setMsg(guestMsg, '密码至少 8 位', 'error');
+        return;
+      }
+      var confirm = signupForm.elements.confirm.value;
+      if (password !== confirm) {
+        setMsg(guestMsg, '两次密码不一致，请重新输入', 'error');
         return;
       }
 

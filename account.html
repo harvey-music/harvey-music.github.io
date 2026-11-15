@@ -108,6 +108,15 @@
           <input type="password" name="password" required minlength="8"
                  autocomplete="new-password" placeholder="至少 8 位">
         </label>
+        <div class="pw-meter" data-pw-meter hidden>
+          <div class="pw-meter-bar"><span data-pw-bar></span></div>
+          <span class="pw-meter-text" data-pw-text></span>
+        </div>
+        <label class="field">
+          <span>确认密码</span>
+          <input type="password" name="confirm" required minlength="8"
+                 autocomplete="new-password" placeholder="再输入一遍密码">
+        </label>
         <button class="btn btn-primary" type="submit">注册并登录</button>
         <p class="form-hint">
           本站不发送任何邮件，注册后直接就能用。密码只用于这里，请不要复用其他网站的密码。

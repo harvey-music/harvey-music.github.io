@@ -428,6 +428,44 @@
   }
 }
 
+/* ---------- 密码强度条（账号页注册表单） ---------- */
+
+.pw-meter {
+  display: grid;
+  gap: 6px;
+}
+
+.pw-meter[hidden] {
+  display: none;
+}
+
+.pw-meter-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line-soft);
+  overflow: hidden;
+}
+
+.pw-meter-bar span {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 3px;
+  transition: width 0.2s var(--ease), background 0.2s var(--ease);
+}
+
+.pw-meter-bar span.is-weak   { width: 33%;  background: #e06c5a; }
+.pw-meter-bar span.is-mid    { width: 66%;  background: #e0b45a; }
+.pw-meter-bar span.is-strong { width: 100%; background: #6cb56c; }
+
+.pw-meter-text {
+  font-size: 0.72rem;
+}
+
+.pw-meter-text.is-weak   { color: #e06c5a; }
+.pw-meter-text.is-mid    { color: #e0b45a; }
+.pw-meter-text.is-strong { color: #6cb56c; }
+
   gap: 5px;
   margin-top: 8px;
 }

@@ -84,7 +84,12 @@
     'border:1px solid var(--accent-line,rgba(227,194,116,.45));color:var(--text,#eaeaec);',
     'font-size:.86rem;box-shadow:0 16px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;',
     'transition:opacity .2s,transform .2s}',
-    '.gg-toast.is-on{opacity:1;transform:translate(-50%,0)}'
+    '.gg-toast.is-on{opacity:1;transform:translate(-50%,0)}',
+    '#gg-loading{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:var(--bg,#08090a);transition:opacity .3s ease,visibility .3s ease}',
+    '#gg-loading.is-done{opacity:0;visibility:hidden}',
+    '#gg-loading span{color:var(--text-mute,#9a9da4);font-size:.86rem}',
+    '.gg-loading-spin{width:28px;height:28px;border:2px solid var(--line-strong,#3a3b42);border-top-color:var(--accent,#e3c274);border-radius:50%;animation:gg-spin .8s linear infinite}',
+    '@keyframes gg-spin{to{transform:rotate(360deg)}}'
   ].join('');
 
   function injectStyle() {
@@ -99,6 +104,30 @@
   var state = { loaded: false, user: null, profile: null };
   var loading = null;
   var pendingResolve = null;
+
+  /* 加载遮罩：通行证判断完成前挡住所有点击，防止在弹窗延迟里被掠过 */
+  var LOAD_ID = 'gg-loading';
+  var loadingEl = null;
+
+  function showLoading() {
+    if (document.getElementById(LOAD_ID)) return;
+    var el = document.createElement('div');
+    el.id = LOAD_ID;
+    el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = '<span class="gg-loading-spin"></span><span>正在加载…</span>';
+    document.body.appendChild(el);
+    loadingEl = el;
+  }
+
+  function hideLoading() {
+    if (!loadingEl) loadingEl = document.getElementById(LOAD_ID);
+    if (!loadingEl) return;
+    loadingEl.classList.add('is-done');
+    window.setTimeout(function () {
+      if (loadingEl && loadingEl.parentNode) loadingEl.parentNode.removeChild(loadingEl);
+      loadingEl = null;
+    }, 300);
+  }
 
   function loadStatus(force) {
     if (loading && !force) return loading;
@@ -224,6 +253,7 @@
 
     say('');
     root.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
     window.setTimeout(function () {
       if (refs.go) refs.go.focus();
     }, 60);
@@ -231,6 +261,7 @@
 
   function close(ok, how) {
     if (root) root.classList.remove('is-open');
+    document.body.style.overflow = '';
 
     // 进站弹窗点了「稍后再说」：本次会话别再烦他，开着标签页翻页也不弹
     if (mode === 'enter' && how === 'later') {
@@ -358,21 +389,23 @@
   function autoShow() {
     var dismissed = false;
     try { dismissed = sessionStorage.getItem(DISMISS_KEY) === '1'; } catch (err) { /* 无视 */ }
-    if (dismissed) return;
+    if (dismissed) { hideLoading(); return; }
 
     loadStatus().then(function () {
-      if (state.user) return;
+      if (state.user) { hideLoading(); return; }
       // 等页面骨架铺完再弹，别一进站就糊一层
       window.setTimeout(function () {
-        if (state.user) return;
+        if (state.user) { hideLoading(); return; }
         // 用户这 450ms 内已经点了下载（弹的是下载版），就别再盖一层
-        if (root && root.classList.contains('is-open')) return;
+        if (root && root.classList.contains('is-open')) { hideLoading(); return; }
         open('enter');
+        hideLoading();
       }, 450);
     });
   }
 
   function start() {
+    showLoading();
     autoShow();
     // 登录 / 登出 / 换号后把缓存作废，下一次判断用新身份
     core.onAuthChange(function () {
