@@ -111,7 +111,7 @@
     </div>
   </section>
 
-  <!-- ============ 全部公告：由 notices.js 按 JSON 渲染 ============ -->
+  <!-- ============ 全部公告：由 notices.js 从 Supabase 渲染（JSON 兜底） ============ -->
   <section class="section" id="all">
     <div class="wrap">
       <div class="section-head">
@@ -350,6 +350,8 @@
       });
     })();
   </script>
+  <script src="vendor/supabase.js" defer></script>
+  <script src="supabase-client.js" defer></script>
   <script src="notices.js" defer></script>
 </body>
 </html>
