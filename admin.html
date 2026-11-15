@@ -132,24 +132,40 @@
     <!-- ============ 审核区 ============ -->
     <div data-admin-body hidden>
 
-      <section class="adm-card">
-        <h2 class="adm-card-title">待审核</h2>
-        <ul class="gb-list" data-pending-list></ul>
-      </section>
+      <details class="adm-fold" open>
+        <summary class="adm-fold-summary">
+          <span>待审核</span>
+          <span class="adm-fold-count" data-pending-count>0</span>
+        </summary>
+        <div class="adm-fold-body">
+          <ul class="gb-list" data-pending-list></ul>
+        </div>
+      </details>
 
-      <section class="adm-card">
-        <h2 class="adm-card-title">最近的留言（含已发布 / 已拒绝 / 已删除）</h2>
-        <ul class="gb-list" data-all-list></ul>
-      </section>
+      <details class="adm-fold">
+        <summary class="adm-fold-summary">
+          <span>最近的留言</span>
+          <span class="adm-fold-count" data-all-count>0</span>
+        </summary>
+        <div class="adm-fold-body">
+          <p class="form-hint" style="margin-bottom:12px">含已发布 / 已拒绝 / 已删除的留言，按时间倒序。</p>
+          <ul class="gb-list" data-all-list></ul>
+        </div>
+      </details>
 
-      <section class="adm-card">
-        <h2 class="adm-card-title">用户</h2>
-        <p class="form-hint">
-          「信任此人」之后，他发的留言不再需要审核，直接公开；「封号」可以设 1 分钟到 30 天的时长，
-          期间不能发留言、不能用站内下载，到期自动恢复；想提前放人就点「立即解封」。
-        </p>
-        <div data-user-list style="margin-top:14px"></div>
-      </section>
+      <details class="adm-fold">
+        <summary class="adm-fold-summary">
+          <span>用户</span>
+          <span class="adm-fold-count" data-user-count>0</span>
+        </summary>
+        <div class="adm-fold-body">
+          <p class="form-hint">
+            「信任此人」之后，他发的留言不再需要审核，直接公开；「封号」可以设 1 分钟到 30 天的时长，
+            期间不能发留言、不能用站内下载，到期自动恢复；想提前放人就点「立即解封」。
+          </p>
+          <div data-user-list style="margin-top:14px"></div>
+        </div>
+      </details>
 
       <!-- ============ 下载统计（站长专属） ============ -->
       <section class="adm-card" id="stats">

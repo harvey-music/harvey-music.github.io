@@ -235,6 +235,14 @@
     return li;
   }
 
+  // 折叠面板标题上的数量徽标
+  function setCount(sel, n) {
+    var el = document.querySelector(sel);
+    if (!el) return;
+    el.textContent = String(n);
+    el.classList.toggle('has-items', n > 0);
+  }
+
   function fillList(node, rows, emptyText) {
     if (!node) return;
     node.innerHTML = '';
@@ -279,6 +287,8 @@
 
       fillList(pendingList, pending, '没有待审留言。');
       fillList(allList, rows, '还没有留言。');
+      setCount('[data-pending-count]', pending.length);
+      setCount('[data-all-count]', rows.length);
     });
   }
 
@@ -294,6 +304,7 @@
           return;
         }
         fillList(pendingList, res.data || [], '没有待审留言。');
+        setCount('[data-pending-count]', (res.data || []).length);
       });
 
     sb.from('messages')
@@ -306,6 +317,7 @@
           return;
         }
         fillList(allList, res.data || [], '还没有留言。');
+        setCount('[data-all-count]', (res.data || []).length);
       });
   }
 
@@ -348,6 +360,7 @@
 
   function renderUsers(rows) {
     userList.innerHTML = '';
+    setCount('[data-user-count]', rows.length);
 
     if (!rows.length) {
       userList.appendChild(el('p', 'gb-empty', '还没有用户。'));

@@ -61,6 +61,96 @@
   letter-spacing: -0.01em;
 }
 
+/* ---------- 折叠面板（待审核 / 最近的留言 / 用户） ---------- */
+
+.adm-fold {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.adm-fold + .adm-fold {
+  margin-top: 12px;
+}
+
+.adm-fold > summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.adm-fold > summary::-webkit-details-marker {
+  display: none;
+}
+
+.adm-fold-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 18px;
+  font-weight: 700;
+  font-size: 0.98rem;
+  letter-spacing: -0.01em;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+}
+
+.adm-fold-summary:hover {
+  background: var(--surface-2);
+}
+
+.adm-fold-summary > span:first-child {
+  flex: 1;
+}
+
+/* 展开指示箭头：收起朝下、展开朝上 */
+.adm-fold-summary::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex: none;
+  margin-left: 2px;
+  border-right: 1.5px solid var(--gold);
+  border-bottom: 1.5px solid var(--gold);
+  transform: rotate(45deg);
+  transition: transform 0.22s var(--ease);
+}
+
+.adm-fold[open] > .adm-fold-summary::before {
+  transform: rotate(-135deg);
+}
+
+/* 数量徽标 */
+.adm-fold-count {
+  flex: none;
+  min-width: 26px;
+  padding: 1px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--faint);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.adm-fold-count.has-items {
+  border-color: var(--gold-line);
+  background: var(--gold-wash);
+  color: var(--gold-bright);
+}
+
+/* 内容区 */
+.adm-fold-body {
+  padding: 16px 18px 18px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.adm-fold-body > :first-child {
+  margin-top: 0;
+}
+
 /* ---------- Button size/danger overrides (on top of stage1 .btn) ---------- */
 
 .btn--sm {

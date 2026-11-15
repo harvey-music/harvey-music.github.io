@@ -477,21 +477,55 @@
 /* ---------- 公告条目 ---------- */
 
 .notice-list {
+  position: relative;
   display: grid;
-  gap: 14px;
+  gap: 18px;
+  padding-left: 40px;
+}
+
+/* 左侧时间轴竖线 */
+.notice-list::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: linear-gradient(180deg, var(--gold-line-strong), var(--line-soft) 36%, var(--line-soft));
 }
 
 .notice {
-  padding: clamp(22px, 3vw, 30px);
+  position: relative;
+  padding: clamp(24px, 3vw, 32px) clamp(22px, 3vw, 30px);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
-  background: var(--surface);
-  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(201, 168, 106, 0.05), transparent 40%),
+    var(--surface);
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease),
+    transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+/* 时间轴节点 */
+.notice::before {
+  content: "";
+  position: absolute;
+  left: -36px;
+  top: 34px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 0 4px rgba(201, 168, 106, 0.14);
 }
 
 .notice:hover {
-  border-color: var(--line-strong);
-  background: var(--surface-2);
+  border-color: var(--gold-line);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(201, 168, 106, 0.08), transparent 42%),
+    var(--surface-2);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
 }
 
 /* 置顶条目：金色描边 + 顶部一层极淡的金雾，不抢正文 */
@@ -500,6 +534,12 @@
   background:
     linear-gradient(180deg, var(--gold-wash-soft), transparent 44%),
     var(--surface);
+}
+
+/* 置顶节点更亮、带光晕 */
+.notice--pin::before {
+  background: var(--gold-bright);
+  box-shadow: 0 0 0 5px rgba(224, 194, 141, 0.16), 0 0 18px rgba(224, 194, 141, 0.55);
 }
 
 .notice-head {
@@ -609,6 +649,22 @@
 
   .notice {
     padding: 20px 18px;
+  }
+
+  .notice-list {
+    padding-left: 30px;
+    gap: 14px;
+  }
+
+  .notice-list::before {
+    left: 6px;
+  }
+
+  .notice::before {
+    left: -27px;
+    top: 26px;
+    width: 8px;
+    height: 8px;
   }
 }
 
