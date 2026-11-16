@@ -273,6 +273,9 @@
 
 .adm-bar-labels {
   display: flex;
+  gap: 5px;
+  margin-top: 8px;
+}
 
 /* ---------- Notice manager ---------- */
 
@@ -465,10 +468,6 @@
 .pw-meter-text.is-weak   { color: #e06c5a; }
 .pw-meter-text.is-mid    { color: #e0b45a; }
 .pw-meter-text.is-strong { color: #6cb56c; }
-
-  gap: 5px;
-  margin-top: 8px;
-}
 
 .adm-bar-labels span {
   flex: 1;

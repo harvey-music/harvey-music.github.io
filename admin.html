@@ -6,12 +6,13 @@
   <title>Arthur 工作室 - 站长后台</title>
   <!-- 后台不该被搜索引擎收录 -->
   <meta name="robots" content="noindex, nofollow">
-  <meta name="theme-color" content="#0b0b0d">
+  <meta name="theme-color" content="#08090a">
   <link rel="icon" href="logo-mark.png">
   <link rel="stylesheet" href="subpage.css">
   <link rel="stylesheet" href="stage1.css">
   <link rel="stylesheet" href="guestbook.css">
   <link rel="stylesheet" href="stage4.css">
+  <link rel="stylesheet" href="stage5.css">
 </head>
 
 <body>
@@ -35,7 +36,7 @@
         <a class="nav-link" href="index.html#liuyan">留言板</a>
         <a class="nav-link nav-account" href="account.html">我的</a>
         <a class="nav-link is-active" href="admin.html" aria-current="page">后台</a>
-        <a class="nav-gh" href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub 首页">
+        <a class="nav-gh" href="https://github.com/harvey-music/harvey-music.github.io" target="_blank" rel="noopener" aria-label="GitHub 首页">
           <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
           </svg>
@@ -51,7 +52,7 @@
           <a href="index.html#liuyan">留言板 <span>04</span></a>
           <a href="account.html">我的 <span>05</span></a>
           <a href="admin.html">后台 <span>06</span></a>
-          <a href="https://github.com" target="_blank" rel="noopener">GitHub <span>↗</span></a>
+          <a href="https://github.com/harvey-music/harvey-music.github.io" target="_blank" rel="noopener">GitHub <span>↗</span></a>
         </nav>
       </details>
     </div>
@@ -129,10 +130,81 @@
       </p>
     </section>
 
-    <!-- ============ 审核区 ============ -->
+    <!-- ============ 后台正文：外壳 + 模块 ============ -->
     <div data-admin-body hidden>
+      <div class="adm2-shell">
+        <aside class="adm2-side" aria-label="后台模块导航">
+          <div class="adm2-side-head">
+            <span class="adm2-side-brand">Arthur</span>
+            <span class="adm2-side-sub">Admin Console</span>
+          </div>
+          <nav class="adm2-nav" data-as-nav>
+            <button class="adm2-nav-item is-active" type="button" data-as-tab="dashboard" aria-current="page"><svg class="adm2-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>总览</span></button>
+            <button class="adm2-nav-item" type="button" data-as-tab="messages"><svg class="adm2-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>留言管理</span></button>
+            <button class="adm2-nav-item" type="button" data-as-tab="users"><svg class="adm2-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>用户管理</span></button>
+            <button class="adm2-nav-item" type="button" data-as-tab="notices"><svg class="adm2-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>公告管理</span></button>
+            <button class="adm2-nav-item" type="button" data-as-tab="stats"><svg class="adm2-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>下载统计</span></button>
+            <button class="adm2-nav-item" type="button" data-as-tab="software" data-as-demo><svg class="adm2-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg><span>软件管理</span><em>演示</em></button>
+            <button class="adm2-nav-item" type="button" data-as-tab="hanhua" data-as-demo><svg class="adm2-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span>汉化项目</span><em>演示</em></button>
+            <button class="adm2-nav-item" type="button" data-as-tab="health" data-as-demo><svg class="adm2-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>系统健康</span><em>预览</em></button>
+            <button class="adm2-nav-item" type="button" data-as-tab="settings" data-as-demo><svg class="adm2-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg><span>系统设置</span><em>演示</em></button>
+          </nav>
+          <div class="adm2-side-foot"><a href="index.html">返回前台 ↗</a></div>
+        </aside>
 
-      <details class="adm-fold" open>
+        <div class="adm2-main">
+          <div class="adm2-topbar">
+            <button class="adm2-drawer" type="button" data-as-drawer aria-label="打开模块导航"><span></span><span></span></button>
+            <span class="adm2-topbar-title" data-as-topbar-title>总览</span>
+          </div>
+
+          <section class="adm-module" data-as-panel="dashboard">
+            <div class="adm2-page-head">
+              <h2 class="adm2-page-title">总览</h2>
+              <p class="adm2-page-desc">全站关键数据一览。下方四个指标在对应模块加载完成后自动填入，未加载时不显示为 0。</p>
+            </div>
+            <div class="adm2-kpi-grid">
+              <div class="adm2-kpi is-loading" data-as-kpi data-as-watch="[data-pending-list]" data-as-src="[data-pending-count]">
+                <span class="adm2-kpi-label">待审留言</span>
+                <b class="adm2-kpi-value" data-as-value>—</b>
+                <span class="adm2-kpi-note">等待站长放行</span>
+              </div>
+              <div class="adm2-kpi is-loading" data-as-kpi data-as-watch="[data-user-list]" data-as-src="[data-user-count]">
+                <span class="adm2-kpi-label">用户总数</span>
+                <b class="adm2-kpi-value" data-as-value>—</b>
+                <span class="adm2-kpi-note">注册 + 游客</span>
+              </div>
+              <div class="adm2-kpi is-loading" data-as-kpi data-as-watch="[data-all-list]" data-as-src="[data-all-count]">
+                <span class="adm2-kpi-label">留言总数</span>
+                <b class="adm2-kpi-value" data-as-value>—</b>
+                <span class="adm2-kpi-note">含已发布 / 已删</span>
+              </div>
+              <div class="adm2-kpi is-loading" data-as-kpi data-as-watch="[data-stats]" data-as-src="[data-stats] .adm-stat:first-child b">
+                <span class="adm2-kpi-label">总下载</span>
+                <b class="adm2-kpi-value" data-as-value>—</b>
+                <span class="adm2-kpi-note">安装包 / 便携版 / 补丁</span>
+              </div>
+            </div>
+            <div class="adm2-notice is-demo">
+              <strong>演示占位说明</strong>：软件管理、汉化项目、系统健康、系统设置四个模块当前为界面框架，未接入真实数据，也不会写入任何内容。
+            </div>
+            <div class="adm2-quick">
+              <h3 class="adm2-card-title">快捷入口</h3>
+              <div class="adm2-quick-grid">
+                <button class="adm2-quick-item" type="button" data-as-jump="messages">待审核留言</button>
+                <button class="adm2-quick-item" type="button" data-as-jump="notices">发布公告</button>
+                <button class="adm2-quick-item" type="button" data-as-jump="stats">下载统计</button>
+                <button class="adm2-quick-item" type="button" data-as-jump="health">系统健康</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="adm-module" data-as-panel="messages" hidden>
+            <div class="adm2-page-head">
+              <h2 class="adm2-page-title">留言管理</h2>
+              <p class="adm2-page-desc">审核待发布的留言，并查看全部留言记录。</p>
+            </div>
+            <details class="adm-fold" open>
         <summary class="adm-fold-summary">
           <span>待审核</span>
           <span class="adm-fold-count" data-pending-count>0</span>
@@ -152,10 +224,16 @@
           <ul class="gb-list" data-all-list></ul>
         </div>
       </details>
+          </section>
 
-      <details class="adm-fold">
-        <summary class="adm-fold-summary">
-          <span>用户</span>
+          <section class="adm-module" data-as-panel="users" hidden>
+            <div class="adm2-page-head">
+              <h2 class="adm2-page-title">用户管理</h2>
+              <p class="adm2-page-desc">信任等级、封禁与游客清理。</p>
+            </div>
+            <details class="adm-fold" open>
+              <summary class="adm-fold-summary">
+                <span>用户</span>
           <span class="adm-fold-count" data-user-count>0</span>
         </summary>
         <div class="adm-fold-body">
@@ -179,19 +257,23 @@
         <p class="form-msg" data-cleanup-msg role="status"></p>
         <div data-cleanup-result></div>
       </section>
+          </section>
 
-      <!-- ============ 下载统计（站长专属） ============ -->
-      <section class="adm-card" id="stats">
-        <h2 class="adm-card-title">下载统计</h2>
+          <section class="adm-module" data-as-panel="stats" hidden>
+            <!-- ============ 下载统计（站长专属） ============ -->
+            <section class="adm-card" id="stats">
+              <h2 class="adm-card-title">下载统计</h2>
         <p class="adm-note">只统计「下载安装包 / 便携版 / 补丁」按钮真正点下后的次数，点击「官方网站」跳转不计入。数据只能站长在这里看，客户端角色读不到、也改不了。</p>
         <div data-stats>
           <p class="form-hint">加载中…</p>
         </div>
       </section>
+          </section>
 
-      <!-- ============ 公告管理（站长专属） ============ -->
-      <section class="adm-card" id="notices-admin">
-        <h2 class="adm-card-title">公告管理</h2>
+          <section class="adm-module" data-as-panel="notices" hidden>
+            <!-- ============ 公告管理（站长专属） ============ -->
+            <section class="adm-card" id="notices-admin">
+              <h2 class="adm-card-title">公告管理</h2>
         <p class="adm-note">发布 / 下架 / 置顶 / 删除都在这里操作，仅站长可执行（数据库会再次校验）。正文与前端 <code>data/notices.json</code> 的条目结构一致，可用 <code>&lt;a&gt;</code>、<code>&lt;b&gt;</code>、<code>&lt;code&gt;</code>、<code>&lt;br&gt;</code> 标签。</p>
 
         <form class="adm-form" data-notice-form>
@@ -229,6 +311,64 @@
 
         <div data-notice-list></div>
       </section>
+          </section>
+
+          <section class="adm-module" data-as-panel="software" hidden>
+            <div class="adm2-page-head">
+              <h2 class="adm2-page-title">软件管理</h2>
+              <p class="adm2-page-desc">软件库条目管理。</p>
+            </div>
+            <div class="adm2-notice is-demo">
+              <strong>演示模式 · 暂未接入</strong>：当前软件库由 <code>softlib.html</code>（静态）与 <code>data/downloads.json</code>（直链）维护，后台增删改尚未接入，本页仅为只读界面框架，不会保存任何修改。
+            </div>
+            <div class="adm-card">
+              <h3 class="adm-card-title">只读预览（演示数据）</h3>
+              <div data-as-software></div>
+            </div>
+          </section>
+
+          <section class="adm-module" data-as-panel="hanhua" hidden>
+            <div class="adm2-page-head">
+              <h2 class="adm2-page-title">汉化项目</h2>
+              <p class="adm2-page-desc">汉化项目的进度与版本管理。</p>
+            </div>
+            <div class="adm2-notice is-demo">
+              <strong>演示模式 · 暂未接入</strong>：项目信息当前硬编码于各产品页，后台管理尚未接入，本页仅为界面框架。
+            </div>
+            <div data-as-hanhua></div>
+          </section>
+
+          <section class="adm-module" data-as-panel="health" hidden>
+            <div class="adm2-page-head">
+              <h2 class="adm2-page-title">系统健康</h2>
+              <p class="adm2-page-desc">站点服务与资源状态。</p>
+            </div>
+            <div class="adm2-notice is-demo">
+              <strong>界面预览 · 未接入真实监测</strong>：以下卡片为界面占位，不反映真实服务状态，也不包含任何真实统计数据。
+            </div>
+            <div data-as-health></div>
+          </section>
+
+          <section class="adm-module" data-as-panel="settings" hidden>
+            <div class="adm2-page-head">
+              <h2 class="adm2-page-title">系统设置</h2>
+              <p class="adm2-page-desc">站点信息、安全与危险操作。</p>
+            </div>
+            <div class="adm2-notice is-demo">
+              <strong>演示模式 · 暂未接入</strong>：以下设置项仅演示交互，点击不会保存、不会影响生产配置。
+            </div>
+            <div data-as-settings></div>
+            <section class="adm-card" style="margin-top:16px">
+              <h3 class="adm-card-title">敏感词 / 角色（仍走 SQL）</h3>
+              <p class="form-hint">
+                敏感词、角色变更这类低频操作为了稳妥仍走 SQL：
+                往 <code>public.banned_words</code> 插一行即可（severity 用 block 直接拒发，flag 只降级为待审）。
+                全部操作都会记进 <code>public.moderation_log</code>。
+              </p>
+            </section>
+          </section>
+        </div>
+      </div>
 
       <!-- ============ 封号弹窗（定时封禁） ============
            时长写进 profiles.banned_until，判断用 banned_until > now()，
@@ -294,12 +434,6 @@
       </dialog>
 
       <p class="form-msg" data-admin-msg role="status"></p>
-
-      <p class="form-hint" style="margin-top:18px">
-        敏感词、角色变更这类低频操作为了稳妥仍走 SQL：
-        往 <code>public.banned_words</code> 插一行即可（severity 用 block 直接拒发，flag 只降级为待审）。
-        全部操作都会记进 <code>public.moderation_log</code>。
-      </p>
     </div>
 
       </div>
@@ -366,5 +500,10 @@
   <script src="admin-notices.js" defer></script>
   <script src="admin-stats.js" defer></script>
   <script src="admin-cleanup.js" defer></script>
+  <script src="admin-shell.js" defer></script>
+  <script src="admin-software.js" defer></script>
+  <script src="admin-hanhua.js" defer></script>
+  <script src="admin-health.js" defer></script>
+  <script src="admin-settings.js" defer></script>
 </body>
 </html>

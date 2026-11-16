@@ -12,7 +12,7 @@
   padding: 18px 20px;
   border: 1px solid var(--line);
   border-radius: 18px;
-  background: linear-gradient(160deg, #17181c 0%, #101116 100%);
+  background: linear-gradient(160deg, var(--card) 0%, var(--bg-soft) 100%);
 }
 
 .gb-tip { color: var(--text-mute); font-size: 0.9rem; }
@@ -88,7 +88,7 @@
 /* 自己的留言（含待审）单独描金边，一眼能认出来 */
 .gb-item.is-own {
   border-color: var(--accent-line);
-  background: linear-gradient(160deg, #1b1a15 0%, #14151a 100%);
+  background: linear-gradient(160deg, var(--card-sel) 0%, var(--card) 100%);
 }
 
 /* 头像占位：首字 + 昵称哈希出来的色相，不存图、不占带宽 */
