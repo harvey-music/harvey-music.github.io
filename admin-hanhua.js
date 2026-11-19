@@ -19,7 +19,7 @@
   var projects = [
     { name: 'Silverdaw 中文汉化', status: '已发布', ver: '完整版 1.9.0', pct: 100, note: '完整中文本地化，菜单 · 面板 · 提示 · 报错。' },
     { name: 'Prism 中文汉化', status: '已发布', ver: '0.4.0-beta', pct: 100, note: '八种仪表，安装包与便携版两种形式。' },
-    { name: 'Chatbox 中文汉化', status: '制作中', ver: '尚未发布', pct: 68, note: '界面文本约完成 68%，暂不提供安装包。' }
+    { name: 'Chatbox 中文汉化', status: '已发布', ver: '2.0.0', pct: 100, note: '完整中文本地化，安装包可在项目页下载。' }
   ];
 
   var grid = el('div', 'adm2-demo-grid');
