@@ -254,6 +254,13 @@
   pointer-events: none;
 }
 
+/* 「工作室自研」标签：金色实心，区别于「网站作者也在用」的描边样式 */
+.app-tag.is-self {
+  border-color: transparent;
+  background: var(--accent-grad);
+  color: var(--on-accent);
+}
+
 .app-desc {
   display: -webkit-box;
   -webkit-line-clamp: 3;

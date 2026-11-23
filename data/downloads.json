@@ -1,7 +1,8 @@
 {
   "_hint": "软件库「下载安装包」按钮的直链。填了 url 的条目，按钮变实心、点了直接下；url 留空的仍是虚线，点了只提示「正在加急投放中」。以后往站内续传安装包，只改这里的 url / file / size / ver 即可，不用动 HTML。",
-  "updated": "2026-11-14",
+  "updated": "2026-11-23",
   "items": {
+    "transfer": { "name": "Transfer", "ver": "", "file": "TransferSetup.exe", "size": "", "url": "https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/TransferSetup.exe" },
     "7z": { "name": "7-Zip", "ver": "26.06", "file": "01_7-Zip_26.06_x64.exe", "size": "1.6 MB", "url": "https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/%E8%BD%AF%E4%BB%B6exe/01_7-Zip_26.06_x64.exe" },
     "powertoys": { "name": "PowerToys", "ver": "0.102.3101", "file": "02_PowerToys_0.102.3101_x64.exe", "size": "309 MB", "url": "https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/%E8%BD%AF%E4%BB%B6exe/02_PowerToys_0.102.3101_x64.exe" },
     "rufus": { "name": "Rufus", "ver": "4.15", "file": "03_Rufus_4.15.exe", "size": "1.9 MB", "url": "https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/%E8%BD%AF%E4%BB%B6exe/03_Rufus_4.15.exe" },

@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arthur 工作室 - 软件库</title>
-  <meta name="description" content="24 个常用电脑工具的整理清单，按系统工具、影音与图像、网络与传输、文档与效率四类分开。每个条目都给官方网站与站内安装包两种取法。">
+  <meta name="description" content="25 个常用电脑工具的整理清单，按系统工具、影音与图像、网络与传输、文档与效率四类分开。每个条目都给官方网站与站内安装包两种取法。">
   <meta name="theme-color" content="#08090a">
   <meta property="og:title" content="软件库 - Arthur 工作室">
-  <meta property="og:description" content="24 个常用电脑工具，按用途分成四类，每个条目都给官方网站与站内安装包两种取法。">
+  <meta property="og:description" content="25 个常用电脑工具，按用途分成四类，每个条目都给官方网站与站内安装包两种取法。">
   <meta property="og:type" content="website">
   <link rel="icon" href="logo-mark.png">
   <link rel="stylesheet" href="stage1.css">
@@ -71,7 +71,7 @@
 
       <div class="product-hero-grid">
         <div>
-          <p class="product-kicker">Soft library / 常用工具整理 · 24 个条目</p>
+          <p class="product-kicker">Soft library / 常用工具整理 · 25 个条目</p>
           <h1 class="product-title">软件库<span class="cn">常用工具，按用途取齐</span></h1>
           <p class="product-tagline">装系统、解压缩、剪片子、传文件、写文档，日常用得上的电脑工具按用途分成四类。每个条目给两种取法：自己核对后从官网取，或直接从站内取安装包。</p>
           <div class="product-actions">
@@ -79,7 +79,7 @@
             <a class="btn btn-ghost" href="notice.html">查看站点公告</a>
           </div>
           <p class="product-meta">
-            <span>24 个条目</span>
+            <span>25 个条目</span>
             <span>4 类用途</span>
             <span>全部指向官方来源</span>
           </p>
@@ -87,7 +87,7 @@
 
         <div class="product-cover list-cover" aria-label="软件库索引结构">
           <div class="cover-top">
-            <span class="cover-index">LB / 24</span>
+            <span class="cover-index">LB / 25</span>
             <span class="cover-status">持续补充</span>
           </div>
           <div class="cover-visual" aria-hidden="true">
@@ -97,7 +97,7 @@
           <p class="cover-name">Soft Library</p>
           <div class="cover-bottom">
             <p>系统工具 · 影音与图像<br>网络与传输 · 文档与效率</p>
-            <span>INDEX / 24</span>
+            <span>INDEX / 25</span>
           </div>
         </div>
       </div>
@@ -123,20 +123,31 @@
           <h2>全部条目</h2>
           <p>怕站内转存的安装包来路不明，点「官方网站」自己核对后下载最稳妥；官网打不开，或嫌注册、跳转、限速麻烦，就直接点「下载安装包」，文件与各项目官方发布一致。</p>
         </div>
-        <span class="count" id="lib-count">共 24 个条目</span>
+        <span class="count" id="lib-count">共 25 个条目</span>
       </div>
 
       <!-- 分类筛选：点一下只留该类条目，再点「全部」恢复 -->
       <div class="chips" role="group" aria-label="按用途筛选">
-        <button class="chip" type="button" data-cat="all" aria-pressed="true">全部 24</button>
+        <button class="chip" type="button" data-cat="all" aria-pressed="true">全部 25</button>
         <button class="chip" type="button" data-cat="系统工具" aria-pressed="false">系统工具 10</button>
         <button class="chip" type="button" data-cat="影音与图像" aria-pressed="false">影音与图像 5</button>
-        <button class="chip" type="button" data-cat="网络与传输" aria-pressed="false">网络与传输 5</button>
+        <button class="chip" type="button" data-cat="网络与传输" aria-pressed="false">网络与传输 6</button>
         <button class="chip" type="button" data-cat="文档与效率" aria-pressed="false">文档与效率 4</button>
       </div>
 
       <!-- 应用方格：正方形卡片。加条目照抄一节，data-cat 与筛选按钮的 data-cat 保持一致 -->
       <div class="lib-grid" id="lib-grid">
+        <div class="app" data-cat="网络与传输" data-key="transfer">
+          <img class="app-icon" src="images/soft/transfer.png" alt="" width="44" height="44" loading="lazy" decoding="async">
+          <span class="app-name">Transfer</span>
+          <span class="app-tag is-self">工作室自研</span>
+          <span class="app-desc">Arthur 工作室打造的局域网文件传输软件，同一局域网内设备间直连传输，无需经过网盘或社交软件，更快更私密。</span>
+          <span class="app-foot">网络与传输 · 工作室自研</span>
+          <span class="app-acts">
+            <a class="app-btn app-btn-dl is-pending" href="https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/TransferSetup.exe" data-dl="transfer">下载安装包<span aria-hidden="true">↓</span></a>
+          </span>
+        </div>
+
         <div class="app" data-cat="系统工具" data-key="7z">
           <img class="app-icon" src="images/soft/7z.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">7-Zip</span>
@@ -666,7 +677,7 @@
     /* ---------- 下载闸门文案 ----------
        框的结构、尺寸、倒计时与两个汉化软件页完全一样（同一份 download-gate.js），
        只把内置那套「汉化版 / 便携版」的说法换成软件库的实情：
-       这里收录的 24 个安装包全部是 Windows 版。 */
+       这里收录的 25 个安装包全部是 Windows 版。 */
     window.DOWNLOAD_GATE_COPY = {
       intro: '请先核对当前系统能否运行本软件，确认后再开始下载。软件库里收录的全部是 Windows 版。',
       can: [
