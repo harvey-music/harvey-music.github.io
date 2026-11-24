@@ -380,10 +380,11 @@
 
 .app-dl-list {
   display: grid;
-  gap: 8px;
-  margin-top: auto;
-  padding-top: 12px;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px;
+  padding-top: 14px;
   border-top: 1px solid var(--line-soft);
+  flex-grow: 1;
 }
 
 .app-dl-row {
@@ -391,7 +392,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 10px 12px;
+  padding: 14px 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   background: var(--surface-2);
