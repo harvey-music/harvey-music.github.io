@@ -137,15 +137,28 @@
 
       <!-- 应用方格：正方形卡片。加条目照抄一节，data-cat 与筛选按钮的 data-cat 保持一致 -->
       <div class="lib-grid" id="lib-grid">
-        <div class="app" data-cat="网络与传输" data-key="transfer">
+        <div class="app app--spotlight" data-cat="网络与传输" data-key="transfer">
           <img class="app-icon" src="images/soft/transfer.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span class="app-name">Transfer</span>
           <span class="app-tag is-self">工作室自研</span>
           <span class="app-desc">Arthur 工作室打造的局域网文件传输软件，同一局域网内设备间直连传输，无需经过网盘或社交软件，更快更私密。</span>
           <span class="app-foot">网络与传输 · 工作室自研</span>
-          <span class="app-acts">
-            <a class="app-btn app-btn-dl is-pending" href="https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/TransferSetup.exe" data-dl="transfer">下载安装包<span aria-hidden="true">↓</span></a>
-          </span>
+          <div class="app-dl-list">
+            <div class="app-dl-row">
+              <div class="app-dl-info">
+                <strong>V1.2.1 · 最新版</strong>
+                <span>当前推荐版本，局域网内设备间直连传输。</span>
+              </div>
+              <a class="app-btn app-btn-dl is-pending" href="https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/TransferSetup_V1.2.1.exe" data-dl="transfer">前往下载<span aria-hidden="true">↓</span></a>
+            </div>
+            <div class="app-dl-row">
+              <div class="app-dl-info">
+                <strong>V0.1.0 · 早期版本</strong>
+                <span>保留的早期版本，需要时取用。</span>
+              </div>
+              <a class="app-btn app-btn-dl is-pending" href="https://arthur-soft-1527701355.cos.ap-beijing.myqcloud.com/TransferSetup_V0.1.0.exe" data-dl="transfer-legacy">前往下载<span aria-hidden="true">↓</span></a>
+            </div>
+          </div>
         </div>
 
         <div class="app" data-cat="系统工具" data-key="7z">
@@ -730,12 +743,12 @@
         var name = cardName(card);
         if (!name) return;
         var site = card.querySelector('.app-btn:not(.app-btn-dl)');
-        var dl = card.querySelector('.app-btn-dl');
+        var dls = card.querySelectorAll('.app-btn-dl');
         if (site) site.title = '前往 ' + name + ' 官方网站';
-        if (dl) {
+        dls.forEach(function (dl) {
           dl.title = '下载 ' + name + ' 安装包';
           dl.setAttribute('aria-label', '下载 ' + name + ' 安装包');
-        }
+        });
       });
 
       /* ---------- 读直链清单：读不到就全保持 pending，页面照常可用 ---------- */
@@ -747,25 +760,26 @@
         .then(function (data) {
           var items = (data && data.items) || {};
           cards.forEach(function (card) {
-            var dl = card.querySelector('.app-btn-dl');
-            if (!dl) return;
-            var item = items[dl.getAttribute('data-dl')];
-            if (!item || !item.url) return;
+            var dls = card.querySelectorAll('.app-btn-dl');
+            dls.forEach(function (dl) {
+              var item = items[dl.getAttribute('data-dl')];
+              if (!item || !item.url) return;
 
-            var name = cardName(card);
-            var meta = [];
-            if (item.ver) meta.push('v' + item.ver);
-            if (item.size) meta.push(item.size);
+              var name = cardName(card);
+              var meta = [];
+              if (item.ver) meta.push('v' + item.ver);
+              if (item.size) meta.push(item.size);
 
-            dl.href = item.url;
-            dl.classList.remove('is-pending');
-            /* 有直链的按钮才挂「运行环境核对」闸门：点一下先弹框，
-               用户看完确认后才真正开始下载（与 prism / silverdaw 两页同一套）。
-               没 url 的按钮不挂，点下去仍是「正在加急投放」的轻提示。 */
-            dl.setAttribute('data-dl-gate', '');
-            dl.setAttribute('data-dl-mac', '本站只提供 Windows 版，其他平台请到「官方网站」下载');
-            if (window.DownloadGate) window.DownloadGate.attach(dl);
-            dl.title = '下载 ' + name + ' 安装包' + (meta.length ? '（' + meta.join(' · ') + '）' : '');
+              dl.href = item.url;
+              dl.classList.remove('is-pending');
+              /* 有直链的按钮才挂「运行环境核对」闸门：点一下先弹框，
+                 用户看完确认后才真正开始下载（与 prism / silverdaw 两页同一套）。
+                 没 url 的按钮不挂，点下去仍是「正在加急投放」的轻提示。 */
+              dl.setAttribute('data-dl-gate', '');
+              dl.setAttribute('data-dl-mac', '本站只提供 Windows 版，其他平台请到「官方网站」下载');
+              if (window.DownloadGate) window.DownloadGate.attach(dl);
+              dl.title = '下载 ' + name + ' 安装包' + (meta.length ? '（' + meta.join(' · ') + '）' : '');
+            });
           });
         })
         .catch(function () {

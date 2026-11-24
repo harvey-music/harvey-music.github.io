@@ -370,6 +370,54 @@
   outline-offset: 2px;
 }
 
+/* ---------- Transfer 自研软件：2×2 大卡片 + 两个横向下载栏 ---------- */
+
+.app--spotlight {
+  grid-column: span 2;
+  grid-row: span 2;
+  min-height: 0;
+}
+
+.app-dl-list {
+  display: grid;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.app-dl-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+}
+
+.app-dl-info {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.app-dl-info strong {
+  font-size: 0.8rem;
+  color: var(--ink);
+}
+
+.app-dl-info span {
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.app-dl-row .app-btn {
+  flex: none;
+}
+
 /* ---------- 轻提示：点还没上架的下载按钮时浮出来 ---------- */
 
 .dl-toast {
@@ -732,6 +780,20 @@
 
   .app-ext {
     font-size: 0.62rem;
+  }
+
+  .app--spotlight {
+    grid-column: span 2;
+    grid-row: auto;
+  }
+
+  .app-dl-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .app-dl-row .app-btn {
+    width: 100%;
   }
 }
 
